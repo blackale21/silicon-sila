@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<title>SILA · Pantallazo general</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@page { size: 1280px 720px; margin: 0; }
+:root { --blue:#006bf2; --hi:#3d8bff; --ice:#cae1ff; --bg:#070b14; --bg2:#0b1222; --card:#0f182b; --line:rgba(202,225,255,.14); --muted:#8ea2c2; --ok:#3ddc97; --warn:#ffb547; --hot:#ff7a6b; --mono:'JetBrains Mono',monospace; }
+* { box-sizing:border-box; }
+html,body { margin:0; background:#000; }
+body { font-family:Poppins,sans-serif; color:#eaf2ff; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+a { color:inherit; text-decoration:none; }
+.page { width:1280px; height:720px; position:relative; overflow:hidden; page-break-after:always; break-after:page;
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(0,107,242,.20), transparent 60%),
+    linear-gradient(rgba(202,225,255,.035) 1px, transparent 1px) 0 0/32px 32px,
+    linear-gradient(90deg, rgba(202,225,255,.035) 1px, transparent 1px) 0 0/32px 32px, var(--bg);
+  padding:78px 56px 40px; }
+.page:last-child { page-break-after:auto; break-after:auto; }
+
+/* barra de navegación (clickeable) */
+.nav { position:absolute; top:0; left:0; right:0; height:52px; display:flex; align-items:center; gap:6px; padding:0 22px; border-bottom:1px solid var(--line); background:rgba(7,11,20,.85); }
+.nav .lg { display:flex; align-items:center; gap:8px; font:600 13px Poppins; margin-right:14px; }
+.nav .lg svg { width:20px; height:20px; }
+.nav .lg span { font:500 10px var(--mono); letter-spacing:.18em; color:var(--muted); border-left:1px solid var(--line); padding-left:8px; }
+.nav a.p { font:500 10.5px var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--muted); padding:6px 10px; border-radius:6px; }
+.nav a.p.on { color:#fff; background:rgba(0,107,242,.22); box-shadow:inset 0 0 0 1px rgba(61,139,255,.5); }
+.nav .num { margin-left:auto; font:500 11px var(--mono); color:var(--muted); }
+.foot { position:absolute; left:56px; right:56px; bottom:16px; display:flex; justify-content:space-between; font:500 10px var(--mono); letter-spacing:.12em; color:rgba(142,162,194,.7); }
+.foot a { color:var(--hi); }
+
+/* tipografía */
+.k { font:500 12px var(--mono); letter-spacing:.24em; text-transform:uppercase; color:var(--hi); display:flex; align-items:center; gap:10px; margin:0 0 12px; }
+.k::before { content:''; width:18px; height:2px; background:var(--blue); }
+h1 { font-size:40px; line-height:1.12; margin:0 0 14px; font-weight:600; letter-spacing:-.015em; }
+h2 { font-size:32px; line-height:1.15; margin:0 0 12px; font-weight:600; letter-spacing:-.01em; }
+h3 { font-size:17px; margin:0 0 6px; font-weight:600; }
+p, li { font-size:15px; line-height:1.6; color:#c9d6ee; }
+p { margin:0 0 10px; }
+.lead { font-size:17px; color:#d6e2f7; }
+.muted { color:var(--muted); }
+.mono { font-family:var(--mono); }
+ul.b { margin:6px 0 0; padding:0; list-style:none; display:grid; gap:8px; }
+ul.b li { padding-left:22px; position:relative; }
+ul.b li::before { content:''; position:absolute; left:0; top:9px; width:9px; height:9px; background:var(--blue); clip-path:polygon(3px 0,100% 0,100% calc(100% - 3px),calc(100% - 3px) 100%,0 100%,0 3px); }
+b, strong { color:#fff; font-weight:600; }
+
+/* layout */
+.row { display:flex; gap:32px; align-items:flex-start; }
+.col { flex:1; min-width:0; }
+.w38 { flex:0 0 38%; } .w33 { flex:0 0 32%; } .w45 { flex:0 0 45%; } .w55 { flex:0 0 55%; } .w62 { flex:0 0 62%; }
+
+/* marcos de imagen (chaflán del isotipo) */
+.shot { --c:16px; position:relative; background:var(--line); padding:1px; clip-path:polygon(var(--c) 0,100% 0,100% calc(100% - var(--c)),calc(100% - var(--c)) 100%,0 100%,0 var(--c)); }
+.shot img { display:block; width:100%; clip-path:polygon(calc(var(--c) - 1px) 0,100% 0,100% calc(100% - var(--c) + 1px),calc(100% - var(--c) + 1px) 100%,0 100%,0 calc(var(--c) - 1px)); }
+.cap { font:500 11px var(--mono); letter-spacing:.08em; color:var(--muted); margin-top:8px; text-transform:uppercase; }
+.cap b { color:var(--ice); }
+.phone { width:200px; border-radius:26px; padding:8px; background:#1a2338; box-shadow:0 0 0 1px var(--line), 0 30px 60px -20px rgba(0,0,0,.8); }
+.phone img { width:100%; display:block; border-radius:19px; }
+.tag { display:inline-block; font:600 10px var(--mono); letter-spacing:.14em; padding:4px 8px; border-radius:4px; background:rgba(255,181,71,.15); color:var(--warn); }
+
+/* tarjetas */
+.cards { display:grid; gap:14px; }
+.card { background:var(--card); border:1px solid var(--line); padding:16px 18px; clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px); }
+.card .n { font:600 11px var(--mono); color:var(--hi); letter-spacing:.14em; }
+.card p { font-size:13.5px; margin:4px 0 0; }
+a.card { display:block; transition:none; }
+a.card:hover { border-color:var(--hi); }
+.go { font:500 11px var(--mono); color:var(--hi); letter-spacing:.1em; margin-top:8px; display:block; }
+
+/* portada */
+.cover { padding:0; display:flex; }
+.cover .l { flex:0 0 52%; padding:110px 56px 56px 72px; display:flex; flex-direction:column; }
+.cover .r { flex:1; position:relative; }
+.cover .r img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.95; }
+.cover .r::before { content:''; position:absolute; inset:0; z-index:1; background:linear-gradient(90deg, var(--bg) 0%, transparent 35%); }
+.cover h1 { font-size:58px; }
+.btn { display:inline-flex; align-items:center; gap:10px; background:var(--blue); color:#fff; font-weight:600; font-size:15px; padding:14px 22px; clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px); }
+.btn.gh { background:transparent; box-shadow:inset 0 0 0 1px var(--line); clip-path:none; border-radius:8px; color:var(--ice); }
+
+/* índice */
+.idx { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:22px; }
+.idx a { background:var(--card); border:1px solid var(--line); padding:16px; min-height:128px; display:flex; flex-direction:column; clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px); }
+.idx a .n { font:600 11px var(--mono); color:var(--hi); letter-spacing:.14em; }
+.idx a b { font-size:16px; margin:6px 0 4px; }
+.idx a span { font-size:12.5px; color:var(--muted); line-height:1.45; }
+.idx a i { margin-top:auto; font:500 10.5px var(--mono); color:var(--hi); font-style:normal; letter-spacing:.1em; }
+
+/* diagrama recorrido */
+.steps { display:flex; align-items:stretch; gap:0; margin-top:26px; }
+.steps a { flex:1; background:var(--card); border:1px solid var(--line); padding:16px 14px; position:relative; margin-right:22px; clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px); }
+.steps a:last-child { margin-right:0; }
+.steps .arw { position:relative; }
+.steps a .n { width:30px; height:30px; display:grid; place-items:center; background:var(--blue); font:600 13px var(--mono); margin-bottom:10px; clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px); }
+.steps a b { display:block; font-size:15px; margin-bottom:4px; }
+.steps a span { font-size:12.5px; color:var(--muted); line-height:1.45; display:block; }
+.steps a i { display:block; margin-top:10px; font:500 10.5px var(--mono); color:var(--hi); font-style:normal; letter-spacing:.08em; }
+.chev { position:absolute; right:-19px; top:50%; width:16px; height:16px; margin-top:-8px; color:var(--hi); font:600 16px var(--mono); }
+
+/* mapa del flujo */
+.fmap { margin-top:14px; display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.node { background:var(--card); border:1px solid var(--line); padding:9px 12px; font-size:12.5px; border-radius:6px; }
+.fhead { text-align:center; margin:0 auto 10px; width:520px; background:var(--blue); border:0; color:#fff; font-weight:600; font-size:14px; padding:10px; clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px); }
+.fhead small { display:block; font:500 10.5px var(--mono); opacity:.8; letter-spacing:.06em; }
+.br { background:var(--card); border:1px solid var(--line); padding:12px; clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px); }
+.br h4 { margin:0 0 8px; font-size:14px; color:#fff; display:flex; justify-content:space-between; align-items:center; }
+.br h4 span { font:500 10px var(--mono); color:var(--hi); }
+.br ol { margin:0; padding:0 0 0 18px; font-size:11.8px; line-height:1.55; color:#c9d6ee; }
+.br ol li { font-size:11.8px; line-height:1.55; }
+.br ol li em { color:var(--warn); font-style:normal; font-size:10.5px; }
+.fcommon { margin-top:12px; display:flex; gap:10px; align-items:center; justify-content:center; }
+.fcommon .node { text-align:center; }
+.fcommon .node b { display:block; font-size:12.5px; }
+.fcommon .node small { font:500 10px var(--mono); color:var(--muted); }
+.fcommon .ar { color:var(--hi); font:600 14px var(--mono); }
+.fcommon .node.end { background:var(--blue); border-color:var(--blue); }
+
+/* tablas */
+table { border-collapse:collapse; width:100%; font-size:13.5px; }
+th, td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { font:500 10.5px var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+td b { color:#fff; }
+.pill { display:inline-block; font:600 10.5px var(--mono); letter-spacing:.1em; padding:3px 8px; border-radius:4px; }
+.hot { background:rgba(255,122,107,.16); color:var(--hot); } .warm { background:rgba(255,181,71,.15); color:var(--warn); } .cold { background:rgba(61,139,255,.16); color:var(--hi); }
+.okc { color:var(--ok); }
+.big-n { font:600 44px Poppins; color:#fff; line-height:1; }
+
+.qrbox { background:#fff; padding:12px; width:200px; border-radius:6px; }
+.qrbox img { width:100%; display:block; }
+</style>
+</head>
+<body>
+
+<!-- ================= 1 PORTADA ================= -->
+<section class="page cover" id="portada">
+  <div class="l">
+    <div class="k">Silicon Access · Proyecto</div>
+    <h1>SILA<br><span style="color:var(--hi)">Canal de ingreso</span><br>de leads comerciales</h1>
+    <p class="lead" style="max-width:460px">Un pantallazo de cómo funciona todo, de punta a punta, antes de ver la demo en vivo.</p>
+    <div style="display:flex;gap:12px;margin-top:26px">
+      <a class="btn" href="#indice">Comenzar →</a>
+      <a class="btn gh" href="#recorrido">Ver el recorrido</a>
+    </div>
+    <p class="muted mono" style="margin-top:auto;font-size:11px;letter-spacing:.12em">PDF INTERACTIVO · TOCÁ LOS TÍTULOS DE ARRIBA, EL ÍNDICE Y LOS BOTONES PARA NAVEGAR</p>
+  </div>
+  <div class="r"><img src="img/intro_3.jpg" alt=""></div>
+</section>
+
+<!-- ================= 2 ÍNDICE ================= -->
+<section class="page" id="indice" data-g="inicio">
+  <div class="k">Índice</div>
+  <h2>¿Qué vas a ver?</h2>
+  <p class="lead">Cada tarjeta lleva a su sección. En todas las páginas, la barra de arriba también navega.</p>
+  <div class="idx">
+    <a href="#objetivo"><span class="n">01</span><b>El objetivo</b><span>Qué reemplaza y por qué no es un formulario más.</span><i>IR →</i></a>
+    <a href="#concepto"><span class="n">02</span><b>El concepto</b><span>"Tu ingreso": cada pregunta es un checkpoint.</span><i>IR →</i></a>
+    <a href="#recorrido"><span class="n">03</span><b>El recorrido</b><span>De la web al asesor, en 5 pasos.</span><i>IR →</i></a>
+    <a href="#entrada"><span class="n">04</span><b>La experiencia del cliente</b><span>Web, intro, preguntas con imágenes.</span><i>IR →</i></a>
+    <a href="#flujo"><span class="n">05</span><b>El mapa del flujo</b><span>Las 4 verticales del flujograma, completas.</span><i>IR →</i></a>
+    <a href="#pase"><span class="n">06</span><b>El pase y el cierre</b><span>Credencial en vivo, validaciones y celular.</span><i>IR →</i></a>
+    <a href="#comercial"><span class="n">07</span><b>Lo que recibe el comercial</b><span>Mail, ficha, WhatsApp, bandeja y planilla.</span><i>IR →</i></a>
+    <a href="#produccion"><span class="n">08</span><b>Costo y paso a producción</b><span>$0, qué falta y cómo se activa.</span><i>IR →</i></a>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>02</span></div>
+</section>
+
+<!-- ================= 3 OBJETIVO ================= -->
+<section class="page" id="objetivo" data-g="inicio">
+  <div class="row">
+    <div class="col">
+      <div class="k">01 · El objetivo</div>
+      <h2>Que cada consulta llegue calificada</h2>
+      <p class="lead">Hoy "Solicitá una demo" lleva a un formulario genérico. Botmaker quedó descartado. SILA lo reemplaza con un recorrido propio, en la web de Silicon.</p>
+      <ul class="b">
+        <li><b>Sigue el flujograma comercial</b> tal cual: 4 verticales, cada una con sus preguntas de calificación.</li>
+        <li><b>Un toque por respuesta:</b> cada opción es una tarjeta con su imagen. Rápido en celular y en PC.</li>
+        <li><b>Diseño propio</b>, ligado a la marca (azul, tipografía e isotipo de Silicon). Nada de plantillas genéricas.</li>
+        <li><b>Costo $0:</b> sin licencias ni plataformas pagas.</li>
+        <li>El lead llega <b>ordenado y con prioridad</b> (frío, tibio o caliente) para que el asesor sepa a quién llamar primero.</li>
+      </ul>
+    </div>
+    <div class="w45">
+      <div class="cards">
+        <div class="card"><span class="n">ANTES</span><h3 style="margin-top:6px">Formulario genérico</h3><p>Campos sueltos, sin contexto del predio. El comercial tiene que volver a preguntar todo.</p></div>
+        <div class="card" style="border-color:rgba(61,139,255,.5)"><span class="n">CON SILA</span><h3 style="margin-top:6px">Consulta calificada</h3><p>Vertical, escala, cómo controlan hoy, qué dolor tienen, qué soluciones les interesan, en qué etapa están y cómo contactarlos.</p></div>
+        <div class="card"><span class="n">4 VERTICALES</span><p style="margin-top:6px">Urbanización · Parque industrial · Industria o planta · Concesionaria</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>03</span></div>
+</section>
+
+<!-- ================= 4 CONCEPTO ================= -->
+<section class="page" id="concepto" data-g="concepto">
+  <div class="row">
+    <div class="w38">
+      <div class="k">02 · El concepto</div>
+      <h2>"Tu ingreso"</h2>
+      <p class="lead">Silicon vende control de acceso, así que el formulario <b>funciona como un control de acceso</b>.</p>
+      <ul class="b">
+        <li><b>Cada pregunta es un checkpoint</b> con su barrera: respondés y la barrera sube.</li>
+        <li><b>Los próximos checkpoints se ven bloqueados</b> y borrosos: dan ganas de ver qué viene.</li>
+        <li><b>Un registro tipo consola de guardia</b> confirma cada respuesta: "✓ REGISTRADO".</li>
+        <li><b>A la derecha se arma "Tu pase"</b>, una credencial con los datos. Al final se emite con número y sello.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="shot"><img src="img/sila_escala.jpg" alt=""></div>
+      <div class="cap"><b>Arriba:</b> ruta de checkpoints · <b>izquierda:</b> pregunta con imágenes · <b>derecha:</b> tu pase en vivo</div>
+    </div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>04</span></div>
+</section>
+
+<!-- ================= 5 RECORRIDO ================= -->
+<section class="page" id="recorrido" data-g="concepto">
+  <div class="k">03 · El recorrido</div>
+  <h2>De la web al asesor, en 5 pasos</h2>
+  <p class="lead">Tocá cada paso para ver el detalle.</p>
+  <div class="steps">
+    <a href="#entrada"><div class="n">1</div><b>Entra desde la web</b><span>"Solicitá una demo", "Contactanos" o el botón flotante "Armá tu acceso".</span><i>VER →</i><span class="chev">›</span></a>
+    <a href="#intro"><div class="n">2</div><b>Intro de marca</b><span>El isotipo de Silicon se arma pieza por pieza: "Acceso verificado".</span><i>VER →</i><span class="chev">›</span></a>
+    <a href="#flujo"><div class="n">3</div><b>Responde su recorrido</b><span>Preguntas propias de su vertical, con imágenes. Entre 11 y 15 toques.</span><i>VER →</i><span class="chev">›</span></a>
+    <a href="#pase"><div class="n">4</div><b>Recibe su pase</b><span>Credencial emitida con número. Puede seguir por WhatsApp.</span><i>VER →</i><span class="chev">›</span></a>
+    <a href="#comercial"><div class="n">5</div><b>Llega al comercial</b><span>Mail de aviso + ficha en el CRM con prioridad. Contacto en 24 hs hábiles.</span><i>VER →</i></a>
+  </div>
+  <div class="row" style="margin-top:26px;gap:18px">
+    <div class="card col"><span class="n">TIEMPO</span><p style="margin-top:6px"><b>~1 minuto</b> para completar todo.</p></div>
+    <div class="card col"><span class="n">DISPOSITIVOS</span><p style="margin-top:6px"><b>Celular y PC</b>, optimizado para los dos.</p></div>
+    <div class="card col"><span class="n">ACCESIBLE</span><p style="margin-top:6px">Teclado (1-9, Enter) y modo "reducir movimiento".</p></div>
+    <div class="card col"><span class="n">ANTI-SPAM</span><p style="margin-top:6px">Campo trampa y tiempo mínimo de completado.</p></div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>05</span></div>
+</section>
+
+<!-- ================= 6 ENTRADA ================= -->
+<section class="page" id="entrada" data-g="cliente">
+  <div class="row">
+    <div class="w33">
+      <div class="k">04 · Paso 1</div>
+      <h2>Entrada desde la web de Silicon</h2>
+      <p>SILA se abre desde los botones que ya existen:</p>
+      <ul class="b">
+        <li><b>SOLICITÁ UNA DEMO</b> en el menú</li>
+        <li><b>CONTACTANOS</b> en la portada</li>
+        <li><b>Atención al cliente</b> en el pie</li>
+        <li>Un <b>botón flotante nuevo</b>, "Armá tu acceso", visible en toda la web</li>
+      </ul>
+      <p style="margin-top:12px">Al tocar, una transición circular lleva directo a SILA. Se integra pegando <b>una sola línea</b> en Webflow.</p>
+    </div>
+    <div class="col">
+      <div class="shot"><img src="img/site_hero.jpg" alt=""></div>
+      <div class="cap"><b>Maqueta de la web</b> usada en la demo · abajo a la derecha, el botón flotante</div>
+    </div>
+    <div style="flex:0 0 170px"><div class="phone" style="width:170px"><img src="img/site_mobile.jpg" alt=""></div><div class="cap" style="text-align:center">celular</div></div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>06</span></div>
+</section>
+
+<!-- ================= 7 INTRO ================= -->
+<section class="page" id="intro" data-g="cliente">
+  <div class="k">04 · Paso 2</div>
+  <h2>Intro de marca, en 3 segundos</h2>
+  <p class="lead" style="max-width:900px">Una línea de escaneo barre la pantalla, las 7 piezas del isotipo de Silicon entran y se encastran, y la cámara atraviesa el bloque central hasta la primera pregunta. Se puede saltar, aparece una sola vez por visita y respeta la opción "reducir movimiento".</p>
+  <div class="row" style="gap:16px;margin-top:18px">
+    <div class="col"><div class="shot"><img src="img/intro_1.jpg" alt=""></div><div class="cap"><b>1</b> · las piezas entran</div></div>
+    <div class="col"><div class="shot"><img src="img/intro_2.jpg" alt=""></div><div class="cap"><b>2</b> · "acceso verificado"</div></div>
+    <div class="col"><div class="shot"><img src="img/intro_3.jpg" alt=""></div><div class="cap"><b>3</b> · se atraviesa el isotipo</div></div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>07</span></div>
+</section>
+
+<!-- ================= 8 PRIMERA PREGUNTA ================= -->
+<section class="page" id="preguntas" data-g="cliente">
+  <div class="row">
+    <div class="w33">
+      <div class="k">04 · Paso 3</div>
+      <h2>Primera pregunta: el destino</h2>
+      <p>"¿Dónde querés implementar tu sistema de control de acceso?"</p>
+      <ul class="b">
+        <li>Cada opción es una <b>tarjeta con su ilustración</b> (más de 90 dibujos propios, sin fotos de stock).</li>
+        <li>Las esquinas en diagonal repiten el <b>corte del isotipo</b> de Silicon.</li>
+        <li>Al pasar el mouse, <b>la barrera del dibujo se levanta</b>.</li>
+        <li>La respuesta define <b>el recorrido</b>: cada vertical tiene sus propias preguntas.</li>
+      </ul>
+      <a class="go" href="#flujo">VER EL MAPA DEL FLUJO →</a>
+    </div>
+    <div class="col">
+      <div class="shot"><img src="img/sila_n1.jpg" alt=""></div>
+      
+    </div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>08</span></div>
+</section>
+
+<!-- ================= 9 MAPA ================= -->
+<section class="page" id="flujo" data-g="flujo">
+  <div class="k">05 · El mapa del flujo</div>
+  <h2 style="font-size:26px;margin-bottom:6px">Las 4 verticales del flujograma, completas</h2>
+  <div class="fhead">¿Dónde querés implementar tu sistema de control de acceso?<small>N1 · DEFINE LA RAMA</small></div>
+  <div class="fmap">
+    <a class="br" href="#imagenes"><h4>Urbanización <span>N2A</span></h4><ol>
+      <li>Lotes</li><li>Accesos</li><li>Control actual</li><li>¿Cuál usan? <em>si tienen sistema</em></li><li>Soluciones <em>varias</em></li><li>Nombre del barrio</li></ol></a>
+    <a class="br" href="#imagenes"><h4>Parque industrial <span>N2B</span></h4><ol>
+      <li>Empresas</li><li>Desde dónde consulta</li><li>Accesos</li><li>Control actual</li><li>Visitas por empresa</li><li>Demoras</li><li>Soluciones <em>varias</em></li><li>Nombre del parque</li><li>Empresa <em>si consulta desde adentro</em></li></ol></a>
+    <a class="br" href="#imagenes"><h4>Industria o planta <span>N2D</span></h4><ol>
+      <li>Personas por día</li><li>Ingresantes</li><li>Sectores restringidos</li><li>Docs de contratistas</li><li>Camiones / balanza</li><li>Seguro vencido</li><li>Soluciones <em>varias</em></li><li>Nombre de la planta</li></ol></a>
+    <a class="br" href="#imagenes"><h4>Concesionaria <span>N2C</span></h4><ol>
+      <li>Circulación diaria</li><li>Predio</li><li>Sucursales</li><li>Cliente sin cita</li><li>CRM</li><li>Ingreso</li><li>Barreras</li><li>Sectores</li><li>Soluciones <em>varias</em></li><li>Nombre y marca</li></ol></a>
+  </div>
+  <div class="fcommon">
+    <div class="node"><b>Necesidad</b><small>N3 · según la rama</small></div><span class="ar">→</span>
+    <div class="node"><b>Etapa</b><small>N4</small></div><span class="ar">→</span>
+    <div class="node"><b>Nombre · Localidad · Rol · Email/Tel</b><small>N5–N8 · uno por uno</small></div><span class="ar">→</span>
+    <a class="node end" href="#pase"><b>Pase emitido</b><small style="color:#dce9ff">N9 · al CRM</small></a>
+  </div>
+  <div class="foot"><span>TOCÁ UNA RAMA PARA VER SUS IMÁGENES</span><span>09</span></div>
+</section>
+
+<!-- ================= 10 IMÁGENES POR RAMA ================= -->
+<section class="page" id="imagenes" data-g="flujo">
+  <div class="k">05 · Una imagen por respuesta</div>
+  <h2 style="font-size:28px">Cada rama con sus propios dibujos</h2>
+  <p style="max-width:1000px">Los rangos se dibujan por <b>densidad</b>: más lotes, más casitas; más empresas, más naves. Así la respuesta se entiende de un vistazo.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 22px;margin-top:10px">
+    <div><div class="shot" style="--c:10px"><img src="img/opts_lotes.png" alt=""></div><div class="cap"><b>Urbanización</b> · cantidad de lotes</div></div>
+    <div><div class="shot" style="--c:10px"><img src="img/opts_parque.png" alt=""></div><div class="cap"><b>Parque industrial</b> · empresas que operan adentro</div></div>
+    <div><div class="shot" style="--c:10px"><img src="img/opts_planta.png" alt=""></div><div class="cap"><b>Industria o planta</b> · tipo de ingresantes</div></div>
+    <div><div class="shot" style="--c:10px"><img src="img/opts_conce.png" alt=""></div><div class="cap"><b>Concesionaria</b> · tipo de predio</div></div>
+  </div>
+  <div class="foot"><span><a href="#flujo">← VOLVER AL MAPA</a></span><span>10</span></div>
+</section>
+
+<!-- ================= 11 MÚLTIPLE ================= -->
+<section class="page" id="multiple" data-g="flujo">
+  <div class="row">
+    <div class="w33">
+      <div class="k">05 · Soluciones</div>
+      <h2>Menús de selección múltiple</h2>
+      <p>Antes del nombre de la cuenta, cada rama pregunta <b>qué soluciones le interesan</b>, con las capacidades del brochure.</p>
+      <ul class="b">
+        <li>Se marcan <b>varias</b> opciones.</li>
+        <li>"<b>Otra — contanos cuál</b>" abre un campo libre.</li>
+        <li>Los menús largos se muestran en lista compacta.</li>
+        <li>Lo marcado aparece en el pase como etiquetas.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="shot"><img src="img/sila_multi.jpg" alt="" style="height:250px;object-fit:cover;object-position:top"></div>
+      <div class="cap"><b>Urbanización</b> · con "Otra" escrita</div>
+      <div class="shot" style="margin-top:12px"><img src="img/sila_menu_conce.jpg" alt="" style="height:235px;object-fit:cover;object-position:top"></div>
+      <div class="cap"><b>Concesionaria</b> · 9 opciones en lista compacta</div>
+    </div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>11</span></div>
+</section>
+
+<!-- ================= 12 CONTACTO ================= -->
+<section class="page" id="contacto" data-g="pase">
+  <div class="row">
+    <div class="w33">
+      <div class="k">06 · Datos de contacto</div>
+      <h2>Uno por uno, sin formularios largos</h2>
+      <p>Nombre, localidad, rol y email o teléfono: <b>un dato por pantalla</b>, como pide el flujograma.</p>
+      <ul class="b">
+        <li>SILA <b>usa el nombre</b>: "Un gusto, María…".</li>
+        <li>El último dato <b>se valida</b>: tiene que ser un email o un teléfono reales en formato.</li>
+        <li>Con "Volver" se puede corregir cualquier respuesta; si cambia la rama, se reacomoda solo.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="shot"><img src="img/sila_texto.jpg" alt="" style="height:290px;object-fit:cover;object-position:top"></div>
+      <div class="shot" style="margin-top:12px"><img src="img/sila_validacion.jpg" alt="" style="height:180px;object-fit:cover;object-position:top"></div>
+      <div class="cap"><b>Validación</b> · "maria@" no pasa</div>
+    </div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>12</span></div>
+</section>
+
+<!-- ================= 13 PASE ================= -->
+<section class="page" id="pase" data-g="pase">
+  <div class="row">
+    <div style="flex:0 0 300px"><div class="shot" style="--c:20px"><img src="img/pase.png" alt=""></div></div>
+    <div class="col">
+      <div class="k">06 · Tu pase</div>
+      <h2>La credencial que se arma sola</h2>
+      <p class="lead">Mientras responde, el cliente ve su pase completarse. Al final se emite.</p>
+      <ul class="b">
+        <li><b>Nombre de la cuenta</b> (barrio, parque, planta o concesionaria) y su vertical.</li>
+        <li><b>Cada respuesta</b> en su renglón; las soluciones, como etiquetas.</li>
+        <li><b>Número de pase</b> (formato SA-XXXXXX): es el mismo ID que ve el comercial.</li>
+        <li>Al emitirse: <b>sello "Acceso concedido"</b>, barrido de luz y código decorativo.</li>
+      </ul>
+      <div class="row" style="gap:12px;margin-top:18px">
+        <a class="card col" href="#cierre"><span class="n">SIGUIENTE</span><p>La pantalla final →</p></a>
+        <a class="card col" href="#celular"><span class="n">EN CELULAR</span><p>Cómo se ve en el teléfono →</p></a>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>13</span></div>
+</section>
+
+<!-- ================= 14 CELULAR ================= -->
+<section class="page" id="celular" data-g="pase">
+  <div class="row" style="align-items:center">
+    <div class="w33">
+      <div class="k">06 · Celular</div>
+      <h2>Pensado primero para el teléfono</h2>
+      <ul class="b">
+        <li>Tarjetas en <b>2 columnas</b>, grandes para el dedo.</li>
+        <li>Barra de avance arriba (04/16) en lugar de la ruta completa.</li>
+        <li>El pase vive en un <b>cajón que se abre</b> desde el botón "PASE".</li>
+        <li>Botones fijos abajo, sin scroll lateral.</li>
+      </ul>
+    </div>
+    <div class="col" style="display:flex;gap:26px;justify-content:center">
+      <div><div class="phone"><img src="img/m_n1.jpg" alt=""></div><div class="cap" style="text-align:center">inicio</div></div>
+      <div><div class="phone"><img src="img/m_pregunta.jpg" alt=""></div><div class="cap" style="text-align:center">pregunta</div></div>
+      <div><div class="phone"><img src="img/m_pase.jpg" alt=""></div><div class="cap" style="text-align:center">pase abierto</div></div>
+    </div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>14</span></div>
+</section>
+
+<!-- ================= 15 CIERRE ================= -->
+<section class="page" id="cierre" data-g="pase">
+  <div class="row">
+    <div class="w33">
+      <div class="k">06 · Pantalla final</div>
+      <h2>"Listo, María. Tu pase está emitido."</h2>
+      <p>Confirma que un asesor contacta en <b>24 hs hábiles</b> y muestra el envío paso a paso:</p>
+      <ul class="b">
+        <li>Validando datos de contacto ✓</li>
+        <li>HubSpot: contacto y negocio creados ✓</li>
+        <li>Mail de aviso al equipo comercial ✓</li>
+        <li>Asignado a la cola de seguimiento ✓</li>
+      </ul>
+      <p style="margin-top:12px"><span class="tag">DEMO</span> Hoy todo esto está <b>simulado</b>: no se envía ningún dato.</p>
+    </div>
+    <div class="col"><div class="shot"><img src="img/sila_fin.jpg" alt=""></div>
+      <div class="cap"><b>Botones:</b> WhatsApp · ver lo que recibe el comercial · abrir la bandeja · volver al sitio</div></div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>15</span></div>
+</section>
+
+<!-- ================= 16 COMERCIAL ================= -->
+<section class="page" id="comercial" data-g="comercial">
+  <div class="k">07 · Lo que recibe el comercial</div>
+  <h2 style="font-size:28px">Aviso por mail y ficha en el CRM, al instante</h2>
+  <div class="row" style="gap:20px;margin-top:8px">
+    <div class="col"><div class="shot"><img src="img/visor_mail.jpg" alt=""></div><div class="cap"><b>Mail de aviso</b> · asunto con prioridad, cuenta y vertical, y todas las respuestas</div></div>
+    <div class="col"><div class="shot"><img src="img/visor_crm.jpg" alt=""></div><div class="cap"><b>Ficha en el CRM</b> · datos de contacto separados, prioridad y nota con el resumen</div></div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>16</span></div>
+</section>
+
+<!-- ================= 17 WHATSAPP ================= -->
+<section class="page" id="whatsapp" data-g="comercial">
+  <div class="row" style="align-items:center">
+    <div class="w38">
+      <div class="k">07 · WhatsApp</div>
+      <h2>Seguir la charla por WhatsApp</h2>
+      <p>Al terminar, el cliente puede abrir WhatsApp con un <b>mensaje ya escrito</b>: su nombre, rol, cuenta, vertical y número de pase.</p>
+      <ul class="b">
+        <li>El asesor recibe el contexto completo, <b>sin volver a preguntar</b>.</li>
+        <li>En la demo, la conversación está <b>simulada</b>: el comercial responde y el cliente elige "Hoy / Mañana / Por mail".</li>
+        <li>Lo que pasa en el chat queda registrado en la <b>actividad del lead</b>.</li>
+      </ul>
+      <p style="margin-top:10px" class="muted">En producción abre el WhatsApp real con el número comercial.</p>
+    </div>
+    <div class="col" style="display:flex;gap:26px;justify-content:center">
+      <div class="phone" style="width:220px"><img src="img/wa_sim.jpg" alt=""></div>
+      <div class="phone" style="width:220px"><img src="img/wa_sim2.jpg" alt=""></div>
+    </div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>17</span></div>
+</section>
+
+<!-- ================= 18 BANDEJA ================= -->
+<section class="page" id="bandeja" data-g="comercial">
+  <div class="row">
+    <div style="flex:0 0 300px">
+      <div class="k">07 · Bandeja comercial</div>
+      <h2 style="font-size:28px">Los leads, ordenados por etapa</h2>
+      <ul class="b">
+        <li><b>Tablero</b>: Nuevo → Contactado → Propuesta → Ganado. Se arrastran entre columnas.</li>
+        <li><b>Indicadores</b>: leads recibidos, calientes, tiempo promedio y vertical principal.</li>
+        <li><b>Ficha</b> con contacto, respuestas, actividad y botones Llamar / WhatsApp / Mail.</li>
+        <li><b>En vivo</b>: si alguien completa SILA, el lead aparece solo con un aviso.</li>
+      </ul>
+      <p style="margin-top:10px"><span class="tag">DEMO</span> Reemplaza a HubSpot o a la Google Sheet mientras no estén los datos reales.</p>
+    </div>
+    <div class="col">
+      <div class="shot" style="--c:12px"><img src="img/crm_tablero.jpg" alt="" style="height:330px;object-fit:cover;object-position:top"></div>
+      <div class="shot" style="--c:12px;margin-top:12px"><img src="img/crm_ficha.jpg" alt="" style="height:215px;object-fit:cover;object-position:right top"></div>
+    </div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>18</span></div>
+</section>
+
+<!-- ================= 19 PLANILLA ================= -->
+<section class="page" id="planilla" data-g="comercial">
+  <div class="row">
+    <div class="col">
+      <div class="k">07 · Planilla</div>
+      <h2 style="font-size:28px">Vista planilla y exportación a Excel</h2>
+      <div class="shot" style="--c:12px"><img src="img/crm_planilla.jpg" alt="" style="height:440px;object-fit:cover;object-position:top"></div>
+      <div class="cap"><b>Una fila por lead</b>, igual a como quedaría en una Google Sheet · botón "Exportar CSV" (abre en Excel o Google Sheets)</div>
+    </div>
+    <div style="flex:0 0 190px;padding-top:40px"><div class="phone" style="width:190px"><img src="img/m_crm.jpg" alt=""></div><div class="cap" style="text-align:center">bandeja en celular</div></div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>19</span></div>
+</section>
+
+<!-- ================= 20 TEMPERATURA ================= -->
+<section class="page" id="temperatura" data-g="comercial">
+  <div class="row">
+    <div class="w38">
+      <div class="k">07 · Prioridad</div>
+      <h2>¿A quién llamo primero?</h2>
+      <p class="lead">Cada lead llega con una <b>temperatura</b>, calculada sola a partir de sus respuestas.</p>
+      <div class="row" style="gap:12px;margin-top:16px">
+        <div class="card col"><span class="pill hot">CALIENTE</span><p>5 puntos o más</p></div>
+        <div class="card col"><span class="pill warm">TIBIO</span><p>3 o 4 puntos</p></div>
+        <div class="card col"><span class="pill cold">FRÍO</span><p>2 o menos</p></div>
+      </div>
+      <p class="muted" style="margin-top:14px;font-size:13px">Los puntajes se pueden ajustar con el equipo comercial.</p>
+    </div>
+    <div class="col">
+      <table>
+        <tr><th>Señal</th><th>Respuesta</th><th>Puntos</th></tr>
+        <tr><td><b>Etapa</b></td><td>Quiero avanzar pronto · Cambiar sistema actual · Comparando opciones</td><td>+3 · +2 · +1</td></tr>
+        <tr><td><b>Escala</b></td><td>Rango alto (ej. más de 600 lotes, más de 60 empresas) · rango medio</td><td>+2 · +1</td></tr>
+        <tr><td><b>Interés</b></td><td>Marcó 3 soluciones o más</td><td>+1</td></tr>
+        <tr><td><b>Dolor</b></td><td>Demoras frecuentes, seguro vencido que frena la operación, sin control o sin registro de clientes</td><td>+1</td></tr>
+      </table>
+      <p style="margin-top:16px;font-size:13.5px">Además se registra <b>por dónde entró</b> (demo, contactanos, botón flotante, campañas) y <b>cuánto tardó</b> en completar.</p>
+    </div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>20</span></div>
+</section>
+
+<!-- ================= 21 PRODUCCIÓN ================= -->
+<section class="page" id="produccion" data-g="prod">
+  <div class="k">08 · Costo y paso a producción</div>
+  <h2>Costo $0, y pasar a real es un ajuste</h2>
+  <div class="row" style="gap:28px;margin-top:10px">
+    <div class="col">
+      <table>
+        <tr><th>Pieza</th><th>Cómo</th><th>Costo</th></tr>
+        <tr><td><b>SILA</b></td><td>Página web propia (sin plataformas de terceros)</td><td class="okc">$0</td></tr>
+        <tr><td><b>Hosting</b></td><td>GitHub Pages o Cloudflare Pages</td><td class="okc">$0</td></tr>
+        <tr><td><b>En la web</b></td><td>Una línea de código en Webflow</td><td class="okc">$0</td></tr>
+        <tr><td><b>Destino del lead</b></td><td>HubSpot (CRM gratis) o Google Sheet + mail</td><td class="okc">$0</td></tr>
+        <tr><td><b>WhatsApp</b></td><td>Link directo al número comercial</td><td class="okc">$0</td></tr>
+      </table>
+    </div>
+    <div class="w38">
+      <div class="card"><span class="n">PARA ACTIVARLO FALTA</span>
+        <ul class="b" style="margin-top:10px">
+          <li><b>Destino:</b> datos del formulario de HubSpot, o el mail que recibe los avisos (Google Sheet).</li>
+          <li><b>Número de WhatsApp</b> comercial.</li>
+          <li><b>Acceso a Webflow</b> para pegar la línea.</li>
+          <li>Definir si se enganchan los botones actuales o sólo el flotante.</li>
+        </ul>
+        <p style="margin-top:12px;font-size:13px">Con eso se cambia la configuración y <b>deja de ser simulado</b>.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>21</span></div>
+</section>
+
+<!-- ================= 22 FINAL ================= -->
+<section class="page" id="final" data-g="demo">
+  <div class="row" style="align-items:center;height:100%">
+    <div class="col">
+      <div class="k">Y ahora</div>
+      <h1>Vamos a la demo en vivo</h1>
+      <p class="lead" style="max-width:560px">Todo lo que viste funciona: la web, SILA, el pase, el WhatsApp y la bandeja comercial. En la demo <b>no se envía ningún dato</b>.</p>
+      <div class="cards" style="margin-top:20px;max-width:580px">
+        <a class="card" href="https://blackale21.github.io/silicon-sila/"><span class="n">1 · LA WEB</span><p>Tocá "Solicitá una demo" → SILA</p></a>
+        <a class="card" href="https://blackale21.github.io/silicon-sila/crm.html"><span class="n">2 · LA BANDEJA COMERCIAL</span><p>Abrila en otra pestaña: los leads aparecen en vivo</p></a>
+      </div>
+      <p class="muted" style="margin-top:14px;font-size:12.5px">Consejo: bandeja y web en el mismo navegador, cada una en su pestaña.</p>
+    </div>
+    <div style="flex:0 0 240px;text-align:center">
+      <div class="qrbox" style="margin:0 auto"><img src="img/qr_demo.svg" alt="QR"></div>
+      <p class="mono" style="font-size:11px;letter-spacing:.12em;margin-top:12px;color:var(--ice)">ESCANEÁ PARA ABRIRLA EN EL CELULAR</p>
+      <a class="btn gh" href="#indice" style="margin-top:14px">← Volver al índice</a>
+    </div>
+  </div>
+  <div class="foot"><span>SILA · SILICON ACCESS</span><span>22</span></div>
+</section>
+
+<script>
+// barra de navegación clickeable en cada página (excepto portada)
+const G = [['inicio','Inicio','#indice'],['concepto','Concepto','#concepto'],['cliente','Cliente','#entrada'],['flujo','Flujo','#flujo'],['pase','Pase','#pase'],['comercial','Comercial','#comercial'],['prod','Producción','#produccion'],['demo','Demo','#final']];
+const pages = [...document.querySelectorAll('.page')];
+pages.forEach((p, i) => {
+  if (p.id === 'portada') return;
+  const g = p.dataset.g;
+  const nav = document.createElement('div');
+  nav.className = 'nav';
+  nav.innerHTML = `<a class="lg" href="#portada"><svg viewBox="0 0 3 3"><path d="M1 0H2V1H3V2L2 3H1V2H0V1Z" fill="#006bf2"/></svg>SILA<span>SILICON ACCESS</span></a>` +
+    G.map(([k, t, h]) => `<a class="p${k === g ? ' on' : ''}" href="${h}">${t}</a>`).join('') +
+    `<span class="num">${String(i + 1).padStart(2, '0')} / ${pages.length}</span>`;
+  p.prepend(nav);
+});
+</script>
+</body>
+</html>
