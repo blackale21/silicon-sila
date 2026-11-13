@@ -1,0 +1,6 @@
+<!doctype html><meta charset="utf-8"><title>SILA iconos</title>
+<link rel="stylesheet" href="../css/sila.css">
+<style>body{overflow:auto;padding:20px}.g{display:grid;grid-template-columns:repeat(auto-fill,140px);gap:10px}.g .opt{animation:none}.g .lbl{font:11px var(--mono)}</style>
+<div class="g opts" id="g"></div>
+<script src="../js/icons.js"></script>
+<script>g.innerHTML=SILA_ICONS.keys.map(k=>`<div class="opt"><span class="art">${SILA_ICONS.icon(k)}</span><span class="lbl">${k}</span></div>`).join('')</script>
