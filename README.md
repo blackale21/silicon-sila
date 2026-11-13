@@ -2,8 +2,10 @@
 
 Canal de ingreso de leads para silicon-access.com — **modo DEMO: no envía ningún dato.**
 
-- App: https://blackale21.github.io/silicon-sila/
-- Con intro siempre: https://blackale21.github.io/silicon-sila/?intro=1
-- Simulación integrada en una web: https://blackale21.github.io/silicon-sila/demo.html
+- **Recorrido completo (maqueta de la web):** https://blackale21.github.io/silicon-sila/
+  → "SOLICITÁ UNA DEMO", "CONTACTANOS", "Atención al cliente" o el botón flotante llevan a SILA.
+- SILA directo: https://blackale21.github.io/silicon-sila/sila.html?intro=1
+
+La maqueta es sólo para presentar internamente (noindex, con aviso visible). INGRESAR lleva al login real.
 
 Estado y pendientes: [ESTADO.md](ESTADO.md) · Concepto: [docs/IDEAS.md](docs/IDEAS.md)

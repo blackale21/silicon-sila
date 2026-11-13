@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070b14">
+  <title>SILA · Silicon Access</title>
+  <meta name="description" content="Armá tu sistema de control de acceso con SILA, el asistente comercial de Silicon Access.">
+  <link rel="icon" href="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/6189369488195832cdd4269d_Favicon%2032.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/sila.css">
+</head>
+<body>
+  <div class="plan" aria-hidden="true"></div>
+
+  <!-- INTRO -->
+  <div id="intro" aria-hidden="true">
+    <div class="igrid"></div>
+    <div class="scan"></div>
+    <svg class="imark" viewBox="-6 -6 132 132">
+      <path class="pc" style="--k:0;--dx:-60px;--dy:-160px;--r:-40deg" d="M0 40L40 0V40Z"/>
+      <path class="pc" style="--k:1;--dx:0px;--dy:-190px;--r:25deg" d="M40 0H80V40H40Z"/>
+      <path class="pc" style="--k:2;--dx:-200px;--dy:0px;--r:-30deg" d="M0 40H40V80H0Z"/>
+      <path class="pc" style="--k:3;--dx:0px;--dy:0px;--r:90deg" d="M40 40H80V80H40Z"/>
+      <path class="pc" style="--k:4;--dx:200px;--dy:10px;--r:35deg" d="M80 40H120V80H80Z"/>
+      <path class="pc" style="--k:5;--dx:10px;--dy:200px;--r:-25deg" d="M40 80H80V120H40Z"/>
+      <path class="pc" style="--k:6;--dx:70px;--dy:170px;--r:45deg" d="M80 80H120L80 120Z"/>
+      <path class="pc edge" d="M40 0H80V40H120V80L80 120H40V80H0V40Z"/>
+    </svg>
+    <div class="itxt" id="itxt">Verificando credencial…</div>
+    <div class="iflash"></div>
+    <button class="iskip" id="iskip" type="button">SALTAR ›</button>
+  </div>
+
+  <!-- APP -->
+  <div id="app" class="pre">
+    <header class="top">
+      <a class="brand" id="brand" href="https://www.silicon-access.com/" target="_top">
+        <img id="logo" alt="Silicon Access" width="88" height="26">
+        <span class="sila-tag">SILA · ASISTENTE</span>
+      </a>
+      <nav class="route" id="route" aria-label="Recorrido"></nav>
+      <div class="meter" id="meter"><span class="cur" id="mcur"></span><span class="bar"><i id="mbar"></i></span><span class="n" id="mn"></span></div>
+      <button class="pass-toggle" id="passToggle" type="button" aria-controls="passWrap" aria-expanded="false">
+      <svg width="14" height="14" viewBox="0 0 3 3"><path d="M1 0H2V1H3V2L2 3H1V2H0V1Z" fill="#3d8bff"/></svg>
+      <span class="pt-l">PASE</span> <span class="dotc" id="passDot">0</span>
+    </button>
+      <button class="close" id="close" type="button" aria-label="Cerrar" hidden>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 3L13 13M13 3L3 13"/></svg>
+      </button>
+    </header>
+
+    <main class="stage">
+      <section class="q" id="q" aria-live="polite"></section>
+
+      <aside class="pass-wrap" id="passWrap" aria-label="Tu pase">
+        <div class="pass-head"><span>Tu pase</span><span id="passCount">0 datos</span></div>
+        <div id="passSlot"></div>
+        <p class="pass-note" id="passNote">Se completa a medida que avanzás. Al final lo emitimos y un asesor lo recibe.</p>
+      </aside>
+    </main>
+
+    <div class="scrim" id="scrim"></div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/flow.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

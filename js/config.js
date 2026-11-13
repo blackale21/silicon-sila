@@ -3,7 +3,8 @@ window.SILA_CONFIG = {
   // DEMO: true = no envía NADA; simula HubSpot + mail y muestra lo que recibiría el comercial.
   demo: true,
 
-  siteUrl: 'https://www.silicon-access.com/',
+  // Destino de "Volver al sitio". En la demo de GitHub es la maqueta ('./'); en producción, la web real.
+  siteUrl: './',
   logoUrl: 'https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/67dc400b8d0c490a7daa35fc_Logo%20Silicon%20Access%20Smart%20Security%20-Blanco.png',
 
   // WhatsApp comercial para el cierre (formato internacional sin +, ej. 5491155555555). Vacío = oculto.

@@ -2,72 +2,141 @@
 <html lang="es-AR">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#070b14">
-  <title>SILA · Silicon Access</title>
-  <meta name="description" content="Armá tu sistema de control de acceso con SILA, el asistente comercial de Silicon Access.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Maqueta de demostración · Silicon Access + SILA</title>
   <link rel="icon" href="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/6189369488195832cdd4269d_Favicon%2032.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/sila.css">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site/site.css">
+  <link rel="prefetch" href="sila.html">
 </head>
 <body>
-  <div class="plan" aria-hidden="true"></div>
+  <div class="mock"><b>MAQUETA DE DEMOSTRACIÓN</b><span>Simulación interna para presentar SILA · no es el sitio oficial ·</span><a href="https://www.silicon-access.com/" target="_blank" rel="noopener">ir a silicon-access.com</a></div>
 
-  <!-- INTRO -->
-  <div id="intro" aria-hidden="true">
-    <div class="igrid"></div>
-    <div class="scan"></div>
-    <svg class="imark" viewBox="-6 -6 132 132">
-      <path class="pc" style="--k:0;--dx:-60px;--dy:-160px;--r:-40deg" d="M0 40L40 0V40Z"/>
-      <path class="pc" style="--k:1;--dx:0px;--dy:-190px;--r:25deg" d="M40 0H80V40H40Z"/>
-      <path class="pc" style="--k:2;--dx:-200px;--dy:0px;--r:-30deg" d="M0 40H40V80H0Z"/>
-      <path class="pc" style="--k:3;--dx:0px;--dy:0px;--r:90deg" d="M40 40H80V80H40Z"/>
-      <path class="pc" style="--k:4;--dx:200px;--dy:10px;--r:35deg" d="M80 40H120V80H80Z"/>
-      <path class="pc" style="--k:5;--dx:10px;--dy:200px;--r:-25deg" d="M40 80H80V120H40Z"/>
-      <path class="pc" style="--k:6;--dx:70px;--dy:170px;--r:45deg" d="M80 80H120L80 120Z"/>
-      <path class="pc edge" d="M40 0H80V40H120V80L80 120H40V80H0V40Z"/>
-    </svg>
-    <div class="itxt" id="itxt">Verificando credencial…</div>
-    <div class="iflash"></div>
-    <button class="iskip" id="iskip" type="button">SALTAR ›</button>
-  </div>
+  <header class="nav" id="nav">
+    <div class="wrap">
+      <a class="logo" href="./" aria-label="Inicio"><img src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/67dc400b8d0c490a7daa35fc_Logo%20Silicon%20Access%20Smart%20Security%20-Blanco.png" alt="Silicon Access" width="136" height="40"></a>
+      <button class="burger" id="burger" type="button" aria-label="Menú" aria-expanded="false"><i></i><i></i><i></i></button>
+      <ul id="menu">
+        <li><a href="#modulos">SOLUCIONES</a></li>
+        <li><a href="#app">CONOCER MÁS</a></li>
+        <li><a href="sila.html" data-sila>SOLICITÁ UNA DEMO</a></li>
+        <li><a href="#" data-off="Sumate a Silicon Access no forma parte de esta demo.">SUMÁTE A SILICON ACCESS</a></li>
+        <li><a class="ing" href="https://web.silicon-access.com/login" target="_blank" rel="noopener">INGRESAR</a></li>
+      </ul>
+    </div>
+  </header>
 
-  <!-- APP -->
-  <div id="app" class="pre">
-    <header class="top">
-      <a class="brand" id="brand" href="https://www.silicon-access.com/" target="_top">
-        <img id="logo" alt="Silicon Access" width="88" height="26">
-        <span class="sila-tag">SILA · ASISTENTE</span>
-      </a>
-      <nav class="route" id="route" aria-label="Recorrido"></nav>
-      <div class="meter" id="meter"><span class="cur" id="mcur"></span><span class="bar"><i id="mbar"></i></span><span class="n" id="mn"></span></div>
-      <button class="pass-toggle" id="passToggle" type="button" aria-controls="passWrap" aria-expanded="false">
-      <svg width="14" height="14" viewBox="0 0 3 3"><path d="M1 0H2V1H3V2L2 3H1V2H0V1Z" fill="#3d8bff"/></svg>
-      <span class="pt-l">PASE</span> <span class="dotc" id="passDot">0</span>
-    </button>
-      <button class="close" id="close" type="button" aria-label="Cerrar" hidden>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 3L13 13M13 3L3 13"/></svg>
-      </button>
-    </header>
+  <section class="hero" style="background-image:url('https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/6182a80e1cbe320c0623704b_Silliconn%20Hero-min.png')">
+    <video autoplay muted loop playsinline preload="metadata" poster="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/6182a80e1cbe320c0623704b_Silliconn%20Hero-min.png">
+      <source src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26%2F67ead89c058090e0fdc135ac_Silicon%20Access%20I%20Control%20de%20Acceso%20-%20%20Video%20WEB-transcode.webm" type="video/webm">
+      <source src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26%2F67ead89c058090e0fdc135ac_Silicon%20Access%20I%20Control%20de%20Acceso%20-%20%20Video%20WEB-transcode.mp4" type="video/mp4">
+    </video>
+    <div class="wrap">
+      <p class="k">RÁPIDO, SIMPLE Y SEGURO</p>
+      <h1>Soluciones tecnológicas para urbanizaciones, edificios y empresas</h1>
+      <a class="btn-w" href="sila.html" data-sila>CONTACTANOS</a>
+    </div>
+  </section>
 
-    <main class="stage">
-      <section class="q" id="q" aria-live="polite"></section>
+  <section class="split gray">
+    <div class="wrap">
+      <div class="txt">
+        <h2>Buscamos darle más seguridad y tecnología a los barrios.</h2>
+        <p>Todo lo que necesitás. Ofrecemos soporte técnico las 24 horas del día los 365 días del año.</p>
+      </div>
+      <div class="img"><img loading="lazy" src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cc2f6173cbbc15e8ae10a2_mockuo%20actividades%202026.png" alt="App Silicon Access: actividad"></div>
+    </div>
+  </section>
 
-      <aside class="pass-wrap" id="passWrap" aria-label="Tu pase">
-        <div class="pass-head"><span>Tu pase</span><span id="passCount">0 datos</span></div>
-        <div id="passSlot"></div>
-        <p class="pass-note" id="passNote">Se completa a medida que avanzás. Al final lo emitimos y un asesor lo recibe.</p>
-      </aside>
-    </main>
+  <section class="monitor">
+    <div class="wrap">
+      <h2>Más seguridad en tus ingresos</h2>
+      <img loading="lazy" src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/67eedb53e0459d0db278ec45_Sin%20t%C3%ADtulo-1-01%20(1)-01%20(1).jpg" alt="Panel de guardia">
+    </div>
+  </section>
 
-    <div class="scrim" id="scrim"></div>
-  </div>
+  <section class="split gray" id="app">
+    <div class="wrap">
+      <div class="txt">
+        <h2>Una herramienta de control de acceso para vos.</h2>
+        <p>Residentes, administración y seguridad conectados al instante a través de nuestra app.</p>
+      </div>
+      <div class="img"><img loading="lazy" src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cc3192e9d8e38e59dde823_53b87a9c89b3a4157d0794d936a91555_autorizaciones%202026.png" alt="App: autorizaciones"></div>
+    </div>
+  </section>
 
-  <script src="js/config.js"></script>
-  <script src="js/flow.js"></script>
-  <script src="js/icons.js"></script>
-  <script src="js/app.js"></script>
+  <section class="split rev">
+    <div class="wrap">
+      <div class="txt">
+        <h2>Personalizá la app según tus necesidades.</h2>
+        <p>Personalizá tu pantalla según tu preferencia y uso frecuente.</p>
+        <div class="stores">
+          <img loading="lazy" src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/681cc324e5a84fe8e786451f_Apple%20Store-01.png" alt="App Store">
+          <img loading="lazy" src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/681cc3d05c234e6d851a8900_Google%20play%20--01.png" alt="Google Play">
+        </div>
+      </div>
+      <div class="img"><img loading="lazy" src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cc3272695544dee4c1447e_home%202026.png" alt="App: inicio"></div>
+    </div>
+  </section>
+
+  <section class="mods" id="modulos">
+    <div class="wrap">
+      <h2>Te brindamos una solución a medida.</h2>
+      <p>Silicon Access cuenta con módulos de gestión de comunidad de base, ofreciendo la posibilidad de realizar desarrollos a medida según las necesidades de cada administración e intendencia.</p>
+      <div class="grid">
+        <div class="card"><img loading="lazy" src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cc1d0c8abe744f2e662eff_Selfie%20ID.svg" alt=""><h3>Selfie ID</h3><p>Gestioná el acceso al barrio con tecnologías biométricas para mejorar la seguridad.</p></div>
+        <div class="card"><img loading="lazy" src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cc1d0c36411080dff88405_Timbre%20Virtual.svg" alt=""><h3>Timbre virtual</h3><p>Recibirás los llamados de autorización para permitir el ingreso de personas a tu lote sin interactuar con la guardia. Gestioná tu grupo familiar, vehículos, mascotas e inquilinos.</p></div>
+        <div class="card"><img loading="lazy" src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cc1d0c31a0c787fa29a5a8_Amenities.svg" alt=""><h3>Amenities</h3><p>Reservá canchas, salones o espacios comunes en segundos. Visualizá disponibilidad, normas de uso y confirmá tus turnos al instante.</p></div>
+        <div class="card"><img loading="lazy" src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cc1d0cdf16f23eff6fb73c_Obras.svg" alt=""><h3>Obras</h3><p>Gestiona la nómina, autorizaciones y reportes de accesos de trabajadores.</p></div>
+        <div class="card"><img loading="lazy" src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cc1d0cd74f51f78b0d7ff2_Paqueter%C3%ADa.svg" alt=""><h3>Paquetería</h3><p>Recibí tus envíos con total trazabilidad. Desde que llega un paquete, el sistema notifica al residente, registra el ingreso y permite confirmación digital de la entrega.</p></div>
+        <div class="card"><img loading="lazy" src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cc1d0cf431dc6ea03f841d_Emergencia.svg" alt=""><h3>Emergencias</h3><p>Permite al residente enviar un aviso de alerta inmediato a la Guardia ante cualquier situación de urgencia.</p></div>
+      </div>
+      <div class="more"><a class="btn-w" href="#" data-off="La página de módulos no forma parte de esta demo.">VER MÁS</a></div>
+    </div>
+  </section>
+
+  <section class="testi">
+    <div class="wrap">
+      <div class="box">
+        <h2>Testimonios</h2>
+        <div class="track"><div class="slides" id="slides">
+          <div class="slide"><q>Si tengo para describir a Silicon Access en una palabra, esa es servicio. Desde el día 0 que nos vienen acompañando.</q><div class="who"><img src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cd0ec2d4c5ac5fae4e11b9_silueta%201-.png" alt=""><div><b>Facundo Saltarelli</b><small>Gerente de IT<br>Car One</small></div><img class="qm" src="https://cdn.prod.website-files.com/62434fa732124a0fb112aab4/62434fa732124a6c9412aae6_double-quotes-l.svg" alt=""></div></div>
+          <div class="slide"><q>Destaco principalmente la respuesta de Silicon Access, tanto en la parte operativa, como de Soporte y Desarrollo. Siempre nos ha acompañado para mejorar.</q><div class="who"><img src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cd0b9a1fcc3226600426ff_20692cc157e8d824b2f666feb4a38ab5_silueta%202.png" alt=""><div><b>Carlos Castillo</b><small>Referente de Seguridad.<br>Barrio San Matías.</small></div><img class="qm" src="https://cdn.prod.website-files.com/62434fa732124a0fb112aab4/62434fa732124a6c9412aae6_double-quotes-l.svg" alt=""></div></div>
+          <div class="slide"><q>Recomiendo a Silicon Access por la confianza que generan, su servicio postventa y el apoyo que brindan en todo momento.</q><div class="who"><img src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cd0ec2d4c5ac5fae4e11b9_silueta%201-.png" alt=""><div><b>Fabio Elcano</b><small>Intendente<br>Barrio San Benito</small></div><img class="qm" src="https://cdn.prod.website-files.com/62434fa732124a0fb112aab4/62434fa732124a6c9412aae6_double-quotes-l.svg" alt=""></div></div>
+          <div class="slide"><q>Muy buena, la verdad muy buena la jornada de visita al barrio. Me parece super necesaria para relevar los temas que van a ongoing y los temas que hay que mejorar.</q><div class="who"><img src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/69cd0b9a1fcc3226600426ff_20692cc157e8d824b2f666feb4a38ab5_silueta%202.png" alt=""><div><b>Gonzalo</b><small>Residente y miembro de la comisión<br>Barrio Santa Elisa</small></div><img class="qm" src="https://cdn.prod.website-files.com/62434fa732124a0fb112aab4/62434fa732124a6c9412aae6_double-quotes-l.svg" alt=""></div></div>
+        </div></div>
+        <button class="arrow l" id="prev" type="button" aria-label="Anterior">‹</button>
+        <button class="arrow r" id="next" type="button" aria-label="Siguiente">›</button>
+        <div class="clients">
+          <h3>Algunos de nuestros clientes</h3>
+          <div class="marq"><div class="row" id="logos"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="cols">
+        <div><a class="logo" href="./"><img src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/67dc3b0df32001df6b2531a9_Logo%20Silicon%20Access%20Smart%20Security.png" alt="Silicon Access" width="136" height="40"></a></div>
+        <div><h4>Contacto</h4><a href="sila.html" data-sila>Atención al cliente</a><a href="tel:+5408002202000">0800 220 2000</a></div>
+        <div><h4>Seguinos</h4><a href="https://www.instagram.com/siliconaccess/" target="_blank" rel="noopener">Instagram</a><a href="https://ar.linkedin.com/company/silicon-access" target="_blank" rel="noopener">Linkedin</a><a href="https://www.youtube.com/@siliconaccess" target="_blank" rel="noopener">Youtube</a></div>
+      </div>
+      <div class="copy">Copyright Silicon-Access © 2026 · Maqueta de demostración</div>
+    </div>
+  </footer>
+
+  <a class="sila-fab" href="sila.html" data-sila>
+    <span class="m"><svg width="20" height="20" viewBox="0 0 3 3" aria-hidden="true"><path d="M1 0H2V1H3V2L2 3H1V2H0V1Z" fill="#3d8bff"/></svg></span>
+    <span><small>SILA · 1 MINUTO</small>Armá tu acceso</span>
+  </a>
+
+  <div class="gate" id="gate" aria-hidden="true"><svg viewBox="0 0 3 3"><path d="M1 0H2V1H3V2L2 3H1V2H0V1Z" fill="#006bf2"/></svg></div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="site/site.js"></script>
 </body>
 </html>

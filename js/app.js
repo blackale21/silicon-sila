@@ -10,6 +10,7 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const params = new URLSearchParams(location.search);
   const EMBED = params.get('embed') === '1';
+  const FROM_SITE = params.get('from') === 'site';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const state = {
@@ -372,14 +373,14 @@
       <div class="sendstate" id="sendstate">Enviando…</div>
       <div class="actions">
         ${wa}
-        <button type="button" class="btn${wa ? ' ghost' : ''}" id="done">${EMBED ? 'Volver al sitio' : 'Ir a silicon-access.com'}</button>
+        <button type="button" class="btn${wa ? ' ghost' : ''}" id="done">${EMBED || FROM_SITE ? 'Volver al sitio' : 'Ir a silicon-access.com'}</button>
         <button type="button" class="link" id="again">Empezar de nuevo</button>
       </div>
     </div>`;
     document.body.classList.add('ended');
     swap(html, () => {
       $('#passInline').innerHTML = passHTML(true);
-      $('#done').addEventListener('click', () => (EMBED ? closeEmbed() : (location.href = CFG.siteUrl || '/')));
+      $('#done').addEventListener('click', () => (EMBED ? closeEmbed() : backToSite()));
       $('#again').addEventListener('click', restart);
       submitLead();
     });
@@ -585,6 +586,12 @@
     if (EMBED && parent !== window) parent.postMessage({ type: 'sila:' + event, ...data }, '*');
   }
 
+  function backToSite() {
+    const ref = document.referrer && new URL(document.referrer, location.href);
+    if (FROM_SITE && ref && ref.origin === location.origin && history.length > 1) history.back();
+    else location.href = CFG.siteUrl || '/';
+  }
+
   function closeEmbed() {
     if (parent !== window) parent.postMessage({ type: 'sila:close' }, '*');
   }
@@ -634,6 +641,7 @@
     } else if (e.key === 'Escape') {
       if (el.passWrap.classList.contains('open')) togglePass(false);
       else if (EMBED) closeEmbed();
+      else if (FROM_SITE) backToSite();
     }
   });
 
@@ -641,6 +649,13 @@
   function boot() {
     el.logo.src = CFG.logoUrl || '';
     el.logo.onerror = () => { el.logo.replaceWith(Object.assign(document.createElement('span'), { innerHTML: MARK.replace('class="pm"', 'width="24" height="24"') + ' <b>Silicon Access</b>', style: 'display:flex;gap:8px;align-items:center' })); };
+    el.brand.href = CFG.siteUrl || el.brand.href;
+    if (FROM_SITE && !EMBED) {
+      el.close.hidden = false;
+      el.close.setAttribute('aria-label', 'Volver al sitio');
+      el.close.addEventListener('click', backToSite);
+      el.brand.removeAttribute('target');
+    }
     if (EMBED) { el.close.hidden = false; el.close.addEventListener('click', closeEmbed); el.brand.addEventListener('click', (e) => { e.preventDefault(); closeEmbed(); }); }
     if (CFG.demo) {
       const b = document.createElement('span');

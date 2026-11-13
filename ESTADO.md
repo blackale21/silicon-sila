@@ -11,12 +11,11 @@ Canal de ingreso de leads para silicon-access.com. Concepto e ideas: [docs/IDEAS
 - Envío: HubSpot Forms API y/o Google Apps Script; sin config = modo demo (guarda en el navegador).
   Cola de reintento, honeypot + tiempo mínimo, UTM, temperatura del lead (frío/tibio/caliente).
 - Snippet Webflow `embed/launcher.js`: botón flotante + engancha CONTACTANOS / SOLICITÁ UNA DEMO,
-  overlay a pantalla completa con apertura circular. Probado en `demo.html`.
 
 ## Probar local
 Servidor estático en la carpeta (ej. `python -m http.server 8340`) y abrir:
-- `http://localhost:8340/?intro=1` → app con intro
-- `http://localhost:8340/demo.html` → integración tipo Webflow
+- `http://localhost:8340/` → maqueta de la web; SOLICITÁ UNA DEMO → SILA
+- `http://localhost:8340/sila.html?intro=1` → SILA con intro
 - `?intro=0` salta la intro · `?embed=1` modo overlay
 
 ## Pendiente (decisiones del cliente)

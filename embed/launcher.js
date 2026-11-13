@@ -43,7 +43,7 @@
   let ov = null, frame = null, lastFocus = null;
 
   function url() {
-    const u = new URL('index.html', base);
+    const u = new URL('sila.html', base);
     u.searchParams.set('embed', '1');
     const here = new URLSearchParams(location.search);
     ['utm_source', 'utm_medium', 'utm_campaign'].forEach((k) => here.get(k) && u.searchParams.set(k, here.get(k)));
