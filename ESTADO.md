@@ -13,6 +13,8 @@ Canal de ingreso de leads para silicon-access.com. Concepto e ideas: [docs/IDEAS
 - Snippet Webflow `embed/launcher.js`: botón flotante + engancha CONTACTANOS / SOLICITÁ UNA DEMO.
 - Maqueta de la home (`index.html`, noindex + aviso): SOLICITÁ UNA DEMO → transición → SILA → vuelve al sitio.
 
+- Destino simulado: `crm.html` (tablero por estado, planilla tipo Google Sheet, ficha, CSV real, llegada en vivo entre pestañas) + WhatsApp simulado al cierre. Leads en localStorage del navegador.
+
 ## Probar local
 Servidor estático en la carpeta (ej. `python -m http.server 8340`) y abrir:
 - `http://localhost:8340/` → maqueta de la web; SOLICITÁ UNA DEMO → SILA

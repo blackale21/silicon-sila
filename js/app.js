@@ -361,9 +361,10 @@
     if (!state.leadId) state.leadId = 'SA-' + (Date.now().toString(36).slice(-4) + Math.random().toString(36).slice(2, 4)).toUpperCase();
     const a = state.answers;
     const first = String(a.N5 || '').trim().split(/\s+/)[0];
-    const wa = CFG.whatsapp
-      ? `<a class="btn wa" id="wa" target="_blank" rel="noopener" href="https://wa.me/${encodeURIComponent(CFG.whatsapp)}?text=${encodeURIComponent(waText())}">Hablar ahora por WhatsApp</a>`
-      : '';
+    const wa = !CFG.whatsapp ? ''
+      : CFG.demo
+        ? `<button type="button" class="btn wa" id="wa">Hablar ahora por WhatsApp</button>`
+        : `<a class="btn wa" id="wa" target="_blank" rel="noopener" href="https://wa.me/${encodeURIComponent(CFG.whatsapp)}?text=${encodeURIComponent(waText())}">Hablar ahora por WhatsApp</a>`;
     const html = `<div class="q-inner enter end">
       <div class="log"><span class="t">${clock()}</span><span class="ok">✓ PASE EMITIDO</span><span class="val">· ${esc(state.leadId)}</span></div>
       <div class="kicker">Checkpoint final · Pase</div>
@@ -382,6 +383,7 @@
       $('#passInline').innerHTML = passHTML(true);
       $('#done').addEventListener('click', () => (EMBED ? closeEmbed() : backToSite()));
       $('#again').addEventListener('click', restart);
+      if (CFG.demo && $('#wa')) $('#wa').addEventListener('click', openWaSim);
       submitLead();
     });
     updateRoute();
@@ -479,11 +481,7 @@
   /* ───────── modo demo: simula el envío y muestra lo que recibe el comercial ───────── */
   function simulateSend(p, st) {
     track('sila_lead', { vertical: p.vertical, temperatura: p.temperatura, demo: true });
-    try {
-      const h = JSON.parse(sessionStorage.getItem('sila_demo_leads') || '[]');
-      h.push(p);
-      sessionStorage.setItem('sila_demo_leads', JSON.stringify(h.slice(-30)));
-    } catch (_) { /* nada */ }
+    window.SILA_STORE && window.SILA_STORE.add(p);
     const steps = [
       'Validando datos de contacto',
       `HubSpot · contacto + negocio creados (${p.temperatura})`,
@@ -493,8 +491,64 @@
     st.className = 'sendstate sim';
     st.innerHTML = '<div class="sim-h">SIMULACIÓN · no se envió ningún dato</div>' +
       steps.map((s, i) => `<div class="sim-l" style="--i:${i}"><span class="sp"></span>${esc(s)}<span class="ok">✓</span></div>`).join('') +
-      `<button type="button" class="btn ghost sim-btn" id="simView">Ver lo que recibe el comercial →</button>`;
+      `<div class="sim-row"><button type="button" class="btn ghost sim-btn" id="simView">Ver lo que recibe el comercial</button>` +
+      `<a class="btn ghost sim-btn" id="simCrm" href="crm.html#${encodeURIComponent(p.id)}" target="_blank" rel="noopener">Abrir bandeja comercial ↗</a></div>`;
     $('#simView').addEventListener('click', () => openLeadViewer(p));
+  }
+
+  /* ───────── WhatsApp simulado (demo) ───────── */
+  function openWaSim() {
+    const p = payload();
+    const nombre = p.nombre || '';
+    const hora = () => clock().slice(0, 5);
+    const box = document.createElement('div');
+    box.className = 'dlg-scrim';
+    box.innerHTML = `<div class="wa-sim" role="dialog" aria-modal="true" aria-label="WhatsApp simulado">
+      <header><button type="button" class="wa-x" data-x aria-label="Cerrar">←</button>
+        <span class="wa-av"><svg viewBox="0 0 3 3" width="18" height="18"><path d="M1 0H2V1H3V2L2 3H1V2H0V1Z" fill="#fff"/></svg></span>
+        <div><b>Silicon Access · Comercial</b><small id="waSt">en línea</small></div>
+        <span class="wa-tag">SIMULADO</span></header>
+      <div class="wa-body" id="waBody"><div class="wa-day">HOY</div></div>
+      <div class="wa-quick" id="waQuick"></div>
+      <footer><span>Mensaje</span><i>➤</i></footer>
+    </div>`;
+    document.body.appendChild(box);
+    const body = box.querySelector('#waBody');
+    const quick = box.querySelector('#waQuick');
+    const st = box.querySelector('#waSt');
+    const T = [];
+    const say = (who, txt) => {
+      const m = document.createElement('div');
+      m.className = 'wa-m ' + who;
+      m.innerHTML = `${esc(txt).replace(/\n/g, '<br>')}<small>${hora()}${who === 'me' ? ' ✓✓' : ''}</small>`;
+      body.appendChild(m);
+      body.scrollTop = body.scrollHeight;
+    };
+    const typing = (ms, fn) => { st.textContent = 'escribiendo…'; T.push(setTimeout(() => { st.textContent = 'en línea'; fn(); }, ms)); };
+    const close = () => { T.forEach(clearTimeout); box.remove(); removeEventListener('keydown', onKey, true); };
+    const onKey = (e) => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+    addEventListener('keydown', onKey, true);
+    box.addEventListener('click', (e) => { if (e.target === box || e.target.closest('[data-x]')) close(); });
+    const chips = (opts) => {
+      quick.innerHTML = opts.map((o) => `<button type="button">${esc(o)}</button>`).join('');
+      quick.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => {
+        quick.innerHTML = '';
+        say('me', b.textContent);
+        window.SILA_STORE && window.SILA_STORE.log(p.id, `WhatsApp: el cliente eligió "${b.textContent}" (simulado)`);
+        typing(1400, () => say('them', b.textContent === 'Prefiero por mail'
+          ? `Perfecto${nombre ? ', ' + nombre : ''}. Te mando la propuesta por mail en el día. ¡Gracias por usar SILA!`
+          : `¡Genial! Te llamamos ${b.textContent.toLowerCase()} al número que dejaste. Mientras tanto, cualquier duda escribime por acá.`));
+      }));
+    };
+    T.push(setTimeout(() => {
+      say('me', waText());
+      window.SILA_STORE && window.SILA_STORE.log(p.id, 'WhatsApp iniciado desde SILA (simulado)');
+      typing(1800, () => {
+        say('them', `¡Hola${nombre ? ' ' + nombre : ''}! Soy del equipo comercial de Silicon Access 👋\nYa tengo tu pase ${p.id} con todo lo que cargaste para ${p.cuenta}.`);
+        typing(1500, () => { say('them', '¿Cuándo te queda cómodo que te llamemos?'); chips(['Hoy', 'Mañana', 'Prefiero por mail']); });
+      });
+    }, 500));
+    box.querySelector('[data-x]').focus();
   }
 
   function openLeadViewer(p) {

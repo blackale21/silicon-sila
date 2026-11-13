@@ -8,7 +8,8 @@ window.SILA_CONFIG = {
   logoUrl: 'https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/67dc400b8d0c490a7daa35fc_Logo%20Silicon%20Access%20Smart%20Security%20-Blanco.png',
 
   // WhatsApp comercial para el cierre (formato internacional sin +, ej. 5491155555555). Vacío = oculto.
-  whatsapp: '',
+  // En demo cualquier valor activa el WhatsApp simulado (no abre WhatsApp real).
+  whatsapp: 'demo',
 
   // HubSpot (CRM gratis). Crear un formulario y copiar portalId + formGuid. Vacío = no se usa.
   hubspot: { portalId: '', formGuid: '' },

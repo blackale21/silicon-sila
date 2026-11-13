@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Bandeja comercial · SILA (simulación)</title>
+  <link rel="icon" href="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/6189369488195832cdd4269d_Favicon%2032.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/crm.css">
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="./" title="Volver a la maqueta del sitio">
+      <svg viewBox="0 0 3 3" aria-hidden="true"><path d="M1 0H2V1H3V2L2 3H1V2H0V1Z" fill="#006bf2"/></svg>
+      <span><b>Bandeja comercial</b><small>Leads de SILA</small></span>
+    </a>
+    <span class="sim">SIMULACIÓN · reemplaza HubSpot / Google Sheet</span>
+    <nav class="views" role="tablist">
+      <button type="button" class="on" data-v="board" role="tab">Tablero</button>
+      <button type="button" data-v="sheet" role="tab">Planilla</button>
+    </nav>
+    <div class="tools">
+      <button type="button" id="csv" title="Descarga un CSV que abre en Excel o Google Sheets">⤓ Exportar CSV</button>
+      <button type="button" id="seed">Cargar ejemplos</button>
+      <button type="button" id="wipe" class="ghost">Vaciar</button>
+    </div>
+  </header>
+
+  <section class="kpis" id="kpis"></section>
+
+  <main>
+    <section class="board" id="board" aria-label="Tablero de leads"></section>
+    <section class="sheet" id="sheet" hidden aria-label="Planilla de leads">
+      <div class="sheet-top">
+        <span class="file"><i></i>Leads — SILA</span>
+        <span class="hint">Así quedaría la Google Sheet: una fila por lead. Se actualiza sola.</span>
+      </div>
+      <div class="grid-wrap"><table id="grid"></table></div>
+    </section>
+    <p class="empty" id="empty" hidden>Todavía no llegó ningún lead. Completá SILA desde <a href="./">la maqueta del sitio</a> o tocá <b>Cargar ejemplos</b>.</p>
+  </main>
+
+  <aside class="drawer" id="drawer" aria-hidden="true"></aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="js/store.js"></script>
+  <script src="js/crm.js"></script>
+</body>
+</html>
