@@ -1,5 +1,8 @@
 /* SILA — configuración. Todo lo vacío queda desactivado (modo demo: el lead se guarda en el navegador). */
 window.SILA_CONFIG = {
+  // DEMO: true = no envía NADA; simula HubSpot + mail y muestra lo que recibiría el comercial.
+  demo: true,
+
   siteUrl: 'https://www.silicon-access.com/',
   logoUrl: 'https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/67dc400b8d0c490a7daa35fc_Logo%20Silicon%20Access%20Smart%20Security%20-Blanco.png',
 
