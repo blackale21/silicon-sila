@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#070b14">
+  <title>Tu pase · Silicon Access</title>
+  <link rel="icon" href="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/6189369488195832cdd4269d_Favicon%2032.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/sila.css?v=20261116b">
+  <style>
+    body { overflow: auto; }
+    .wrap { position: relative; z-index: 1; max-width: 460px; margin: 0 auto; padding: 22px 16px calc(32px + env(safe-area-inset-bottom)); }
+    .hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+    .hd img { height: 24px; }
+    .hd span { font: 500 10px var(--mono); letter-spacing: 0.2em; color: var(--muted); }
+    h1 { font-size: 26px; line-height: 1.2; margin: 0 0 8px; font-weight: 600; }
+    .st { font: 500 12px var(--mono); letter-spacing: 0.08em; color: var(--muted); margin: 0 0 18px; min-height: 18px; }
+    .st.ok { color: var(--ok); } .st.err { color: var(--warn); }
+    .pass { min-height: 0; }
+    .row { animation: none; }
+    .btns { display: grid; gap: 10px; margin-top: 18px; }
+    .btns .btn { justify-content: center; }
+    .err-box { background: var(--card); border: 1px solid var(--line); padding: 18px; border-radius: 12px; color: var(--muted); line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="plan" aria-hidden="true"></div>
+  <main class="wrap">
+    <div class="hd"><img src="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/67dc400b8d0c490a7daa35fc_Logo%20Silicon%20Access%20Smart%20Security%20-Blanco.png" alt="Silicon Access"><span>SILA · PASE</span></div>
+    <h1 id="t">Tu pase de ingreso</h1>
+    <p class="st" id="st">Preparando tu PDF…</p>
+    <div id="card"></div>
+    <div class="btns" id="btns" hidden>
+      <button type="button" class="btn" id="dl">Descargar PDF</button>
+      <a class="btn ghost" href="./">Conocé Silicon Access</a>
+    </div>
+  </main>
+
+  <script src="js/flow.js?v=20261116b"></script>
+  <script src="js/vendor/qrcode.js?v=20261116b"></script>
+  <script src="js/pase.js?v=20261116b"></script>
+  <script>
+  (function () {
+    const P = window.SILA_PASE;
+    const st = document.getElementById('st');
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    let data;
+    try { data = P.decode(decodeURIComponent(location.hash.slice(1))); } catch (e) { data = null; }
+    if (!data) {
+      document.getElementById('t').textContent = 'No encontramos el pase';
+      st.textContent = '';
+      document.getElementById('card').innerHTML = '<div class="err-box">El link está incompleto. Volvé a escanear el QR del pase o completá SILA desde la web de Silicon Access.</div>';
+      document.getElementById('btns').hidden = false;
+      document.getElementById('dl').hidden = true;
+      return;
+    }
+    const M = P.model(data);
+    const rows = M.rows.map((r) => `<div class="row"><dt>${esc(r.k)}</dt><dd>${Array.isArray(r.v) ? `<span class="tags">${r.v.map((x) => `<span class="tag">${esc(x)}</span>`).join('')}</span>` : esc(r.v)}</dd></div>`).join('');
+    document.getElementById('card').innerHTML = `<div class="pass issued">
+      <div class="pass-top"><svg class="pm" viewBox="0 0 3 3" aria-hidden="true"><path d="M1 0H2V1H3V2L2 3H1V2H0V1Z" fill="#fff"/></svg><div class="pt">PASE DE INGRESO<br>SILICON ACCESS</div></div>
+      <div class="chip"></div>
+      <div class="pass-name">${esc(M.name || 'Tu predio')}</div>
+      <div class="pass-vert">${esc(M.vertical)}</div>
+      <dl class="rows">${rows}</dl>
+      <div class="pass-bottom"><div class="code">${esc(M.id)}<br><span style="opacity:.7">EMITIDO ${esc(M.fecha)}</span></div>
+        <button type="button" class="qr-btn" data-pdf aria-label="Descargar PDF">${P.qrSVG(location.href, 'qr')}<span class="qr-hint">PRESIONAME</span></button></div>
+      <div class="stamp">ACCESO CONCEDIDO</div>
+    </div>`;
+    document.title = `Pase ${M.id} · Silicon Access`;
+    document.querySelectorAll('.qr-btn svg').forEach((svg) => { const n = svg.viewBox.baseVal.width, k = matchMedia('(max-width: 860px)').matches ? 2 : 3; svg.style.width = svg.style.height = n * k + 'px'; svg.parentElement.style.setProperty('--qs', n * k + 'px'); });
+    document.getElementById('btns').hidden = false;
+
+    let busy = false;
+    async function go(auto) {
+      if (busy) return;
+      busy = true;
+      st.className = 'st';
+      st.textContent = 'Generando tu PDF…';
+      try {
+        const name = await P.download(data);
+        st.className = 'st ok';
+        st.textContent = `✓ ${name} descargado`;
+      } catch (e) {
+        st.className = 'st err';
+        st.textContent = auto ? 'Tocá "Descargar PDF" para bajarlo.' : 'No se pudo generar el PDF. Probá de nuevo.';
+      } finally { busy = false; }
+    }
+    document.getElementById('dl').addEventListener('click', () => go(false));
+    document.addEventListener('click', (e) => { if (e.target.closest('[data-pdf]')) go(false); });
+    // al abrir desde el QR intentamos bajarlo solo; si el navegador lo bloquea, queda el botón
+    setTimeout(() => go(true), 700);
+  })();
+  </script>
+</body>
+</html>

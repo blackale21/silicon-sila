@@ -315,7 +315,7 @@
       <div class="pass-name${name ? '' : ' empty'}">${name ? esc(name) : 'Tu predio'}</div>
       <div class="pass-vert">${a.N1 ? esc(VERT[a.N1]) : 'Vertical · pendiente'}</div>
       <dl class="rows">${all.length ? all.join('') : '<div class="ghost-row"></div><div class="ghost-row"></div><div class="ghost-row"></div>'}</dl>
-      <div class="pass-bottom"><div class="code">${esc(code)}</div><div class="bars">${barsFor(code)}</div>${issued ? qrFor(code) : ''}</div>
+      <div class="pass-bottom"><div class="code">${esc(code)}</div><div class="bars">${barsFor(code)}</div>${issued ? qrBtn() : ''}</div>
       ${issued ? '<div class="stamp">ACCESO CONCEDIDO</div>' : ''}
     </div>`;
   }
@@ -326,17 +326,43 @@
     for (let i = 0; i < 26; i++) { h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0; out += `<i style="opacity:${0.35 + (h % 65) / 100}"></i>`; }
     return out;
   }
-  function qrFor(code) {
-    // patrón decorativo tipo QR (no codifica datos)
-    const N = 17; let h = hash(code), cells = '';
-    const finder = (x, y) => `<rect x="${x}" y="${y}" width="5" height="5" fill="none" stroke="#0a1222" stroke-width="1" transform="translate(.5 .5) scale(1)"/><rect x="${x + 1.5}" y="${y + 1.5}" width="2" height="2" fill="#0a1222"/>`;
-    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-      const inF = (x < 6 && y < 6) || (x > N - 7 && y < 6) || (x < 6 && y > N - 7);
-      if (inF) continue;
-      h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0;
-      if (h % 100 < 46) cells += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
+  // pase portable: el QR lleva al pase y descarga el PDF; tocarlo descarga directo
+  const passState = () => ({ leadId: state.leadId, fecha: state.fecha, answers: state.answers, other: state.other, history: state.history });
+  function qrBtn() {
+    if (!window.SILA_PASE) return '';
+    let svg = '';
+    try { svg = window.SILA_PASE.qrSVG(window.SILA_PASE.url(passState()), 'qr'); } catch (e) { console.warn('[SILA] QR', e); return ''; }
+    return `<button type="button" class="qr-btn" data-pdf aria-label="Descargar mi pase en PDF">${svg}<span class="qr-hint">PRESIONAME</span></button>`;
+  }
+  async function downloadPass(btn) {
+    if (btn.dataset.busy) return;
+    btn.dataset.busy = '1';
+    const hints = document.querySelectorAll('.qr-hint');
+    const set = (t) => hints.forEach((h) => (h.textContent = t));
+    set('GENERANDO…');
+    try {
+      await window.SILA_PASE.download(passState());
+      set('DESCARGADO ✓');
+      window.SILA_STORE && window.SILA_STORE.log(state.leadId, 'El cliente descargó su pase en PDF');
+      track('sila_pase_pdf', { id: state.leadId });
+    } catch (e) {
+      console.warn('[SILA] PDF', e);
+      set('REINTENTAR');
+    } finally {
+      delete btn.dataset.busy;
+      setTimeout(() => set('PRESIONAME'), 4000);
     }
-    return `<svg class="qr" viewBox="0 0 ${N} ${N}" shape-rendering="crispEdges"><g fill="#0a1222">${cells}</g>${finder(0, 0)}${finder(N - 6, 0)}${finder(0, N - 6)}</svg>`;
+  }
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-pdf]'); if (b) downloadPass(b); });
+  // QR nítido: cada módulo ocupa un número entero de píxeles (3 en PC para escanearlo desde el monitor)
+  function sizeQR(root) {
+    (root || document).querySelectorAll('.qr-btn svg').forEach((svg) => {
+      const n = svg.viewBox.baseVal.width;
+      const k = matchMedia('(max-width: 860px)').matches ? 2 : 3;
+      svg.style.width = svg.style.height = n * k + 'px';
+      const ring = svg.parentElement;
+      ring.style.setProperty('--qs', n * k + 'px');
+    });
   }
 
   function updatePass(issued) {
@@ -359,6 +385,7 @@
   /* ───────── cierre ───────── */
   function renderEnd() {
     if (!state.leadId) state.leadId = 'SA-' + (Date.now().toString(36).slice(-4) + Math.random().toString(36).slice(2, 4)).toUpperCase();
+    if (!state.fecha) state.fecha = new Date().toISOString();
     const a = state.answers;
     const first = String(a.N5 || '').trim().split(/\s+/)[0];
     const wa = !CFG.whatsapp ? ''
@@ -370,6 +397,7 @@
       <div class="kicker">Checkpoint final · Pase</div>
       <h1 class="qt">${`Listo${first ? ', ' + first : ''}. Tu pase está emitido.`.split(' ').map((w, i) => `<span class="w" style="--i:${i}">${esc(w)}</span>`).join(' ')}</h1>
       <p class="lead">Registramos tu consulta. Un asesor de Silicon Access te contacta en las próximas <strong>24 hs hábiles</strong> con una propuesta para ${esc(accountName() || 'tu predio')}.</p>
+      <p class="lead qr-tip">Tocá el QR de tu pase para <strong>descargarlo en PDF</strong>, o escanealo con otro celular.</p>
       <div class="pass-inline" id="passInline"></div>
       <div class="sendstate" id="sendstate">Enviando…</div>
       <div class="actions">
@@ -381,6 +409,7 @@
     document.body.classList.add('ended');
     swap(html, () => {
       $('#passInline').innerHTML = passHTML(true);
+      sizeQR();
       $('#done').addEventListener('click', () => (EMBED ? closeEmbed() : backToSite()));
       $('#again').addEventListener('click', restart);
       if (CFG.demo && $('#wa')) $('#wa').addEventListener('click', openWaSim);
@@ -388,11 +417,12 @@
     });
     updateRoute();
     updatePass(true);
+    sizeQR();
     el.passCount.textContent = 'Emitido';
   }
 
   function restart() {
-    Object.assign(state, { answers: {}, other: {}, history: [], current: FLOW.start, startedAt: Date.now(), leadId: null, sent: false });
+    Object.assign(state, { answers: {}, other: {}, history: [], current: FLOW.start, startedAt: Date.now(), leadId: null, fecha: null, sent: false });
     document.body.classList.remove('ended');
     render(FLOW.start);
   }
