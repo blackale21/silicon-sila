@@ -41,6 +41,13 @@
   // al volver con "atrás" (bfcache) la cortina no debe quedar puesta
   addEventListener('pageshow', () => gate.classList.remove('go'));
 
+  // botón flotante: aparece cuando el CTA del hero ya no se ve (no tapa "CONTACTANOS")
+  const fab = document.querySelector('.sila-fab');
+  const heroCta = document.querySelector('.hero .btn-w');
+  if (fab && heroCta && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => fab.classList.toggle('show', !e.isIntersecting), { threshold: 0 }).observe(heroCta);
+  } else if (fab) fab.classList.add('show');
+
   // testimonios
   const slides = $('#slides');
   const count = slides.children.length;

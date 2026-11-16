@@ -720,6 +720,7 @@
     }
     el.passToggle.addEventListener('click', () => togglePass());
     el.scrim.addEventListener('click', () => togglePass(false));
+    document.getElementById('passClose').addEventListener('click', () => togglePass(false));
     flushQueue();
     intro(() => {
       el.app.classList.remove('pre');
