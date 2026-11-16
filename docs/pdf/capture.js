@@ -20,6 +20,7 @@ const HELPERS = `
     args: ['--autoplay-policy=no-user-gesture-required', '--hide-scrollbars'],
   });
   const page = await browser.newPage();
+  await page.setCacheEnabled(false);
   const desk = async () => page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1.5 });
   const mob = async () => page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   const shot = async (name, opt = {}) => { await page.screenshot({ path: path.join(OUT, name + '.jpg'), type: 'jpeg', quality: 86, ...opt }); console.log('ok', name); };
