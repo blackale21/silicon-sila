@@ -6,6 +6,60 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const S = G.S;
 
+  /* ── ayudas "?" con explicación simple de cada campo ── */
+  const AYUDA = {
+    categoria: 'Es el tipo de problema (por ejemplo “Barrera caída” o “Cambio de datos”). Cada tipo tiene su propio tiempo máximo para resolverse. Si un ticket no tiene categoría, no se le mide el tiempo.',
+    plazo: 'Cuántas horas como máximo debería tardar en resolverse este tipo de problema, desde que el vecino lo reportó. Ejemplo: barrera caída = 2 horas.',
+    claves: 'Palabras que, si aparecen en lo que escribió el vecino en el chat, hacen que el ticket se ponga solo en esta categoría. Separalas con comas. Ejemplo: barrera, brazo, no sube.',
+    abiertos: 'Cuántos tickets de este tipo están sin resolver ahora.',
+    nuevaCat: 'Para crear un tipo de problema nuevo: poné el nombre, las horas máximas para resolverlo y, si querés, las palabras que lo identifican.',
+    contrato: 'Son los tiempos que fija el contrato con Silicon Access. Con un clic se cargan como categorías.',
+    alerta: 'Cuándo avisar que un ticket se está atrasando. Con 75 %, si el plazo es de 2 horas, el aviso sale a la hora y media. Al pasarse del plazo, se avisa a Dirección.',
+    equipo: 'Las personas que usan esta pantalla. Un operador ve sólo los barrios que le asignes; un técnico de campo ve sólo las visitas que le tocan.',
+    rol: 'Operador: atiende los tickets de sus barrios. Técnico de campo: va al lugar a resolver. Dirección: ve todo y configura.',
+    barrios: 'Se crean solos con lo que escribe el vecino en el chat. Si el mismo barrio aparece escrito de dos formas, podés unirlos.',
+    google: 'Opcional: el link donde los vecinos dejan reseñas del barrio en Google, la calificación actual (estrellas) y cuántas reseñas tiene. Se usa en Reputación.',
+    unir: 'Si el mismo barrio quedó escrito distinto (por ejemplo “Los Alamos” y “Los Álamos”), elegí con cuál es el mismo y se juntan.',
+    semaforo: 'Verde: está en tiempo. Amarillo: se está por vencer. Rojo: ya se pasó del tiempo máximo. Gris: no tiene categoría, así que no se mide.',
+    sla: 'Es el tiempo máximo prometido para resolver cada tipo de problema. “A tiempo” es el porcentaje de tickets que se resolvieron dentro de ese tiempo.',
+    tecnico: 'La persona asignada para ir al lugar o resolverlo.',
+    estado: 'En qué punto está: Nuevo (nadie lo tomó), En curso (alguien lo está viendo), En campo (un técnico fue al lugar) o Cerrado (resuelto).',
+    nps: 'Qué tanto nos recomendarían los vecinos, de −100 a +100. Sale de la encuesta que reciben al cerrar su caso (0 a 10). Más de +30 es bueno; negativo es preocupante.',
+    csat: 'Qué tan conformes quedaron con la atención, de 1 a 5, según la encuesta al cerrar el caso.',
+    bot: 'Porcentaje de consultas del chat que se resolvieron solas, sin que tenga que intervenir la central.',
+    googleRep: 'Calificación promedio en Google de los barrios y cuántas reseñas tienen (lo carga Dirección en Configuración).',
+    encuestas: 'Encuestas que se mandan al cerrar cada caso: por WhatsApp si lo resolvió el chat y por correo si lo resolvió una persona. Por ahora son simuladas: no se envía nada.',
+    respuesta: 'De las encuestas enviadas, qué porcentaje respondieron los vecinos.',
+    verComo: 'Para ver la pantalla como la vería cada persona: Dirección ve todo; un operador, sólo sus barrios; un técnico, sólo sus visitas.',
+  };
+  const hlp = (k) => `<button type="button" class="hlp" data-hlp="${k}" aria-label="¿Qué es esto?">?</button>`;
+  window.SILA_HLP = hlp;
+  (function () {
+    let tip = null;
+    const cerrar = () => { if (tip) { tip.remove(); tip = null; } };
+    document.addEventListener('click', (e) => {
+      const b = e.target.closest('.hlp');
+      if (!b) { if (!e.target.closest('.hlp-tip')) cerrar(); return; }
+      e.preventDefault(); e.stopPropagation();
+      const was = tip && tip.dataset.k === b.dataset.hlp;
+      cerrar();
+      if (was) return;
+      tip = document.createElement('div');
+      tip.className = 'hlp-tip';
+      tip.dataset.k = b.dataset.hlp;
+      tip.setAttribute('role', 'tooltip');
+      tip.textContent = AYUDA[b.dataset.hlp] || '';
+      document.body.appendChild(tip);
+      const r = b.getBoundingClientRect(), w = Math.min(300, innerWidth - 24);
+      tip.style.width = w + 'px';
+      tip.style.left = Math.max(12, Math.min(r.left + r.width / 2 - w / 2, innerWidth - w - 12)) + 'px';
+      const below = r.bottom + 8 + tip.offsetHeight < innerHeight;
+      tip.style.top = (below ? r.bottom + 8 : r.top - 8 - tip.offsetHeight) + scrollY + 'px';
+    }, true);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrar(); });
+    addEventListener('scroll', cerrar, { passive: true });
+  })();
+
   /* ── estado de la pestaña (cada pestaña puede mirar con otro rol) ── */
   const UI_KEY = 'sila_gestion_ui';
   const ui = Object.assign({ rol: 'dir', vista: 'tickets', barrio: '*', filtro: 'abiertos', cat: '', q: '', lote: null, encF: 'todas' }, (() => { try { return JSON.parse(sessionStorage.getItem(UI_KEY)) || {}; } catch (_) { return {}; } })());
@@ -253,7 +307,7 @@
         <div class="kpi cut"><span>${tec ? 'Mis visitas abiertas' : 'Abiertos'}</span><b>${open.length}</b><small>${open.filter((t) => t.estado === 'nuevo').length} sin tomar${sinCat ? ` · ${sinCat} sin categoría` : ''}</small></div>
         <div class="kpi cut k-riesgo"><span>En riesgo · ≥ ${G.umbral()} %</span><b>${riesgo.length}</b><small>alerta automática</small></div>
         <div class="kpi cut k-vencido"><span>Vencidos</span><b>${venc.length}</b><small>escalados a Dirección</small></div>
-        <div class="kpi cut"><span>SLA cumplido · 30 d</span><b>${cumpl == null ? '—' : cumpl + ' %'}</b><small>${plural(c30.length, 'cerrado')}</small></div>
+        <div class="kpi cut"><span>A tiempo · 30 d ${hlp('sla')}</span><b>${cumpl == null ? '—' : cumpl + ' %'}</b><small>${plural(c30.length, 'cerrado')}</small></div>
       </section>
       <div class="live"><i></i>EN VIVO · ${tec ? 'tickets asignados a vos' : `conectado al chat · ${plural(casos.length, 'caso')} · ${der} derivado${der === 1 ? '' : 's'} a la central`}</div>
       <div class="filters">
@@ -265,7 +319,7 @@
         <input id="fq" type="search" placeholder="Buscar ticket, lote, vecino…" value="${esc(ui.q)}" aria-label="Buscar">
       </div>
       <div class="grid" role="list">
-        <div class="gh" aria-hidden="true"><span>Semáforo SLA</span><span>Ticket</span><span>Barrio · lote</span><span>Categoría</span><span>Técnico</span><span>Estado</span></div>
+        <div class="gh"><span>Semáforo ${hlp('semaforo')}</span><span>Ticket</span><span>Barrio · lote</span><span>Categoría ${hlp('categoria')}</span><span>Técnico ${hlp('tecnico')}</span><span>Estado ${hlp('estado')}</span></div>
         ${list.map(rowT).join('') || vacio}
       </div>`;
   }
@@ -326,7 +380,7 @@
           <div class="estados">${['nuevo', 'en_curso', 'en_campo'].map((e) => `<button type="button" data-a="estado" data-k="${e}" class="${t.estado === e ? 'on' : ''}">${EST[e]}</button>`).join('')}</div>
           <div class="form2">
             <label>Técnico de campo<select data-a="asignar"><option value="">${tecs.length ? 'Sin asignar' : 'Sin técnicos cargados'}</option>${tecs.map((p) => `<option value="${esc(p.id)}" ${t.asignado === p.id ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}</select></label>
-            <label>Categoría (define el SLA)<select data-a="cat"><option value="" ${t.cat ? '' : 'selected'}>Sin categoría</option>${G.cats().map((k) => `<option value="${esc(k.id)}" ${t.cat === k.id ? 'selected' : ''}>${esc(k.nombre)} · ${k.h} h</option>`).join('')}</select></label>
+            <label>Categoría ${hlp('categoria')}<select data-a="cat"><option value="" ${t.cat ? '' : 'selected'}>Sin categoría</option>${G.cats().map((k) => `<option value="${esc(k.id)}" ${t.cat === k.id ? 'selected' : ''}>${esc(k.nombre)} · ${k.h} h</option>`).join('')}</select></label>
             ${puede('reasignarBarrio') ? `<label>Barrio<select data-a="barrio">${[...S.barrios, G.SIN_BARRIO].map((b) => `<option value="${esc(b.id)}" ${t.barrio === b.id ? 'selected' : ''}>${esc(b.nombre)}</option>`).join('')}</select></label>` : ''}
           </div>` : ''}
         ${puede('campo') && t.estado !== 'cerrado' ? `<h4>En campo</h4><div class="estados"><button type="button" data-a="estado" data-k="en_campo" class="${t.estado === 'en_campo' ? 'on' : ''}">Llegué al lugar</button></div>` : ''}
@@ -580,10 +634,10 @@
     const bs = barriosVis().filter((b) => enc.some((e) => e.barrio === b.id));
     return `
       <section class="kpis">
-        <div class="kpi cut"><span>Encuestas enviadas · 30 d <span class="simtag">SIM</span></span><b>${e30.length}</b><small>${e30.filter((e) => e.canal === 'whatsapp').length} WhatsApp · ${e30.filter((e) => e.canal === 'email').length} email</small></div>
-        <div class="kpi cut"><span>Tasa de respuesta</span><b>${e30.length ? Math.round((resp / e30.length) * 100) + ' %' : '—'}</b><small>${resp} respondidas</small></div>
-        <div class="kpi cut"><span>NPS · 30 d</span><b class="${N ? npsCls(N.nps) : ''}">${N ? fmtNps(N.nps) : '—'}</b><small>${N ? `${N.p} prom. · ${N.pa} pas. · ${N.d} detr.` : 'sin respuestas'}</small></div>
-        <div class="kpi cut"><span>CSAT promedio</span><b>${N ? N.csat.toFixed(1) : '—'}<em>/5</em></b><small>satisfacción con la atención</small></div>
+        <div class="kpi cut"><span>Encuestas enviadas · 30 d ${hlp('encuestas')} <span class="simtag">SIM</span></span><b>${e30.length}</b><small>${e30.filter((e) => e.canal === 'whatsapp').length} WhatsApp · ${e30.filter((e) => e.canal === 'email').length} email</small></div>
+        <div class="kpi cut"><span>Tasa de respuesta ${hlp('respuesta')}</span><b>${e30.length ? Math.round((resp / e30.length) * 100) + ' %' : '—'}</b><small>${resp} respondidas</small></div>
+        <div class="kpi cut"><span>NPS · 30 d ${hlp('nps')}</span><b class="${N ? npsCls(N.nps) : ''}">${N ? fmtNps(N.nps) : '—'}</b><small>${N ? `${N.p} prom. · ${N.pa} pas. · ${N.d} detr.` : 'sin respuestas'}</small></div>
+        <div class="kpi cut"><span>CSAT promedio ${hlp('csat')}</span><b>${N ? N.csat.toFixed(1) : '—'}<em>/5</em></b><small>satisfacción con la atención</small></div>
       </section>
       <section class="block">
         <header class="bh"><h3>Alertas de detractores <i class="bd">${det.length}</i></h3><span class="mini">Recuperados: ${recCerr.filter((e) => e.recup.estado === 'recuperado').length} de ${recCerr.length} cerrados</span></header>
@@ -671,10 +725,10 @@
     const tc = st.reduce((a, s) => a + s.casos, 0), tb = st.reduce((a, s) => a + s.bot, 0);
     return `
       <section class="kpis">
-        <div class="kpi cut"><span>NPS · 90 d</span><b class="${N ? npsCls(N.nps) : ''}">${N ? fmtNps(N.nps) : '—'}</b><small>${N ? N.n + ' respuestas' : 'sin respuestas'}</small></div>
-        <div class="kpi cut"><span>CSAT</span><b>${N ? N.csat.toFixed(1) : '—'}<em>/5</em></b><small>promedio 90 d</small></div>
-        <div class="kpi cut"><span>Google</span><b>${rAvg ? rAvg.toFixed(2) : '—'}<em>★</em></b><small>${rs.length ? `${rs.reduce((a, s) => a + s.nG, 0)} reseñas · ${rs.reduce((a, s) => a + s.viaSila, 0)} vía SILA (sim.)` : 'perfiles sin cargar'}</small></div>
-        <div class="kpi cut"><span>Resueltos por el bot</span><b>${tc ? Math.round((tb / tc) * 100) + ' %' : '—'}</b><small>${tb} de ${plural(tc, 'caso')} del chat</small></div>
+        <div class="kpi cut"><span>NPS · 90 d ${hlp('nps')}</span><b class="${N ? npsCls(N.nps) : ''}">${N ? fmtNps(N.nps) : '—'}</b><small>${N ? N.n + ' respuestas' : 'sin respuestas'}</small></div>
+        <div class="kpi cut"><span>CSAT ${hlp('csat')}</span><b>${N ? N.csat.toFixed(1) : '—'}<em>/5</em></b><small>promedio 90 d</small></div>
+        <div class="kpi cut"><span>Google ${hlp('googleRep')}</span><b>${rAvg ? rAvg.toFixed(2) : '—'}<em>★</em></b><small>${rs.length ? `${rs.reduce((a, s) => a + s.nG, 0)} reseñas · ${rs.reduce((a, s) => a + s.viaSila, 0)} vía SILA (sim.)` : 'perfiles sin cargar'}</small></div>
+        <div class="kpi cut"><span>Resueltos por el bot ${hlp('bot')}</span><b>${tc ? Math.round((tb / tc) * 100) + ' %' : '—'}</b><small>${tb} de ${plural(tc, 'caso')} del chat</small></div>
       </section>
       <p class="legend"><span><i class="lg good"></i>NPS ≥ +30 saludable</span><span><i class="lg mid"></i>0 a +29 a mejorar</span><span><i class="lg bad"></i>negativo · crítico</span></p>
       <div class="barrios">${st.map((s, i) => repCard(s, i + 1)).join('')}</div>`;
@@ -710,38 +764,38 @@
     const host = (() => { try { return new URL(G.url()).host; } catch (_) { return G.url(); } })();
     return `
       <section class="block">
-        <header class="bh"><h3>Motor de SLA por categoría</h3>${dir ? '<span class="mini">Palabras clave: si la consulta del chat las contiene, el ticket se categoriza solo</span>' : '<span class="mini">Sólo Dirección puede editarlo</span>'}</header>
+        <header class="bh"><h3>Tipos de problema y tiempos ${hlp('sla')}</h3>${dir ? '<span class="mini">Palabras clave: si la consulta del chat las contiene, el ticket se categoriza solo</span>' : '<span class="mini">Sólo Dirección puede editarlo</span>'}</header>
         <div class="slat cut">
-          ${cs.length ? `<div class="sr0 cfgc"><span>Categoría</span><span>Plazo</span><span>Palabras clave</span><span>Abiertos</span></div>
+          ${cs.length ? `<div class="sr0 cfgc"><span>Categoría ${hlp('categoria')}</span><span>Plazo ${hlp('plazo')}</span><span>Palabras clave ${hlp('claves')}</span><span>Abiertos ${hlp('abiertos')}</span></div>
           ${cs.map((c) => `<div class="sr1 cfgc"><span>${dir ? `<input data-cfg="cnom" data-k="${esc(c.id)}" value="${esc(c.nombre)}" maxlength="50" aria-label="Nombre de la categoría">` : esc(c.nombre)}</span>
             <span>${dir ? `<input type="number" min="1" max="240" step="1" value="${c.h}" data-cfg="h" data-k="${esc(c.id)}" aria-label="Horas de ${esc(c.nombre)}"> h` : c.h + ' h'}<small class="mono">alerta a las ${dur((c.h * G.umbral() * G.H) / 100)}</small></span>
             <span>${dir ? `<input data-cfg="claves" data-k="${esc(c.id)}" value="${esc(c.claves || '')}" maxlength="300" placeholder="barrera, brazo…" aria-label="Palabras clave de ${esc(c.nombre)}">` : esc(c.claves || '—')}</span>
             <span class="mono">${open.filter((t) => t.cat === c.id).length}<i class="mlbl"> abiertos</i>${dir ? ` <button type="button" class="x sm" data-a="catDel" data-k="${esc(c.id)}" aria-label="Quitar ${esc(c.nombre)}">✕</button>` : ''}</span></div>`).join('')}`
             : `<p class="mini pad">Todavía no hay categorías. Sin categoría no hay plazo y el semáforo queda en gris.</p>`}
-          ${dir ? `<form class="addrow" data-a="catAdd"><input id="ncNom" placeholder="Nueva categoría" maxlength="50" required aria-label="Nombre"><input id="ncH" type="number" min="1" max="240" placeholder="horas" required aria-label="Horas"><input id="ncCl" placeholder="palabras clave, separadas por coma" maxlength="300" aria-label="Palabras clave"><button type="submit" class="ghost">Agregar</button></form>
-            ${faltan.length ? `<p class="mini">Plazos que fija el contrato: ${faltan.map((c) => `${esc(c.nombre)} ${c.h} h`).join(' · ')} <button type="button" class="ghost sm" data-a="catDoc">Cargarlos</button></p>` : ''}` : ''}
-          <div class="sr2"><label>Alerta al ${dir ? `<input type="number" min="50" max="95" step="5" value="${G.umbral()}" data-cfg="umbral" aria-label="Umbral de alerta"> %` : G.umbral() + ' %'} del tiempo</label>
+          ${dir ? `<p class="mini">Agregar un tipo de problema ${hlp('nuevaCat')}</p><form class="addrow" data-a="catAdd"><input id="ncNom" placeholder="Nueva categoría" maxlength="50" required aria-label="Nombre"><input id="ncH" type="number" min="1" max="240" placeholder="horas" required aria-label="Horas"><input id="ncCl" placeholder="palabras clave, separadas por coma" maxlength="300" aria-label="Palabras clave"><button type="submit" class="ghost">Agregar</button></form>
+            ${faltan.length ? `<p class="mini">Plazos que fija el contrato ${hlp('contrato')}: ${faltan.map((c) => `${esc(c.nombre)} ${c.h} h`).join(' · ')} <button type="button" class="ghost sm" data-a="catDoc">Cargarlos</button></p>` : ''}` : ''}
+          <div class="sr2"><label>Alerta al ${dir ? `<input type="number" min="50" max="95" step="5" value="${G.umbral()}" data-cfg="umbral" aria-label="Umbral de alerta"> %` : G.umbral() + ' %'} del tiempo ${hlp('alerta')}</label>
             <span class="mini">Al cruzarlo: aviso al operador de turno y al supervisor. Al 100 %: escalado a Dirección. Avisos SIMULADOS.</span></div>
         </div>
       </section>
       <section class="block">
-        <header class="bh"><h3>Equipo</h3><span class="mini">Operadores (ven sólo sus barrios) y técnicos de campo (ven sólo sus visitas)</span></header>
+        <header class="bh"><h3>Equipo ${hlp('equipo')}</h3><span class="mini">Operadores (ven sólo sus barrios) y técnicos de campo (ven sólo sus visitas)</span></header>
         <div class="conn cut cfgl">
           ${S.equipo.length ? `<ul class="team">${S.equipo.map((p) => `<li><b>${esc(p.nombre)}</b><span class="chip">${G.ROL_TXT[p.rol]}</span>
             ${p.rol === 'operador' ? (dir ? `<span class="bchk">${S.barrios.map((b) => `<label><input type="checkbox" data-cfg="pb" data-k="${esc(p.id)}" value="${esc(b.id)}" ${(p.barrios || []).includes(b.id) ? 'checked' : ''}>${esc(b.nombre)}</label>`).join('') || '<small>sin barrios todavía</small>'}</span>` : `<small>${(p.barrios || []).map((b) => esc(G.barrio(b).nombre)).join(', ') || 'sin barrios'}</small>`) : ''}
             ${dir ? `<button type="button" class="x sm" data-a="pDel" data-k="${esc(p.id)}" aria-label="Quitar a ${esc(p.nombre)}">✕</button>` : ''}</li>`).join('')}</ul>` : '<p class="mini">Sin personas cargadas. Mientras tanto, todo se ve como Dirección.</p>'}
-          ${dir ? `<form class="addrow" data-a="pAdd"><input id="npNom" placeholder="Nombre y apellido" maxlength="60" required aria-label="Nombre"><select id="npRol" aria-label="Rol"><option value="operador">Operador</option><option value="tecnico">Técnico de campo</option></select><button type="submit" class="ghost">Agregar</button></form>` : ''}
+          ${dir ? `<form class="addrow" data-a="pAdd"><input id="npNom" placeholder="Nombre y apellido" maxlength="60" required aria-label="Nombre">${hlp('rol')}<select id="npRol" aria-label="Rol"><option value="operador">Operador</option><option value="tecnico">Técnico de campo</option></select><button type="submit" class="ghost">Agregar</button></form>` : ''}
         </div>
       </section>
       <section class="block">
-        <header class="bh"><h3>Barrios</h3><span class="mini">Se dan de alta solos con lo que escribe el residente en el chat</span></header>
+        <header class="bh"><h3>Barrios ${hlp('barrios')}</h3><span class="mini">Se dan de alta solos con lo que escribe el residente en el chat</span></header>
         <div class="conn cut cfgl">
           ${S.barrios.length ? `<ul class="team brs">${S.barrios.map((b) => {
             const n = casos.filter((c) => idBarrioCaso(c) === b.id).length;
             const g = b.google || {};
             return `<li><span class="bn">${dir ? `<input data-cfg="bnom" data-k="${esc(b.id)}" value="${esc(b.nombre)}" maxlength="60" aria-label="Nombre del barrio">` : `<b>${esc(b.nombre)}</b>`}<small>${plural(n, 'caso')}${(b.alias || []).length ? ' · también escrito como ' + b.alias.map(esc).join(', ') : ''}</small></span>
-              ${dir ? `<span class="gg"><input data-cfg="gurl" data-k="${esc(b.id)}" value="${esc(g.url || '')}" placeholder="link de reseñas de Google" maxlength="200" aria-label="Link de Google"><input type="number" step="0.1" min="1" max="5" data-cfg="grat" data-k="${esc(b.id)}" value="${g.rating || ''}" placeholder="★" aria-label="Calificación actual"><input type="number" min="0" data-cfg="gn" data-k="${esc(b.id)}" value="${g.n || ''}" placeholder="reseñas" aria-label="Cantidad de reseñas"></span>
-                ${S.barrios.length > 1 ? `<select data-cfg="bunir" data-k="${esc(b.id)}" aria-label="Unir ${esc(b.nombre)} con otro barrio"><option value="">Es el mismo que…</option>${S.barrios.filter((x) => x.id !== b.id).map((x) => `<option value="${esc(x.id)}">${esc(x.nombre)}</option>`).join('')}</select>` : ''}` : `<small>${g.rating ? `Google ${g.rating}★ · ${g.n || 0} reseñas` : 'Google sin cargar'}</small>`}</li>`;
+              ${dir ? `<span class="gg">${hlp('google')}<input data-cfg="gurl" data-k="${esc(b.id)}" value="${esc(g.url || '')}" placeholder="link de reseñas de Google" maxlength="200" aria-label="Link de Google"><input type="number" step="0.1" min="1" max="5" data-cfg="grat" data-k="${esc(b.id)}" value="${g.rating || ''}" placeholder="★" aria-label="Calificación actual"><input type="number" min="0" data-cfg="gn" data-k="${esc(b.id)}" value="${g.n || ''}" placeholder="reseñas" aria-label="Cantidad de reseñas"></span>
+                ${S.barrios.length > 1 ? `${hlp('unir')}<select data-cfg="bunir" data-k="${esc(b.id)}" aria-label="Unir ${esc(b.nombre)} con otro barrio"><option value="">Es el mismo que…</option>${S.barrios.filter((x) => x.id !== b.id).map((x) => `<option value="${esc(x.id)}">${esc(x.nombre)}</option>`).join('')}</select>` : ''}` : `<small>${g.rating ? `Google ${g.rating}★ · ${g.n || 0} reseñas` : 'Google sin cargar'}</small>`}</li>`;
           }).join('')}</ul>` : '<p class="mini">Todavía no entró ningún barrio.</p>'}
         </div>
       </section>
