@@ -304,12 +304,12 @@
   /* ── respuesta en tono humano + capturas con círculo rojo ── */
   const srcOf = (s) => (s.chunkObj ? s.chunkObj.doc.title + (s.chunkObj.page ? ` (pág. ${s.chunkObj.page})` : '') : '');
   function shotHTML(s, n) {
-    const ell = s.marks.map((m) => {
+    const ell = (s.marks || []).map((m) => {
       const rx = m.w / 2 * 1.3 + 0.035, ry = m.h / 2 * 1.9 + 0.02;
       return `<ellipse cx="${m.x + m.w / 2}" cy="${m.y + m.h / 2}" rx="${rx}" ry="${ry}"/>`;
     }).join('');
     return `<figure class="ay-shot" style="--r:${s.ratio || 0.6}" data-zoom tabindex="0" role="button" aria-label="Agrandar imagen del paso ${n}">
-      <div class="crop"><img src="${ROOT + s.shot}" alt="Pantalla de la app: ${esc(s.marks.map((m) => m.label).join(', '))}" loading="lazy">
+      <div class="crop"><img src="${ROOT + s.shot}" alt="Pantalla de la app${(s.marks || []).length ? ': ' + esc(s.marks.map((m) => m.label).join(', ')) : ''}" loading="lazy">
       <svg viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true">${ell}</svg></div>
       <figcaption>Paso ${n}</figcaption></figure>`;
   }
@@ -331,9 +331,14 @@
       ? `<ol class="ay-steps">${card.steps.map((s) => `<li>${esc(s.say)}</li>`).join('')}</ol>`
       : `<p>${esc(card.steps[0].say)}</p>`;
     await say(steps, card.steps.reduce((a, s) => a + s.say.length, 0) * 0.5);
-    const shots = card.steps.map((s, i) => (s.shot && s.marks && s.marks.length ? shotHTML(s, i + 1) : '')).filter(Boolean);
+    const shots = card.steps.map((s, i) => (s.shot ? shotHTML(s, i + 1) : '')).filter(Boolean);
     if (shots.length) {
       await say(`<p>${shots.length > 1 ? 'Te marqué en rojo dónde tocar en cada paso:' : 'Te marqué en rojo dónde tenés que tocar:'}</p><div class="ay-shots">${shots.join('')}</div>`, 30);
+    }
+    if (card.video) {
+      await say(`<p>${pick(['Si te resulta más fácil, acá tenés un video cortito:', 'También lo podés ver en este video:'])}</p>
+        <figure class="ay-video"><video controls preload="none" playsinline poster="${ROOT + card.video.poster}" src="${ROOT + card.video.file}"></video>
+        ${card.video.title ? `<figcaption>${esc(card.video.title)}</figcaption>` : ''}</figure>`, 30);
     }
     if (card.tips.length) await say(card.tips.length > 1 ? `<p>Un par de cosas a tener en cuenta:</p><ul class="ay-steps">${card.tips.map((t) => `<li>${esc(t.say)}</li>`).join('')}</ul>` : `<p>${esc(card.tips[0].say)}</p>`);
     await guardar(`Se le explicó: ${card.title} [${st.caso.fuentes_citadas}]`);

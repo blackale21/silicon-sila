@@ -209,6 +209,20 @@ def main():
             ncf += 1
             report.append(f'ok        confluence     {pg["module"]:30} {pg["title"]}')
     con.commit()
+    # imágenes y videos de Confluence (índice armado por kb/tools/conf_media.py)
+    mi = os.path.join(SRC, 'confluence', 'media_index.json')
+    if os.path.exists(mi):
+        idx = json.load(open(mi, encoding='utf-8'))
+        tit = {k: v['title'] for k, v in idx['paginas'].items()}
+        for fid, m in idx['imagenes'].items():
+            pg = (m.get('pages') or [None])[0]
+            con.execute('INSERT INTO media VALUES (?,?,?,?,?,?,?,?,?)', (fid, 'imagen', pg, tit.get(pg), m['title'], m['file'], m['w'], m['h'], 0))
+        for nombre, v in idx['videos'].items():
+            if not os.path.exists(os.path.join(KB, 'videos', nombre + '.mp4')):
+                continue
+            pg = (v.get('pages') or [None])[0]
+            con.execute('INSERT INTO media VALUES (?,?,?,?,?,?,?,?,?)', (nombre, 'video', pg, tit.get(pg), v['title'], v['file'], None, None, 1))
+        con.commit()
     # fichas humanas: primero se validan las citas literales, después se ubican los círculos
     con.commit()
     import subprocess, sys as _sys

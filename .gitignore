@@ -7,3 +7,7 @@ kb/ocr/png/
 kb/ocr/boxes.log
 kb/tmp/
 kb/.llave_local
+
+# capturas originales de Confluence y su OCR: sólo locales (pueden tener datos personales)
+kb/conf/
+kb/ocr/conf/

@@ -13,19 +13,66 @@
     ],
     "intro": "Te cuento, es todo desde el celu y son pocos pasos.",
     "steps": [
-      {"say": "Escaneá el código QR de la campaña de empadronamiento; eso te lleva al portal de inscripción.", "chunk": 10, "quote": "Al escanearlo, accederás al portal de inscripción"},
-      {"say": "Ingresá tu barrio y tu DNI para arrancar la validación.", "chunk": 10, "quote": "Ingresá tu barrio y tu DNI para iniciar la validación.", "mark": ["Siguiente"]},
-      {"say": "Completá tus datos: nombre, correo, DNI. Fijate bien que estén correctos.", "chunk": 10, "quote": "Completá tus datos requeridos por la administración (nombre, correo electrónico, DNI, etc.). Verificá que estén correctos"},
-      {"say": "Elegí tu lote o tus lotes y contá qué relación tenés: propietario, inquilino, familiar, etc.", "chunk": 11, "quote": "Seleccioná el o los lotes que te pertenecen dentro del consorcio e indicá tu relación con ellos"},
-      {"say": "Sacate una selfie para activar el acceso con reconocimiento facial, siguiendo las indicaciones.", "chunk": 11, "quote": "Tomate una foto tipo selfie para activar el acceso automático con reconocimiento facial (Face ID)."},
-      {"say": "Cargá tus vehículos, que también forman parte de la inscripción.", "chunk": 12, "quote": "se permite la registración de los vehículos de las personas que se inscriben"},
-      {"say": "Subí una foto de tu documento de identidad.", "chunk": 12, "quote": "Subí una imagen de tu documento de identidad."},
-      {"say": "Cuando termines, enviá tu solicitud y te va a llegar una confirmación.", "chunk": 13, "quote": "Una vez completados los pasos, enviá tu solicitud. Vas a recibir una confirmación"}
+      {
+        "say": "Escaneá el código QR de la campaña de empadronamiento; eso te lleva al portal de inscripción.",
+        "chunk": 10,
+        "quote": "Al escanearlo, accederás al portal de inscripción"
+      },
+      {
+        "say": "Ingresá tu barrio y tu DNI para arrancar la validación.",
+        "chunk": 10,
+        "quote": "Ingresá tu barrio y tu DNI para iniciar la validación.",
+        "mark": [
+          "Siguiente"
+        ]
+      },
+      {
+        "say": "Completá tus datos: nombre, correo, DNI. Fijate bien que estén correctos.",
+        "chunk": 10,
+        "quote": "Completá tus datos requeridos por la administración (nombre, correo electrónico, DNI, etc.). Verificá que estén correctos"
+      },
+      {
+        "say": "Elegí tu lote o tus lotes y contá qué relación tenés: propietario, inquilino, familiar, etc.",
+        "chunk": 11,
+        "quote": "Seleccioná el o los lotes que te pertenecen dentro del consorcio e indicá tu relación con ellos"
+      },
+      {
+        "say": "Sacate una selfie para activar el acceso con reconocimiento facial, siguiendo las indicaciones.",
+        "chunk": 11,
+        "quote": "Tomate una foto tipo selfie para activar el acceso automático con reconocimiento facial (Face ID)."
+      },
+      {
+        "say": "Cargá tus vehículos, que también forman parte de la inscripción.",
+        "chunk": 12,
+        "quote": "se permite la registración de los vehículos de las personas que se inscriben"
+      },
+      {
+        "say": "Subí una foto de tu documento de identidad.",
+        "chunk": 12,
+        "quote": "Subí una imagen de tu documento de identidad."
+      },
+      {
+        "say": "Cuando termines, enviá tu solicitud y te va a llegar una confirmación.",
+        "chunk": 13,
+        "quote": "Una vez completados los pasos, enviá tu solicitud. Vas a recibir una confirmación"
+      }
     ],
     "tips": [
-      {"say": "Si ya tenías una solicitud empezada o te faltaba completar algo, el sistema te avisa.", "chunk": 10, "quote": "Si ya tenés una solicitud en curso o información pendiente de completar, el sistema te lo indicará."},
-      {"say": "Tus datos son clave para entrar a la app y generar tu registro, así que revisalos bien.", "chunk": 10, "quote": "son esenciales para acceder a la aplicación y generar tu registro"},
-      {"say": "La foto del documento se usa solo para validarte y se borra sola cuando aprueban la solicitud.", "chunk": 12, "quote": "El sistema la utilizará solo para validar tu información y la eliminará automáticamente una vez aprobada la solicitud."}
+      {
+        "say": "Si ya tenías una solicitud empezada o te faltaba completar algo, el sistema te avisa.",
+        "chunk": 10,
+        "quote": "Si ya tenés una solicitud en curso o información pendiente de completar, el sistema te lo indicará."
+      },
+      {
+        "say": "Tus datos son clave para entrar a la app y generar tu registro, así que revisalos bien.",
+        "chunk": 10,
+        "quote": "son esenciales para acceder a la aplicación y generar tu registro"
+      },
+      {
+        "say": "La foto del documento se usa solo para validarte y se borra sola cuando aprueban la solicitud.",
+        "chunk": 12,
+        "quote": "El sistema la utilizará solo para validar tu información y la eliminará automáticamente una vez aprobada la solicitud."
+      }
     ]
   },
   {
@@ -42,14 +89,41 @@
     ],
     "intro": "Bien, ya hiciste lo más largo. Te cuento cómo sigue.",
     "steps": [
-      {"say": "Después de la confirmación podés seguir registrando a tu grupo familiar, vehículos y mascotas.", "chunk": 13, "quote": "podrás continuar con el registro de tu grupo familiar, vehículos y mascotas, repitiendo los pasos anteriores según corresponda"},
-      {"say": "Al final tenés que generar y validar tu usuario.", "chunk": 13, "quote": "Por último será necesario generar y validar el usuario."},
-      {"say": "Para eso ingresá tu documento y una contraseña, y terminá la confirmación.", "chunk": 13, "quote": "ingrese su documento y contraseña para terminar el proceso de confirmación", "mark": ["Finalizar"]},
-      {"say": "Con el usuario listo ya podés entrar desde el navegador o desde la app de residente Silicon Access.", "chunk": 13, "quote": "podrá ingresar a la aplicación desde el navegador o desde la App de residente Silicon Access"}
+      {
+        "say": "Después de la confirmación podés seguir registrando a tu grupo familiar, vehículos y mascotas.",
+        "chunk": 13,
+        "quote": "podrás continuar con el registro de tu grupo familiar, vehículos y mascotas, repitiendo los pasos anteriores según corresponda"
+      },
+      {
+        "say": "Al final tenés que generar y validar tu usuario.",
+        "chunk": 13,
+        "quote": "Por último será necesario generar y validar el usuario."
+      },
+      {
+        "say": "Para eso ingresá tu documento y una contraseña, y terminá la confirmación.",
+        "chunk": 13,
+        "quote": "ingrese su documento y contraseña para terminar el proceso de confirmación",
+        "mark": [
+          "Finalizar"
+        ]
+      },
+      {
+        "say": "Con el usuario listo ya podés entrar desde el navegador o desde la app de residente Silicon Access.",
+        "chunk": 13,
+        "quote": "podrá ingresar a la aplicación desde el navegador o desde la App de residente Silicon Access"
+      }
     ],
     "tips": [
-      {"say": "Los lotes y la relación que indicaste los tiene que aprobar la administración.", "chunk": 11, "quote": "Esta información deberá ser aprobada por la administración."},
-      {"say": "Cuando aprueban tu solicitud y confirman tu Selfie ID, te llega la notificación de activación del acceso automático.", "chunk": 14, "quote": "Una vez aprobada la solicitud y confirmada la Selfie ID, el residente recibirá la notificación de activación para el acceso automático."}
+      {
+        "say": "Los lotes y la relación que indicaste los tiene que aprobar la administración.",
+        "chunk": 11,
+        "quote": "Esta información deberá ser aprobada por la administración."
+      },
+      {
+        "say": "Cuando aprueban tu solicitud y confirman tu Selfie ID, te llega la notificación de activación del acceso automático.",
+        "chunk": 14,
+        "quote": "Una vez aprobada la solicitud y confirmada la Selfie ID, el residente recibirá la notificación de activación para el acceso automático."
+      }
     ]
   },
   {
@@ -66,13 +140,39 @@
     ],
     "intro": "Es rapidito, solo tenés que crear tu contraseña.",
     "steps": [
-      {"say": "Cuando la administración te invita, te llega un correo de invitación a tu mail registrado.", "chunk": 97, "quote": "el sistema enviará automáticamente un correo electrónico de invitación a la dirección registrada para ese residente"},
-      {"say": "Entrá al enlace de ese correo y creá tu contraseña.", "chunk": 97, "quote": "el residente solo deberá crear una contraseña, ingresando al enlace recibido por correo", "mark": ["Completar Registro"]},
-      {"say": "Tu usuario ya está creado: es tu número de DNI y aparece seleccionado solo.", "chunk": 97, "quote": "El usuario ya estará generado y será su número de DNI, el cual aparecerá automáticamente seleccionado."},
-      {"say": "Elegida la contraseña, quedás logueado en el portal web y ya podés usarlo.", "chunk": 97, "quote": "Una vez elegida la contraseña, el residente quedará logueado en el portal web y podrá acceder normalmente.", "mark": ["Finalizar"]}
+      {
+        "say": "Cuando la administración te invita, te llega un correo de invitación a tu mail registrado.",
+        "chunk": 97,
+        "quote": "el sistema enviará automáticamente un correo electrónico de invitación a la dirección registrada para ese residente"
+      },
+      {
+        "say": "Entrá al enlace de ese correo y creá tu contraseña.",
+        "chunk": 97,
+        "quote": "el residente solo deberá crear una contraseña, ingresando al enlace recibido por correo",
+        "mark": [
+          "Completar Registro"
+        ]
+      },
+      {
+        "say": "Tu usuario ya está creado: es tu número de DNI y aparece seleccionado solo.",
+        "chunk": 97,
+        "quote": "El usuario ya estará generado y será su número de DNI, el cual aparecerá automáticamente seleccionado."
+      },
+      {
+        "say": "Elegida la contraseña, quedás logueado en el portal web y ya podés usarlo.",
+        "chunk": 97,
+        "quote": "Una vez elegida la contraseña, el residente quedará logueado en el portal web y podrá acceder normalmente.",
+        "mark": [
+          "Finalizar"
+        ]
+      }
     ],
     "tips": [
-      {"say": "Ya no hace falta el código de 6 dígitos.", "chunk": 97, "quote": "En este nuevo proceso ya no se utiliza el código alfanumérico de 6 dígitos."}
+      {
+        "say": "Ya no hace falta el código de 6 dígitos.",
+        "chunk": 97,
+        "quote": "En este nuevo proceso ya no se utiliza el código alfanumérico de 6 dígitos."
+      }
     ]
   },
   {
@@ -88,11 +188,29 @@
     ],
     "intro": "Dale, entrar a la app es muy simple.",
     "steps": [
-      {"say": "Abrí la app y tocá Ya tengo una cuenta.", "chunk": 98, "quote": "podrá iniciar sesión en la aplicación móvil, seleccionando “Ya tengo una cuenta”", "mark": ["Ya tengo una cuenta"]},
-      {"say": "Poné tu DNI como usuario y la contraseña que creaste.", "chunk": 98, "quote": "ingresando su usuario (DNI) y la contraseña creada", "mark": ["Ingresar"]}
+      {
+        "say": "Abrí la app y tocá Ya tengo una cuenta.",
+        "chunk": 98,
+        "quote": "podrá iniciar sesión en la aplicación móvil, seleccionando “Ya tengo una cuenta”",
+        "mark": [
+          "Ya tengo una cuenta"
+        ]
+      },
+      {
+        "say": "Poné tu DNI como usuario y la contraseña que creaste.",
+        "chunk": 98,
+        "quote": "ingresando su usuario (DNI) y la contraseña creada",
+        "mark": [
+          "Ingresar"
+        ]
+      }
     ],
     "tips": [
-      {"say": "La app de residente Silicon Access la bajás desde el store de tu teléfono.", "chunk": 13, "quote": "App de residente Silicon Access descargada desde el store de su teléfono"}
+      {
+        "say": "La app de residente Silicon Access la bajás desde el store de tu teléfono.",
+        "chunk": 13,
+        "quote": "App de residente Silicon Access descargada desde el store de su teléfono"
+      }
     ]
   },
   {
@@ -109,9 +227,24 @@
     ],
     "intro": "Tranqui, ese caso también se resuelve fácil.",
     "steps": [
-      {"say": "En la página de inicio de Silicon Access, entrá por la opción Primera vez.", "chunk": 98, "quote": "Desde la página de inicio de Silicon Access, el residente deberá ingresar por la opción “Primera vez”"},
-      {"say": "Poné tu DNI y tu correo electrónico.", "chunk": 98, "quote": "indicar su DNI y correo electrónico", "mark": ["Siguiente"]},
-      {"say": "Con los datos confirmados, el sistema te guía para crear y confirmar tu contraseña.", "chunk": 98, "quote": "el sistema lo guiará para crear y confirmar su contraseña"}
+      {
+        "say": "En la página de inicio de Silicon Access, entrá por la opción Primera vez.",
+        "chunk": 98,
+        "quote": "Desde la página de inicio de Silicon Access, el residente deberá ingresar por la opción “Primera vez”"
+      },
+      {
+        "say": "Poné tu DNI y tu correo electrónico.",
+        "chunk": 98,
+        "quote": "indicar su DNI y correo electrónico",
+        "mark": [
+          "Siguiente"
+        ]
+      },
+      {
+        "say": "Con los datos confirmados, el sistema te guía para crear y confirmar tu contraseña.",
+        "chunk": 98,
+        "quote": "el sistema lo guiará para crear y confirmar su contraseña"
+      }
     ]
   },
   {
@@ -127,8 +260,16 @@
     ],
     "intro": "No necesitás otra cuenta, te explico.",
     "steps": [
-      {"say": "Si ya tenés un usuario activo, te llega un correo que vincula tu cuenta al nuevo barrio.", "chunk": 99, "quote": "Si la persona ya posee un usuario activo en Silicon Access, recibirá un correo de vinculación a su cuenta existente."},
-      {"say": "Entrá a la app de residente y fijate en Mis Lotes: ahí vas a ver el nuevo consorcio.", "chunk": 99, "quote": "visualizará el nuevo consorcio dentro de la sección Mis Lotes."}
+      {
+        "say": "Si ya tenés un usuario activo, te llega un correo que vincula tu cuenta al nuevo barrio.",
+        "chunk": 99,
+        "quote": "Si la persona ya posee un usuario activo en Silicon Access, recibirá un correo de vinculación a su cuenta existente."
+      },
+      {
+        "say": "Entrá a la app de residente y fijate en Mis Lotes: ahí vas a ver el nuevo consorcio.",
+        "chunk": 99,
+        "quote": "visualizará el nuevo consorcio dentro de la sección Mis Lotes."
+      }
     ]
   },
   {
@@ -145,14 +286,44 @@
     ],
     "intro": "Buenísimo, son tres pasos nada más.",
     "steps": [
-      {"say": "Entrá al menú Selfie ID de la app.", "chunk": 143, "quote": "Ingresa al Menú Selfie ID.", "mark": ["Selfie ID"]},
-      {"say": "Seguí las indicaciones que te muestra la pantalla.", "chunk": 143, "quote": "Seguí las Indicaciones para lograr un autoempadronamiento exitoso."},
-      {"say": "Sacate la foto bien centrada; confirmala o volvé a sacarla hasta que te guste.", "chunk": 143, "quote": "Tomate la foto bien centrada y confirmala o volvé a tomarla hasta estar conforme."},
-      {"say": "Si te lo pide, subí un documento que acredite tu identidad.", "chunk": 143, "quote": "Se pedirá para completar la registración, un documento que acredite tu identidad.", "mark": ["Sacar foto"]},
-      {"say": "Después te llega una notificación cuando aprueben tu solicitud.", "chunk": 143, "quote": "Recibirás una notificación cuando tu solicitud haya sido aprobada"}
+      {
+        "say": "Entrá al menú Selfie ID de la app.",
+        "chunk": 143,
+        "quote": "Ingresa al Menú Selfie ID.",
+        "mark": [
+          "Selfie ID"
+        ]
+      },
+      {
+        "say": "Seguí las indicaciones que te muestra la pantalla.",
+        "chunk": 143,
+        "quote": "Seguí las Indicaciones para lograr un autoempadronamiento exitoso."
+      },
+      {
+        "say": "Sacate la foto bien centrada; confirmala o volvé a sacarla hasta que te guste.",
+        "chunk": 143,
+        "quote": "Tomate la foto bien centrada y confirmala o volvé a tomarla hasta estar conforme."
+      },
+      {
+        "say": "Si te lo pide, subí un documento que acredite tu identidad.",
+        "chunk": 143,
+        "quote": "Se pedirá para completar la registración, un documento que acredite tu identidad.",
+        "mark": [
+          "Sacar foto"
+        ]
+      },
+      {
+        "say": "Después te llega una notificación cuando aprueben tu solicitud.",
+        "chunk": 143,
+        "quote": "Recibirás una notificación cuando tu solicitud haya sido aprobada"
+      }
     ],
     "tips": [
-      {"say": "Tomátelo en serio: esa foto es tu llave para entrar al barrio.", "chunk": 143, "quote": "Recordá que esta foto es la llave de Acceso a tu barrio"}
+      {
+        "say": "Tomátelo en serio: esa foto es tu llave para entrar al barrio.",
+        "chunk": 143,
+        "quote": "Recordá que esta foto es la llave de Acceso a tu barrio"
+      }
     ]
   },
   {
@@ -168,8 +339,19 @@
     ],
     "intro": "Es normal, depende de cómo lo tenga armado tu barrio.",
     "steps": [
-      {"say": "Para completar el registro se puede pedir un documento que acredite tu identidad.", "chunk": 143, "quote": "Se pedirá para completar la registración, un documento que acredite tu identidad.", "mark": ["Sacar foto"]},
-      {"say": "Que te lo pidan o no depende de cómo lo configuró la administración de tu barrio.", "chunk": 143, "quote": "Este paso dependerá de la configuración que haya adoptado tu administración."}
+      {
+        "say": "Para completar el registro se puede pedir un documento que acredite tu identidad.",
+        "chunk": 143,
+        "quote": "Se pedirá para completar la registración, un documento que acredite tu identidad.",
+        "mark": [
+          "Sacar foto"
+        ]
+      },
+      {
+        "say": "Que te lo pidan o no depende de cómo lo configuró la administración de tu barrio.",
+        "chunk": 143,
+        "quote": "Este paso dependerá de la configuración que haya adoptado tu administración."
+      }
     ]
   },
   {
@@ -186,11 +368,23 @@
     ],
     "intro": "Te cuento cómo sigue después de mandar la foto.",
     "steps": [
-      {"say": "Te llega una notificación cuando aprueben tu solicitud, en las próximas horas.", "chunk": 143, "quote": "Recibirás una notificación cuando tu solicitud haya sido aprobada en el transcurso de las próximas horas."},
-      {"say": "Si la foto no sirve para que las terminales te reconozcan, te van a pedir que te registres de nuevo.", "chunk": 143, "quote": "En caso de que la foto no cumpla con los requisitos de identificación positiva en las terminales de Face id, se te pedirá que vuelvas a registrarte."}
+      {
+        "say": "Te llega una notificación cuando aprueben tu solicitud, en las próximas horas.",
+        "chunk": 143,
+        "quote": "Recibirás una notificación cuando tu solicitud haya sido aprobada en el transcurso de las próximas horas."
+      },
+      {
+        "say": "Si la foto no sirve para que las terminales te reconozcan, te van a pedir que te registres de nuevo.",
+        "chunk": 143,
+        "quote": "En caso de que la foto no cumpla con los requisitos de identificación positiva en las terminales de Face id, se te pedirá que vuelvas a registrarte."
+      }
     ],
     "tips": [
-      {"say": "También te llegan por correo las novedades sobre tu empadronamiento.", "chunk": 143, "quote": "Te llegará también por correo los avisos de novedades respecto a tu empadronamiento"}
+      {
+        "say": "También te llegan por correo las novedades sobre tu empadronamiento.",
+        "chunk": 143,
+        "quote": "Te llegará también por correo los avisos de novedades respecto a tu empadronamiento"
+      }
     ]
   },
   {
@@ -207,15 +401,52 @@
     ],
     "intro": "Dale, lo podés hacer vos mismo sin pasar por la administración.",
     "steps": [
-      {"say": "Desde la web de residente, entrá al menú Obras.", "chunk": 95, "quote": "Desde la web de residente solo tienen que ingresar al menú de Obras", "mark": ["Obras"]},
-      {"say": "Elegí la obra a la que le querés dar acceso.", "chunk": 95, "quote": "seleccionar la obra en cuestión a la cual se le quiere dar acceso"},
-      {"say": "Entrá a la vista de responsable de obra y hacé click en Agregar responsable de Obra.", "chunk": 95, "quote": "ingresar a la vista de responsable de Obra y hacer click en el Botón Agregar responsable de Obra"},
-      {"say": "Poné el DNI del responsable; si ya está en el barrio, se completan sus datos y solo validás el correo.", "chunk": 95, "quote": "Se autocompletarán los datos del responsable si la misma existe en la base de datos del consorcio y solo deberá validar su correo electrónico.", "mark": ["Seleccionar persona"]},
-      {"say": "Si no está registrado, completá los campos obligatorios del formulario.", "chunk": 95, "quote": "En caso de que no esté registrado deberá completar los campos requeridos del formulario.", "mark": ["Agregar"]}
+      {
+        "say": "Desde la web de residente, entrá al menú Obras.",
+        "chunk": 95,
+        "quote": "Desde la web de residente solo tienen que ingresar al menú de Obras",
+        "mark": [
+          "Obras"
+        ]
+      },
+      {
+        "say": "Elegí la obra a la que le querés dar acceso.",
+        "chunk": 95,
+        "quote": "seleccionar la obra en cuestión a la cual se le quiere dar acceso"
+      },
+      {
+        "say": "Entrá a la vista de responsable de obra y hacé click en Agregar responsable de Obra.",
+        "chunk": 95,
+        "quote": "ingresar a la vista de responsable de Obra y hacer click en el Botón Agregar responsable de Obra"
+      },
+      {
+        "say": "Poné el DNI del responsable; si ya está en el barrio, se completan sus datos y solo validás el correo.",
+        "chunk": 95,
+        "quote": "Se autocompletarán los datos del responsable si la misma existe en la base de datos del consorcio y solo deberá validar su correo electrónico.",
+        "mark": [
+          "Seleccionar persona"
+        ]
+      },
+      {
+        "say": "Si no está registrado, completá los campos obligatorios del formulario.",
+        "chunk": 95,
+        "quote": "En caso de que no esté registrado deberá completar los campos requeridos del formulario.",
+        "mark": [
+          "Agregar"
+        ]
+      }
     ],
     "tips": [
-      {"say": "A ese correo le llegan las credenciales para entrar al módulo de obras.", "chunk": 95, "quote": "se enviarán a dicho correo, las credenciales de acceso al módulo de obras"},
-      {"say": "También lo podés invitar desde la app tocando el ícono de Obras, sin pedirle nada a la administración.", "chunk": 94, "quote": "desde su aplicación mobile de Silicon Access haciendo click en el ícono de Obras sin necesidad de solicitar la registración del mismo a la administración del consorcio"}
+      {
+        "say": "A ese correo le llegan las credenciales para entrar al módulo de obras.",
+        "chunk": 95,
+        "quote": "se enviarán a dicho correo, las credenciales de acceso al módulo de obras"
+      },
+      {
+        "say": "También lo podés invitar desde la app tocando el ícono de Obras, sin pedirle nada a la administración.",
+        "chunk": 94,
+        "quote": "desde su aplicación mobile de Silicon Access haciendo click en el ícono de Obras sin necesidad de solicitar la registración del mismo a la administración del consorcio"
+      }
     ]
   },
   {
@@ -231,11 +462,23 @@
     ],
     "intro": "Sí, eso lo manejás vos desde tu obra.",
     "steps": [
-      {"say": "Como residente podés cambiar el estado de tu responsable de obra.", "chunk": 95, "quote": "Como residente podrá modificar el estado de dicho responsable de obra"},
-      {"say": "Y si no encuentra sus credenciales, se las podés reenviar.", "chunk": 95, "quote": "reenviar credenciales de acceso en caso de no encontrarlas"}
+      {
+        "say": "Como residente podés cambiar el estado de tu responsable de obra.",
+        "chunk": 95,
+        "quote": "Como residente podrá modificar el estado de dicho responsable de obra"
+      },
+      {
+        "say": "Y si no encuentra sus credenciales, se las podés reenviar.",
+        "chunk": 95,
+        "quote": "reenviar credenciales de acceso en caso de no encontrarlas"
+      }
     ],
     "tips": [
-      {"say": "Las credenciales van al correo que validaste cuando lo invitaste.", "chunk": 95, "quote": "se enviarán a dicho correo, las credenciales de acceso al módulo de obras"}
+      {
+        "say": "Las credenciales van al correo que validaste cuando lo invitaste.",
+        "chunk": 95,
+        "quote": "se enviarán a dicho correo, las credenciales de acceso al módulo de obras"
+      }
     ]
   },
   {
@@ -251,12 +494,31 @@
     ],
     "intro": "Te muestro dónde están los archivos.",
     "steps": [
-      {"say": "En tu obra, andá a la parte de documentación.", "chunk": 36, "quote": "Ahora es más fácil acceder a la documentación.", "mark": ["Documentación"]},
-      {"say": "Para desplegar todas las carpetas y archivos, hacé clic en el signo +.", "chunk": 36, "quote": "Para desplegar y ver todas las carpetas y los archivos adjuntos de la obra, solo tenés que hacer clic en el signo"},
-      {"say": "Para bajar un archivo, hacé clic en su nombre.", "chunk": 36, "quote": "Podés descargar los archivos adjuntos de la administración haciendo clic en su nombre."}
+      {
+        "say": "En tu obra, andá a la parte de documentación.",
+        "chunk": 36,
+        "quote": "Ahora es más fácil acceder a la documentación.",
+        "mark": [
+          "Documentación"
+        ]
+      },
+      {
+        "say": "Para desplegar todas las carpetas y archivos, hacé clic en el signo +.",
+        "chunk": 36,
+        "quote": "Para desplegar y ver todas las carpetas y los archivos adjuntos de la obra, solo tenés que hacer clic en el signo"
+      },
+      {
+        "say": "Para bajar un archivo, hacé clic en su nombre.",
+        "chunk": 36,
+        "quote": "Podés descargar los archivos adjuntos de la administración haciendo clic en su nombre."
+      }
     ],
     "tips": [
-      {"say": "Si son imágenes, las podés ver directo en la web.", "chunk": 36, "quote": "Si son imágenes, también podrás visualizarlas directamente desde la web."}
+      {
+        "say": "Si son imágenes, las podés ver directo en la web.",
+        "chunk": 36,
+        "quote": "Si son imágenes, también podrás visualizarlas directamente desde la web."
+      }
     ]
   },
   {
@@ -273,16 +535,54 @@
     ],
     "intro": "Ahora es más corto, te explico.",
     "steps": [
-      {"say": "Desde el inicio de la app tenés un acceso directo a Autorizaciones e Invitaciones.", "chunk": 112, "quote": "Autorizaciones e Invitaciones directo desde el home de la aplicación."},
-      {"say": "Buscá a la persona: el buscador primero mira entre tus contactos.", "chunk": 112, "quote": "Primero busca entre tus contactos."},
-      {"say": "Si no existe, la podés registrar ahí mismo.", "chunk": 112, "quote": "Si la persona no existe, podrás registrarla fácilmente.", "mark": ["Registrar contacto"]},
-      {"say": "Cuando ponés el DNI, el sistema se fija solo si ya está registrada en el barrio.", "chunk": 112, "quote": "Al ingresar el DNI, el sistema verifica automáticamente si ya está registrada dentro del consorcio"},
-      {"say": "Con la información básica ya podés generar la autorización en pocos clics.", "chunk": 112, "quote": "permitiendo generar autorizaciones completas en pocos clics", "mark": ["Autorizar"]}
+      {
+        "say": "Desde el inicio de la app tenés un acceso directo a Autorizaciones e Invitaciones.",
+        "chunk": 112,
+        "quote": "Autorizaciones e Invitaciones directo desde el home de la aplicación."
+      },
+      {
+        "say": "Buscá a la persona: el buscador primero mira entre tus contactos.",
+        "chunk": 112,
+        "quote": "Primero busca entre tus contactos."
+      },
+      {
+        "say": "Si no existe, la podés registrar ahí mismo.",
+        "chunk": 112,
+        "quote": "Si la persona no existe, podrás registrarla fácilmente.",
+        "mark": [
+          "Registrar contacto"
+        ]
+      },
+      {
+        "say": "Cuando ponés el DNI, el sistema se fija solo si ya está registrada en el barrio.",
+        "chunk": 112,
+        "quote": "Al ingresar el DNI, el sistema verifica automáticamente si ya está registrada dentro del consorcio"
+      },
+      {
+        "say": "Con la información básica ya podés generar la autorización en pocos clics.",
+        "chunk": 112,
+        "quote": "permitiendo generar autorizaciones completas en pocos clics",
+        "mark": [
+          "Autorizar"
+        ]
+      }
     ],
     "tips": [
-      {"say": "La pantalla te marca claramente si estás creando una invitación o una autorización.", "chunk": 112, "quote": "permiten identificar fácilmente si estás creando una invitación o autorización"},
-      {"say": "La agenda de contactos se reemplazó por este buscador.", "chunk": 112, "quote": "Reemplazamos la agenda de contactos por un buscador inteligente"}
-    ]
+      {
+        "say": "La pantalla te marca claramente si estás creando una invitación o una autorización.",
+        "chunk": 112,
+        "quote": "permiten identificar fácilmente si estás creando una invitación o autorización"
+      },
+      {
+        "say": "La agenda de contactos se reemplazó por este buscador.",
+        "chunk": 112,
+        "quote": "Reemplazamos la agenda de contactos por un buscador inteligente"
+      }
+    ],
+    "video": {
+      "nombre": "crear-autorizacion",
+      "titulo": "Cómo crear una autorización"
+    }
   },
   {
     "id": "app-movil-autorizacion-opciones-avanzadas",
@@ -298,12 +598,54 @@
     ],
     "intro": "Sí, para eso están las opciones avanzadas.",
     "steps": [
-      {"say": "Al autorizar, abrí la parte de autorización avanzada.", "chunk": 113, "quote": "Para quienes necesiten mayor control, ahora también es posible", "mark": ["Autorización avanzada (Opcional)"]},
-      {"say": "Ahí podés elegir días específicos de ingreso.", "chunk": 113, "quote": "Definir días específicos de ingreso.", "mark": ["Días autorizados"]},
-      {"say": "Seleccionar el tipo de autorización.", "chunk": 113, "quote": "Seleccionar el tipo de autorización.", "mark": ["Tipo de autorización"]},
-      {"say": "Compartir la ubicación automáticamente hacia el acceso del barrio o edificio.", "chunk": 113, "quote": "Compartir ubicación automáticamente hacia el acceso del barrio o edificio.", "mark": ["Compartir ubicación a"]},
-      {"say": "Agregar notas para la guardia.", "chunk": 113, "quote": "Agregar notas para la guardia.", "mark": ["Notas para la Guardia"]},
-      {"say": "Y ponerle un título para reconocer fácil cada autorización.", "chunk": 113, "quote": "Incorporar títulos para identificar fácilmente cada autorización.", "mark": ["Título"]}
+      {
+        "say": "Al autorizar, abrí la parte de autorización avanzada.",
+        "chunk": 113,
+        "quote": "Para quienes necesiten mayor control, ahora también es posible",
+        "mark": [
+          "Autorización avanzada (Opcional)"
+        ]
+      },
+      {
+        "say": "Ahí podés elegir días específicos de ingreso.",
+        "chunk": 113,
+        "quote": "Definir días específicos de ingreso.",
+        "mark": [
+          "Días autorizados"
+        ]
+      },
+      {
+        "say": "Seleccionar el tipo de autorización.",
+        "chunk": 113,
+        "quote": "Seleccionar el tipo de autorización.",
+        "mark": [
+          "Tipo de autorización"
+        ]
+      },
+      {
+        "say": "Compartir la ubicación automáticamente hacia el acceso del barrio o edificio.",
+        "chunk": 113,
+        "quote": "Compartir ubicación automáticamente hacia el acceso del barrio o edificio.",
+        "mark": [
+          "Compartir ubicación a"
+        ]
+      },
+      {
+        "say": "Agregar notas para la guardia.",
+        "chunk": 113,
+        "quote": "Agregar notas para la guardia.",
+        "mark": [
+          "Notas para la Guardia"
+        ]
+      },
+      {
+        "say": "Y ponerle un título para reconocer fácil cada autorización.",
+        "chunk": 113,
+        "quote": "Incorporar títulos para identificar fácilmente cada autorización.",
+        "mark": [
+          "Título"
+        ]
+      }
     ]
   },
   {
@@ -320,12 +662,34 @@
     ],
     "intro": "Lo armás a tu gusto en un minuto.",
     "steps": [
-      {"say": "En el panel de inicio tocá + y después Configurá tu panel.", "chunk": 130, "quote": "En el panel de inicio, tocá + y luego Configurá tu panel.", "mark": ["Configurá tu panel"]},
-      {"say": "Tocá el menos para quitar un módulo y el más para sumarlo.", "chunk": 130, "quote": "Tocá para quitar el módulo y para sumarlo."},
-      {"say": "Elegí tus 5 favoritos y tocá Guardar.", "chunk": 130, "quote": "Elegí tus 5 favoritos y tocá Guardar.", "mark": ["Guardar"]}
+      {
+        "say": "En el panel de inicio tocá + y después Configurá tu panel.",
+        "chunk": 130,
+        "quote": "En el panel de inicio, tocá + y luego Configurá tu panel.",
+        "mark": [
+          "Configurá tu panel"
+        ]
+      },
+      {
+        "say": "Tocá el menos para quitar un módulo y el más para sumarlo.",
+        "chunk": 130,
+        "quote": "Tocá para quitar el módulo y para sumarlo."
+      },
+      {
+        "say": "Elegí tus 5 favoritos y tocá Guardar.",
+        "chunk": 130,
+        "quote": "Elegí tus 5 favoritos y tocá Guardar.",
+        "mark": [
+          "Guardar"
+        ]
+      }
     ],
     "tips": [
-      {"say": "Esa configuración es solo tuya.", "chunk": 130, "quote": "La configuración es solo tuya."}
+      {
+        "say": "Esa configuración es solo tuya.",
+        "chunk": 130,
+        "quote": "La configuración es solo tuya."
+      }
     ]
   },
   {
@@ -341,7 +705,11 @@
     ],
     "intro": "Seguro te falta actualizar la app.",
     "steps": [
-      {"say": "Actualizá la app desde App Store o Google Play y vas a ver la nueva pantalla de inicio.", "chunk": 131, "quote": "para ver la nueva pantalla de inicio"}
+      {
+        "say": "Actualizá la app desde App Store o Google Play y vas a ver la nueva pantalla de inicio.",
+        "chunk": 131,
+        "quote": "para ver la nueva pantalla de inicio"
+      }
     ]
   },
   {
@@ -358,13 +726,45 @@
     ],
     "intro": "Para eso está la sección Ayuda, te cuento.",
     "steps": [
-      {"say": "Entrá a la sección Ayuda de la app.", "chunk": 131, "quote": "escribinos desde la sección Ayuda de la app", "mark": ["Ayuda"]},
-      {"say": "Si necesitás que te contacten, escribí desde ¿Necesitás ayuda?", "chunk": 131, "quote": "Escribínos y te contactamos.", "mark": ["¿Necesitás ayuda?"]},
-      {"say": "Para una idea o propuesta, usá ¿Tenés una sugerencia?", "chunk": 131, "quote": "Dejános tu propuesta.", "mark": ["¿Tenés una sugerencia?"]},
-      {"say": "Y en Preguntas frecuentes resolvés dudas al toque.", "chunk": 131, "quote": "Preguntas frecuentes, resolvé dudas al instante.", "mark": ["Preguntas frecuentes"]}
+      {
+        "say": "Entrá a la sección Ayuda de la app.",
+        "chunk": 131,
+        "quote": "escribinos desde la sección Ayuda de la app",
+        "mark": [
+          "Ayuda"
+        ]
+      },
+      {
+        "say": "Si necesitás que te contacten, escribí desde ¿Necesitás ayuda?",
+        "chunk": 131,
+        "quote": "Escribínos y te contactamos.",
+        "mark": [
+          "¿Necesitás ayuda?"
+        ]
+      },
+      {
+        "say": "Para una idea o propuesta, usá ¿Tenés una sugerencia?",
+        "chunk": 131,
+        "quote": "Dejános tu propuesta.",
+        "mark": [
+          "¿Tenés una sugerencia?"
+        ]
+      },
+      {
+        "say": "Y en Preguntas frecuentes resolvés dudas al toque.",
+        "chunk": 131,
+        "quote": "Preguntas frecuentes, resolvé dudas al instante.",
+        "mark": [
+          "Preguntas frecuentes"
+        ]
+      }
     ],
     "tips": [
-      {"say": "También podés entrar a www.silicon-access.com, sección Ayuda al Usuario.", "chunk": 131, "quote": "ingresá en www.silicon-access.com, sección"}
+      {
+        "say": "También podés entrar a www.silicon-access.com, sección Ayuda al Usuario.",
+        "chunk": 131,
+        "quote": "ingresá en www.silicon-access.com, sección"
+      }
     ]
   },
   {
@@ -381,11 +781,29 @@
     ],
     "intro": "Sí, eso lo podés manejar vos.",
     "steps": [
-      {"say": "En los registros de actividad podés configurar la privacidad de tus movimientos.", "chunk": 176, "quote": "permite configurar la privacidad de los movimientos", "mark": ["Actividad"]},
-      {"say": "Si desactivás la opción, tus movimientos quedan ocultos para los coresidentes.", "chunk": 176, "quote": "Si desactivás esta opción, tus movimientos se ocultarán para los coresidentes.", "mark": ["Compartir mis movimientos con mi grupo familiar"]}
+      {
+        "say": "En los registros de actividad podés configurar la privacidad de tus movimientos.",
+        "chunk": 176,
+        "quote": "permite configurar la privacidad de los movimientos",
+        "mark": [
+          "Actividad"
+        ]
+      },
+      {
+        "say": "Si desactivás la opción, tus movimientos quedan ocultos para los coresidentes.",
+        "chunk": 176,
+        "quote": "Si desactivás esta opción, tus movimientos se ocultarán para los coresidentes.",
+        "mark": [
+          "Compartir mis movimientos con mi grupo familiar"
+        ]
+      }
     ],
     "tips": [
-      {"say": "Si la volvés a activar, se muestra de nuevo todo el historial que estaba oculto.", "chunk": 176, "quote": "Cuando la vuelvas a activar, se mostrará todo el historial oculto."}
+      {
+        "say": "Si la volvés a activar, se muestra de nuevo todo el historial que estaba oculto.",
+        "chunk": 176,
+        "quote": "Cuando la vuelvas a activar, se mostrará todo el historial oculto."
+      }
     ]
   },
   {
@@ -401,8 +819,19 @@
     ],
     "intro": "Se puede, te digo dónde.",
     "steps": [
-      {"say": "Entrá a la sección Actividad.", "chunk": 176, "quote": "en la sección de Actividad", "mark": ["Actividad"]},
-      {"say": "En el registro de visita que quieras borrar, tocá el ícono eliminar.", "chunk": 176, "quote": "podés eliminar registros específicos de visitas en la sección de Actividad haciendo click en el ícono eliminar"}
+      {
+        "say": "Entrá a la sección Actividad.",
+        "chunk": 176,
+        "quote": "en la sección de Actividad",
+        "mark": [
+          "Actividad"
+        ]
+      },
+      {
+        "say": "En el registro de visita que quieras borrar, tocá el ícono eliminar.",
+        "chunk": 176,
+        "quote": "podés eliminar registros específicos de visitas en la sección de Actividad haciendo click en el ícono eliminar"
+      }
     ]
   },
   {
@@ -419,12 +848,28 @@
     ],
     "intro": "Buenísimo, eso se define en la misma reserva.",
     "steps": [
-      {"say": "Dentro de tu reserva tenés una sección para indicar si va a necesitar luces.", "chunk": 30, "quote": "Dentro de tu reserva tendrás la nueva sección donde se podrá definir si la reserva requerirá encendido de luces."},
-      {"say": "Si elegís encendido, las luces se prenden unos minutos antes de tu horario.", "chunk": 30, "quote": "Si seleccionás encendido, las luces se encenderán unos minutos previos al horario de tu reserva."},
-      {"say": "En el listado de tus reservas vas a ver el ícono de luz encendida.", "chunk": 30, "quote": "Verás el ícono de luz encendida en el listado de tus reservas."}
+      {
+        "say": "Dentro de tu reserva tenés una sección para indicar si va a necesitar luces.",
+        "chunk": 30,
+        "quote": "Dentro de tu reserva tendrás la nueva sección donde se podrá definir si la reserva requerirá encendido de luces."
+      },
+      {
+        "say": "Si elegís encendido, las luces se prenden unos minutos antes de tu horario.",
+        "chunk": 30,
+        "quote": "Si seleccionás encendido, las luces se encenderán unos minutos previos al horario de tu reserva."
+      },
+      {
+        "say": "En el listado de tus reservas vas a ver el ícono de luz encendida.",
+        "chunk": 30,
+        "quote": "Verás el ícono de luz encendida en el listado de tus reservas."
+      }
     ],
     "tips": [
-      {"say": "Esto funciona solo si tu barrio activó y configuró los espacios comunes con luz programable.", "chunk": 30, "quote": "Esta funcionalidad requiere que se active y se configuren previamente los espacios comunes con uso de luz programable."}
+      {
+        "say": "Esto funciona solo si tu barrio activó y configuró los espacios comunes con luz programable.",
+        "chunk": 30,
+        "quote": "Esta funcionalidad requiere que se active y se configuren previamente los espacios comunes con uso de luz programable."
+      }
     ]
   },
   {
@@ -440,10 +885,21 @@
     ],
     "intro": "Tranqui, las podés prender desde la reserva.",
     "steps": [
-      {"say": "Con la reserva ya iniciada, tocá tu reserva y activá las luces.", "chunk": 30, "quote": "Tendrás la posibilidad, seleccionando en tu reserva, de activar las luces, iniciada la misma, en caso de no haberlo programado con anterioridad.", "mark": ["Encender iluminación"]}
+      {
+        "say": "Con la reserva ya iniciada, tocá tu reserva y activá las luces.",
+        "chunk": 30,
+        "quote": "Tendrás la posibilidad, seleccionando en tu reserva, de activar las luces, iniciada la misma, en caso de no haberlo programado con anterioridad.",
+        "mark": [
+          "Encender iluminación"
+        ]
+      }
     ],
     "tips": [
-      {"say": "Tiene que ser un espacio común configurado con luz programable.", "chunk": 30, "quote": "configuren previamente los espacios comunes con uso de luz programable"}
+      {
+        "say": "Tiene que ser un espacio común configurado con luz programable.",
+        "chunk": 30,
+        "quote": "configuren previamente los espacios comunes con uso de luz programable"
+      }
     ]
   },
   {
@@ -459,11 +915,26 @@
     ],
     "intro": "Es un aviso para que sepas que el barrio se quedó sin internet.",
     "steps": [
-      {"say": "Cuando el barrio se queda sin internet, ves un banner arriba en tu app.", "chunk": 16, "quote": "Cuando se detecta que el consorcio está sin conexión a internet, verás un banner informativo en la parte superior de tu app."},
-      {"say": "Tocá Ver más para ver qué funciones están afectadas por ahora.", "chunk": 16, "quote": "podrás consultar el detalle de las funcionalidades afectadas temporalmente", "mark": ["Ver más"]}
+      {
+        "say": "Cuando el barrio se queda sin internet, ves un banner arriba en tu app.",
+        "chunk": 16,
+        "quote": "Cuando se detecta que el consorcio está sin conexión a internet, verás un banner informativo en la parte superior de tu app."
+      },
+      {
+        "say": "Tocá Ver más para ver qué funciones están afectadas por ahora.",
+        "chunk": 16,
+        "quote": "podrás consultar el detalle de las funcionalidades afectadas temporalmente",
+        "mark": [
+          "Ver más"
+        ]
+      }
     ],
     "tips": [
-      {"say": "El corte afecta a los residentes y también a Administración, Guardia y demás sectores.", "chunk": 15, "quote": "afectando tanto a los residentes como a los distintos sectores operativos (Administración, Guardia, etc.)"}
+      {
+        "say": "El corte afecta a los residentes y también a Administración, Guardia y demás sectores.",
+        "chunk": 15,
+        "quote": "afectando tanto a los residentes como a los distintos sectores operativos (Administración, Guardia, etc.)"
+      }
     ]
   },
   {
@@ -480,9 +951,24 @@
     ],
     "intro": "Si el barrio está sin conexión, algunas cosas quedan en pausa.",
     "steps": [
-      {"say": "Pueden verse afectados: Timbre Virtual, Estoy Llegando, Autorizaciones e Invitaciones y Paquetería.", "chunk": 16, "quote": "Timbre Virtual • Estoy Llegando • Autorizaciones e Invitaciones • Paquetería"},
-      {"say": "También Notificaciones, Registros de actividad de guardia, Botón de Pánico, Autogestión y Selfie ID.", "chunk": 16, "quote": "Notificaciones • Registros de actividad de guardia • Botón de Pánico • Autogestión • Selfie ID"},
-      {"say": "El detalle lo ves tocando Ver más en el banner de arriba.", "chunk": 16, "quote": "Al hacer clic en “Ver más”", "mark": ["Ver más"]}
+      {
+        "say": "Pueden verse afectados: Timbre Virtual, Estoy Llegando, Autorizaciones e Invitaciones y Paquetería.",
+        "chunk": 16,
+        "quote": "Timbre Virtual • Estoy Llegando • Autorizaciones e Invitaciones • Paquetería"
+      },
+      {
+        "say": "También Notificaciones, Registros de actividad de guardia, Botón de Pánico, Autogestión y Selfie ID.",
+        "chunk": 16,
+        "quote": "Notificaciones • Registros de actividad de guardia • Botón de Pánico • Autogestión • Selfie ID"
+      },
+      {
+        "say": "El detalle lo ves tocando Ver más en el banner de arriba.",
+        "chunk": 16,
+        "quote": "Al hacer clic en “Ver más”",
+        "mark": [
+          "Ver más"
+        ]
+      }
     ]
   },
   {
@@ -498,8 +984,16 @@
     ],
     "intro": "Quedate tranquilo, no se pierde nada.",
     "steps": [
-      {"say": "La información no se pierde.", "chunk": 16, "quote": "No te preocupes: la información no se pierde."},
-      {"say": "Autorizaciones, ingresos y notificaciones quedan guardados y se actualizan solos cuando vuelve la conexión.", "chunk": 16, "quote": "comenzarán a actualizarse automáticamente en cuanto se restablezca la conexión"}
+      {
+        "say": "La información no se pierde.",
+        "chunk": 16,
+        "quote": "No te preocupes: la información no se pierde."
+      },
+      {
+        "say": "Autorizaciones, ingresos y notificaciones quedan guardados y se actualizan solos cuando vuelve la conexión.",
+        "chunk": 16,
+        "quote": "comenzarán a actualizarse automáticamente en cuanto se restablezca la conexión"
+      }
     ]
   }
 ]

@@ -60,6 +60,74 @@ def resolve(page, ocr, label):
     return best
 
 
+def best_label(ocr, label):
+    """Mejor caja para `label` en una captura suelta (sin PDF): prefiere renglones cortos (botones)."""
+    best = None
+    for sc, box, n in find_label(label, ocr):
+        score = sc + (0.6 if n <= len(fold(label).split()) + 2 else 0)
+        if not best or score > best[0]:
+            best = (score, box)
+    return best[1] if best else None
+
+
+def conf_shot(cid, kind, i, s, report):
+    """Paso con captura de Confluence: ubica los rótulos (`mark`) por OCR y arma el recorte con sus círculos.
+    Celular (vertical) = captura entera; pantalla ancha = recorte alrededor de lo marcado."""
+    from PIL import Image
+    fid = s['img']
+    png = os.path.join(KB, 'src', 'confluence', 'png', f'{fid}.png')
+    box = os.path.join(KB, 'ocr', 'conf', f'{fid}.json')
+    if not os.path.exists(png) or not os.path.exists(box):
+        report.append(f'sin captura/OCR · {cid} · {fid}')
+        return None
+    ocr = json.load(open(box, encoding='utf-8-sig'))
+    W, H = ocr['w'], ocr['h']
+    marks = []
+    for label in s.get('mark') or []:
+        b = best_label(ocr, label)
+        if not b:
+            report.append(f'no ubicado · {cid} · «{label}»')
+            continue
+        marks.append((label, b))
+    if s.get('mark') and not marks:
+        return None
+    if H > W * 1.2 or not marks:
+        cx1, cy1, cx2, cy2 = 0, 0, W, H
+    else:  # pantalla ancha: ventana de ~55 % del ancho, proporción 16:10, centrada en lo marcado
+        mx1 = min(b[0] for _, b in marks); my1 = min(b[1] for _, b in marks)
+        mx2 = max(b[2] for _, b in marks); my2 = max(b[3] for _, b in marks)
+        cw = min(W, max(W * 0.55, (mx2 - mx1) * 1.6)); ch = min(H, max(cw / 1.6, (my2 - my1) * 2.2))
+        cx = (mx1 + mx2) / 2; cy = (my1 + my2) / 2
+        cx1 = min(max(0, cx - cw / 2), W - cw); cy1 = min(max(0, cy - ch / 2), H - ch)
+        cx2, cy2 = cx1 + cw, cy1 + ch
+    cw, ch = cx2 - cx1, cy2 - cy1
+    os.makedirs(os.path.join(KB, 'shots'), exist_ok=True)
+    name = f'{cid}-{kind[0]}{i}.webp'
+    base = Image.open(png).convert('RGB')
+    from PIL import ImageFilter
+    for t in s.get('tapar') or []:  # datos personales visibles en la captura: se difuminan
+        r = (int(t[0] * W), int(t[1] * H), int((t[0] + t[2]) * W), int((t[1] + t[3]) * H))
+        base.paste(base.crop(r).filter(ImageFilter.GaussianBlur(14)), r[:2])
+    im = base.crop((int(cx1), int(cy1), int(cx2), int(cy2)))
+    if im.width > 760:
+        im = im.resize((760, int(im.height * 760 / im.width)), Image.LANCZOS)
+    im.save(os.path.join(KB, 'shots', name), 'WEBP', quality=82, method=6)
+    return {'shot': f'kb/shots/{name}', 'ratio': cw / ch,
+            'marks': [{'label': l, 'x': (b[0] - cx1) / cw, 'y': (b[1] - cy1) / ch, 'w': (b[2] - b[0]) / cw, 'h': (b[3] - b[1]) / ch} for l, b in marks]}
+
+
+def video_de(c, report):
+    """`video` de la ficha = nombre en kb/videos (mp4 + jpg de portada), con un título corto."""
+    v = c.get('video')
+    if not v:
+        return None
+    mp4 = os.path.join(KB, 'videos', v['nombre'] + '.mp4')
+    if not os.path.exists(mp4):
+        report.append(f'video faltante · {c["id"]} · {v["nombre"]}')
+        return None
+    return {'file': f'kb/videos/{v["nombre"]}.mp4', 'poster': f'kb/videos/{v["nombre"]}.jpg', 'title': v.get('titulo', '')}
+
+
 def build(con):
     files = sorted(glob.glob(os.path.join(KB, 'cards', '*.json')))
     chunks = {cid: (doc, page, img) for cid, doc, page, img in con.execute('select id, doc_id, page, image from chunks')}
@@ -79,6 +147,11 @@ def build(con):
                 for s in c.get(kind) or []:
                     doc, page, img = chunks[s['chunk']]
                     s['image'] = img
+                    if s.get('img'):  # captura de Confluence (kb/conf/<fileId>.webp) elegida para este paso
+                        r = conf_shot(c['id'], kind, (c.get(kind) or []).index(s) + 1, s, report)
+                        if r:
+                            s.update(r)
+                        continue
                     marks, crops = [], []
                     for label in s.get('mark') or []:
                         box = os.path.join(KB, 'ocr', 'boxes', f'{doc}-{page}.json')
@@ -118,6 +191,6 @@ def build(con):
                                        'w': m['w'] * W / cw, 'h': m['h'] * H / chh} for m in marks]
             con.execute('INSERT INTO cards (id, module, title, ask, intro, body) VALUES (?,?,?,?,?,?)', (
                 c['id'], c['module'], c['title'], json.dumps(c['ask'], ensure_ascii=False), c['intro'],
-                json.dumps({'steps': c['steps'], 'tips': c.get('tips') or []}, ensure_ascii=False)))
+                json.dumps({'steps': c['steps'], 'tips': c.get('tips') or [], 'video': video_de(c, report)}, ensure_ascii=False)))
             n += 1
     return n, report

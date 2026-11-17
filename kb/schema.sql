@@ -85,3 +85,17 @@ CREATE TABLE case_events (
   detail   TEXT NOT NULL,
   chunk_id INTEGER REFERENCES chunks(id)  -- fragmento citado, si corresponde
 );
+
+-- Imágenes y videos traídos de Confluence (Casos de Soporte). Los archivos originales quedan en la PC
+-- (kb/src/confluence/media, kb/conf); al sitio sólo van los recortes revisados (kb/shots) y los videos (kb/videos).
+CREATE TABLE media (
+  id        TEXT PRIMARY KEY,               -- fileId de Confluence o nombre del video
+  tipo      TEXT NOT NULL,                  -- imagen | video
+  pagina    TEXT,                           -- id de la página de Confluence (la primera donde aparece)
+  pagina_titulo TEXT,
+  titulo    TEXT,                           -- nombre del archivo en Confluence
+  archivo   TEXT NOT NULL,                  -- ruta local (imagen) o publicada (video)
+  ancho     INTEGER,
+  alto      INTEGER,
+  publicado INTEGER NOT NULL DEFAULT 0      -- 1 = se sirve en el sitio
+);

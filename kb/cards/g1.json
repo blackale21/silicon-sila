@@ -3,383 +3,1090 @@
     "id": "amenities-reservar",
     "module": "Amenities",
     "title": "Reservar un amenity (cancha, parrilla, salón)",
-    "ask": ["cómo reservo la cancha de tenis", "quiero reservar la parrilla", "dónde se reserva el salón", "como saco turno para un amenity", "no encuentro dónde reservar", "cómo hago una reserva en la app", "quiero reservar una cancha para el sábado"],
+    "ask": [
+      "cómo reservo la cancha de tenis",
+      "quiero reservar la parrilla",
+      "dónde se reserva el salón",
+      "como saco turno para un amenity",
+      "no encuentro dónde reservar",
+      "cómo hago una reserva en la app",
+      "quiero reservar una cancha para el sábado"
+    ],
     "intro": "Dale, te cuento cómo se reserva, es rapidito.",
     "steps": [
-      {"say": "Abrí la app Silicon Access e iniciá sesión con tu correo y tu contraseña.", "chunk": 20, "quote": "Iniciá sesión con: Usuario: tu correo electrónico."},
-      {"say": "Buscá el módulo Amenities en el menú principal y entrá.", "chunk": 20, "quote": "Buscá el módulo “Amenities” en el menú principal", "mark": ["Amenities"]},
-      {"say": "Tocá el botón + para ver todos los amenities de tu barrio.", "chunk": 21, "quote": "Hacé clic en el botón “+” (más)."},
-      {"say": "Elegí el que quieras reservar, por ejemplo la cancha de tenis.", "chunk": 21, "quote": "Elegí la que quieras reservar (por ejemplo: cancha de tenis)."},
-      {"say": "Se abre un calendario: fijate qué días y horarios están libres y tocá el que quieras.", "chunk": 21, "quote": "Hacé clic en el horario deseado para seleccionarlo.", "mark": ["Reservar"]},
-      {"say": "Después la app te pregunta si querés invitar a alguien más.", "chunk": 22, "quote": "la app te va a preguntar si querés invitar a alguien más"},
-      {"say": "Listo: tu reserva queda confirmada y la ves en Mis reservas, dentro del módulo.", "chunk": 22, "quote": "Tu reserva queda confirmada y podés verla en la sección “Mis reservas” dentro del módulo.", "mark": ["Mis Reservas"]}
+      {
+        "say": "Abrí la app Silicon Access e iniciá sesión con tu correo y tu contraseña.",
+        "chunk": 20,
+        "quote": "Iniciá sesión con: Usuario: tu correo electrónico."
+      },
+      {
+        "say": "Buscá el módulo Amenities en el menú principal y entrá.",
+        "chunk": 20,
+        "quote": "Buscá el módulo “Amenities” en el menú principal",
+        "mark": [
+          "Amenities"
+        ]
+      },
+      {
+        "say": "Tocá el botón + para ver todos los amenities de tu barrio.",
+        "chunk": 21,
+        "quote": "Hacé clic en el botón “+” (más)."
+      },
+      {
+        "say": "Elegí el que quieras reservar, por ejemplo la cancha de tenis.",
+        "chunk": 21,
+        "quote": "Elegí la que quieras reservar (por ejemplo: cancha de tenis)."
+      },
+      {
+        "say": "Se abre un calendario: fijate qué días y horarios están libres y tocá el que quieras.",
+        "chunk": 21,
+        "quote": "Hacé clic en el horario deseado para seleccionarlo.",
+        "mark": [
+          "Reservar"
+        ]
+      },
+      {
+        "say": "Después la app te pregunta si querés invitar a alguien más.",
+        "chunk": 22,
+        "quote": "la app te va a preguntar si querés invitar a alguien más"
+      },
+      {
+        "say": "Listo: tu reserva queda confirmada y la ves en Mis reservas, dentro del módulo.",
+        "chunk": 22,
+        "quote": "Tu reserva queda confirmada y podés verla en la sección “Mis reservas” dentro del módulo.",
+        "mark": [
+          "Mis Reservas"
+        ]
+      }
     ],
     "tips": [
-      {"say": "En algunos amenities tu barrio define a qué hora se habilita la agenda, así que puede que todavía no haya turnos abiertos.", "chunk": 21, "quote": "cada barrio define qué amenities utilizan esta funcionalidad y a qué hora se habilita su agenda"}
-    ]
+      {
+        "say": "En algunos amenities tu barrio define a qué hora se habilita la agenda, así que puede que todavía no haya turnos abiertos.",
+        "chunk": 21,
+        "quote": "cada barrio define qué amenities utilizan esta funcionalidad y a qué hora se habilita su agenda"
+      }
+    ],
+    "video": {
+      "nombre": "reservar-amenity-corto",
+      "titulo": "Cómo reservar un amenity"
+    }
   },
   {
     "id": "amenities-turnos-no-habilitados",
     "module": "Amenities",
     "title": "Me dice que los turnos todavía no están habilitados o que está completo",
-    "ask": ["no me deja reservar me sale un cartel con una hora", "dice que los turnos se habilitan mas tarde", "por qué no puedo reservar todavía", "me aparece que el amenity está completo", "cuándo abren los turnos de la cancha", "no hay turnos disponibles", "me salta un pop up cuando quiero reservar"],
+    "ask": [
+      "no me deja reservar me sale un cartel con una hora",
+      "dice que los turnos se habilitan mas tarde",
+      "por qué no puedo reservar todavía",
+      "me aparece que el amenity está completo",
+      "cuándo abren los turnos de la cancha",
+      "no hay turnos disponibles",
+      "me salta un pop up cuando quiero reservar"
+    ],
     "intro": "Tranqui, eso no es una falla, te explico qué pasa.",
     "steps": [
-      {"say": "Tu administración puede fijar a qué hora arrancan las reservas de cada tipo de amenity.", "chunk": 21, "quote": "las administraciones de los consorcios podrán fijar el horario de inicio de reservas por tipo de amenity"},
-      {"say": "Si intentás reservar antes de ese horario, la app te muestra un aviso con la hora exacta en que se habilitan los turnos.", "chunk": 21, "quote": "la APP te mostrará un pop-up informativo indicando la hora exacta en la que se habilitarán los turnos para ese amenity"},
-      {"say": "Cuando llega esa hora, la agenda se abre sola y ya podés reservar sin problema.", "chunk": 21, "quote": "Cuando llegue la hora indicada, automáticamente se abrirá la agenda y podrás hacer tu reserva sin inconvenientes."}
+      {
+        "say": "Tu administración puede fijar a qué hora arrancan las reservas de cada tipo de amenity.",
+        "chunk": 21,
+        "quote": "las administraciones de los consorcios podrán fijar el horario de inicio de reservas por tipo de amenity"
+      },
+      {
+        "say": "Si intentás reservar antes de ese horario, la app te muestra un aviso con la hora exacta en que se habilitan los turnos.",
+        "chunk": 21,
+        "quote": "la APP te mostrará un pop-up informativo indicando la hora exacta en la que se habilitarán los turnos para ese amenity"
+      },
+      {
+        "say": "Cuando llega esa hora, la agenda se abre sola y ya podés reservar sin problema.",
+        "chunk": 21,
+        "quote": "Cuando llegue la hora indicada, automáticamente se abrirá la agenda y podrás hacer tu reserva sin inconvenientes."
+      }
     ],
     "tips": [
-      {"say": "Si el amenity está completo, la app también te avisa la hora exacta en que se abren nuevos turnos.", "chunk": 21, "quote": "cuando una amenity esté completo, la app te avisará con un pop-up mostrando la hora exacta en que se abrirán nuevos turnos"},
-      {"say": "Esto lo define cada barrio: no todos los amenities funcionan así.", "chunk": 21, "quote": "cada barrio define qué amenities utilizan esta funcionalidad"}
+      {
+        "say": "Si el amenity está completo, la app también te avisa la hora exacta en que se abren nuevos turnos.",
+        "chunk": 21,
+        "quote": "cuando una amenity esté completo, la app te avisará con un pop-up mostrando la hora exacta en que se abrirán nuevos turnos"
+      },
+      {
+        "say": "Esto lo define cada barrio: no todos los amenities funcionan así.",
+        "chunk": 21,
+        "quote": "cada barrio define qué amenities utilizan esta funcionalidad"
+      }
     ]
   },
   {
     "id": "amenities-invitar",
     "module": "Amenities",
     "title": "Invitar a otras personas a una reserva de amenity (cancha, parrilla, salón)",
-    "ask": ["cómo invito a un amigo a la cancha", "quiero sumar gente a mi reserva", "como agrego invitados al amenity", "puedo invitar a alguien que no es del barrio", "dónde invito por whatsapp a mi reserva", "no sé cómo invitar a mis amigos al turno"],
+    "ask": [
+      "cómo invito a un amigo a la cancha",
+      "quiero sumar gente a mi reserva",
+      "como agrego invitados al amenity",
+      "puedo invitar a alguien que no es del barrio",
+      "dónde invito por whatsapp a mi reserva",
+      "no sé cómo invitar a mis amigos al turno"
+    ],
     "intro": "Sí, se puede, y hay dos formas de hacerlo.",
     "steps": [
-      {"say": "Una vez que elegís día y horario, la app te pregunta si querés invitar a alguien más.", "chunk": 22, "quote": "Una vez elegido el día y horario, la app te va a preguntar si querés invitar a alguien más."},
-      {"say": "Podés sumarlo desde tu agenda, la que tenés cargada en el módulo Contactos.", "chunk": 22, "quote": "Desde tu agenda ya cargada en el módulo Contactos."},
-      {"say": "Si la persona no está en tu lista, mandale la invitación por WhatsApp.", "chunk": 22, "quote": "Por WhatsApp, si la persona no está en tu lista."}
-    ]
+      {
+        "say": "Una vez que elegís día y horario, la app te pregunta si querés invitar a alguien más.",
+        "chunk": 22,
+        "quote": "Una vez elegido el día y horario, la app te va a preguntar si querés invitar a alguien más."
+      },
+      {
+        "say": "Podés sumarlo desde tu agenda, la que tenés cargada en el módulo Contactos.",
+        "chunk": 22,
+        "quote": "Desde tu agenda ya cargada en el módulo Contactos."
+      },
+      {
+        "say": "Si la persona no está en tu lista, mandale la invitación por WhatsApp.",
+        "chunk": 22,
+        "quote": "Por WhatsApp, si la persona no está en tu lista."
+      }
+    ],
+    "video": {
+      "nombre": "reservar-amenity-corto",
+      "titulo": "Cómo reservar e invitar en Amenities"
+    }
   },
   {
     "id": "amenities-ver-reservas",
     "module": "Amenities",
     "title": "Dónde veo mis reservas",
-    "ask": ["dónde veo mis reservas", "no encuentro la reserva que hice", "cómo sé si quedó reservada la cancha", "donde estan mis turnos de amenities", "quiero ver las reservas de mi lote", "qué son las reservas públicas"],
+    "ask": [
+      "dónde veo mis reservas",
+      "no encuentro la reserva que hice",
+      "cómo sé si quedó reservada la cancha",
+      "donde estan mis turnos de amenities",
+      "quiero ver las reservas de mi lote",
+      "qué son las reservas públicas"
+    ],
     "intro": "Te muestro dónde quedan.",
     "steps": [
-      {"say": "Entrá al módulo Amenities desde el menú principal.", "chunk": 20, "quote": "Buscá el módulo “Amenities” en el menú principal y hacé clic para ingresar.", "mark": ["Amenities"]},
-      {"say": "Arriba vas a ver tres pestañas: Mis reservas, De mi lote y Públicas.", "chunk": 20, "quote": "vas a ver un menú informativo con las siguientes categorías", "mark": ["Mis Reservas", "De mi lote", "Públicas"]},
-      {"say": "Las reservas que hiciste vos quedan en Mis reservas.", "chunk": 22, "quote": "podés verla en la sección “Mis reservas” dentro del módulo", "mark": ["Mis Reservas"]}
+      {
+        "say": "Entrá al módulo Amenities desde el menú principal.",
+        "chunk": 20,
+        "quote": "Buscá el módulo “Amenities” en el menú principal y hacé clic para ingresar.",
+        "mark": [
+          "Amenities"
+        ]
+      },
+      {
+        "say": "Arriba vas a ver tres pestañas: Mis reservas, De mi lote y Públicas.",
+        "chunk": 20,
+        "quote": "vas a ver un menú informativo con las siguientes categorías",
+        "mark": [
+          "Mis Reservas",
+          "De mi lote",
+          "Públicas"
+        ]
+      },
+      {
+        "say": "Las reservas que hiciste vos quedan en Mis reservas.",
+        "chunk": 22,
+        "quote": "podés verla en la sección “Mis reservas” dentro del módulo",
+        "mark": [
+          "Mis Reservas"
+        ]
+      }
     ]
   },
   {
     "id": "amenities-confirmar-asistencia",
     "module": "Amenities",
     "title": "Confirmar la asistencia a una reserva",
-    "ask": ["no puedo confirmar mi asistencia", "cómo confirmo la reserva de la cancha", "dónde confirmo que voy al amenity", "me pide confirmar asistencia que hago", "como confirmo que estoy en la cancha", "cuándo tengo que confirmar la reserva", "no me aparece el botón de confirmar"],
+    "ask": [
+      "no puedo confirmar mi asistencia",
+      "cómo confirmo la reserva de la cancha",
+      "dónde confirmo que voy al amenity",
+      "me pide confirmar asistencia que hago",
+      "como confirmo que estoy en la cancha",
+      "cuándo tengo que confirmar la reserva",
+      "no me aparece el botón de confirmar"
+    ],
     "intro": "Dale, te explico cómo se confirma.",
     "steps": [
-      {"say": "Entrá a la app y tocá la reserva que tenés pendiente de confirmar.", "chunk": 23, "quote": "Ingresá a la app y seleccioná la reserva pendiente de confirmación."},
-      {"say": "Se abre un cartel con opciones: tocá Confirmar asistencia.", "chunk": 23, "quote": "Tocá “Confirmar asistencia”.", "mark": ["Confirmar asistencia"]},
-      {"say": "Si estás en horario y cerca del lugar, te llega una notificación de que quedó confirmada.", "chunk": 23, "quote": "Si estás dentro del tiempo y ubicación permitida, recibirás una notificación confirmando el éxito de la acción."}
+      {
+        "say": "Entrá a la app y tocá la reserva que tenés pendiente de confirmar.",
+        "chunk": 23,
+        "quote": "Ingresá a la app y seleccioná la reserva pendiente de confirmación."
+      },
+      {
+        "say": "Se abre un cartel con opciones: tocá Confirmar asistencia.",
+        "chunk": 23,
+        "quote": "Tocá “Confirmar asistencia”.",
+        "mark": [
+          "Confirmar asistencia"
+        ]
+      },
+      {
+        "say": "Si estás en horario y cerca del lugar, te llega una notificación de que quedó confirmada.",
+        "chunk": 23,
+        "quote": "Si estás dentro del tiempo y ubicación permitida, recibirás una notificación confirmando el éxito de la acción."
+      }
     ],
     "tips": [
-      {"say": "Solo se puede confirmar dentro del margen que define tu consorcio, por ejemplo 15 minutos antes o después de tu turno.", "chunk": 23, "quote": "dentro de un margen configurable por tu consorcio (por ejemplo, 15 minutos antes o después del horario reservado)"},
-      {"say": "Además tenés que estar cerca del amenity, dentro del radio permitido.", "chunk": 23, "quote": "Tu ubicación debe estar dentro del radio permitido."},
-      {"say": "Tené activada la geolocalización del teléfono, al menos mientras usás la app.", "chunk": 23, "quote": "Asegurate de tener activada la geolocalización de tu teléfono (al menos mientras usás la app)"},
-      {"say": "Sirve para mostrar que vas a usar el espacio de verdad y que no quede bloqueado sin necesidad.", "chunk": 23, "quote": "evita bloqueos innecesarios del espacio"}
+      {
+        "say": "Solo se puede confirmar dentro del margen que define tu consorcio, por ejemplo 15 minutos antes o después de tu turno.",
+        "chunk": 23,
+        "quote": "dentro de un margen configurable por tu consorcio (por ejemplo, 15 minutos antes o después del horario reservado)"
+      },
+      {
+        "say": "Además tenés que estar cerca del amenity, dentro del radio permitido.",
+        "chunk": 23,
+        "quote": "Tu ubicación debe estar dentro del radio permitido."
+      },
+      {
+        "say": "Tené activada la geolocalización del teléfono, al menos mientras usás la app.",
+        "chunk": 23,
+        "quote": "Asegurate de tener activada la geolocalización de tu teléfono (al menos mientras usás la app)"
+      },
+      {
+        "say": "Sirve para mostrar que vas a usar el espacio de verdad y que no quede bloqueado sin necesidad.",
+        "chunk": 23,
+        "quote": "evita bloqueos innecesarios del espacio"
+      }
     ]
   },
   {
     "id": "amenities-error-confirmacion",
     "module": "Amenities",
     "title": "Me sale error al confirmar la asistencia",
-    "ask": ["me dice error en la confirmación de tu asistencia", "no me deja confirmar la reserva", "dice que tengo que estar a menos de x metros", "me pide habilitar el permiso de ubicación", "estoy en la cancha y no me confirma", "error al confirmar asistencia amenity", "dice que no es posible confirmar la reserva"],
+    "ask": [
+      "me dice error en la confirmación de tu asistencia",
+      "no me deja confirmar la reserva",
+      "dice que tengo que estar a menos de x metros",
+      "me pide habilitar el permiso de ubicación",
+      "estoy en la cancha y no me confirma",
+      "error al confirmar asistencia amenity",
+      "dice que no es posible confirmar la reserva"
+    ],
     "intro": "Eso pasa por la ubicación o por el horario, vamos a revisarlo.",
     "steps": [
-      {"say": "Ese error aparece si estás lejos del amenity o fuera del margen de minutos de tu turno.", "chunk": 42, "quote": "Para confirmar, debes estar a menos de X metros de tu ubicación y dentro de los x minutos de tu horario de reserva."},
-      {"say": "Fijate de estar cerca del lugar: el sistema detecta si estás lo suficientemente cerca para habilitar la confirmación.", "chunk": 23, "quote": "El sistema detectará si estás lo suficientemente cerca para habilitar la confirmación."},
-      {"say": "Revisá el horario: si intentás fuera del margen que fijó tu consorcio, no se puede confirmar.", "chunk": 23, "quote": "Si intentás fuera de ese rango, el sistema te avisará que no es posible confirmar la reserva."},
-      {"say": "Si ya estás en horario y en el lugar, volvé a intentarlo.", "chunk": 42, "quote": "Por favor, inténtalo de nuevo"}
+      {
+        "say": "Ese error aparece si estás lejos del amenity o fuera del margen de minutos de tu turno.",
+        "chunk": 42,
+        "quote": "Para confirmar, debes estar a menos de X metros de tu ubicación y dentro de los x minutos de tu horario de reserva."
+      },
+      {
+        "say": "Fijate de estar cerca del lugar: el sistema detecta si estás lo suficientemente cerca para habilitar la confirmación.",
+        "chunk": 23,
+        "quote": "El sistema detectará si estás lo suficientemente cerca para habilitar la confirmación."
+      },
+      {
+        "say": "Revisá el horario: si intentás fuera del margen que fijó tu consorcio, no se puede confirmar.",
+        "chunk": 23,
+        "quote": "Si intentás fuera de ese rango, el sistema te avisará que no es posible confirmar la reserva."
+      },
+      {
+        "say": "Si ya estás en horario y en el lugar, volvé a intentarlo.",
+        "chunk": 42,
+        "quote": "Por favor, inténtalo de nuevo"
+      }
     ],
     "tips": [
-      {"say": "Si te aparece el cartel del permiso de ubicación, es porque el módulo lo necesita para funcionar.", "chunk": 42, "quote": "Es necesario que puedas habilitar el permiso de ubicación para usar este módulo."},
-      {"say": "Dejá activada la geolocalización del teléfono, al menos mientras usás la app.", "chunk": 23, "quote": "Asegurate de tener activada la geolocalización de tu teléfono"}
+      {
+        "say": "Si te aparece el cartel del permiso de ubicación, es porque el módulo lo necesita para funcionar.",
+        "chunk": 42,
+        "quote": "Es necesario que puedas habilitar el permiso de ubicación para usar este módulo."
+      },
+      {
+        "say": "Dejá activada la geolocalización del teléfono, al menos mientras usás la app.",
+        "chunk": 23,
+        "quote": "Asegurate de tener activada la geolocalización de tu teléfono"
+      }
     ]
   },
   {
     "id": "amenities-programar-luces",
     "module": "Amenities",
     "title": "Programar el encendido de luces en una reserva",
-    "ask": ["cómo prendo las luces de la cancha", "quiero que estén las luces encendidas cuando juego", "dónde se programan las luces", "puedo reservar con luz", "como pido luz para la cancha de noche", "no me aparece la opción de luces"],
+    "ask": [
+      "cómo prendo las luces de la cancha",
+      "quiero que estén las luces encendidas cuando juego",
+      "dónde se programan las luces",
+      "puedo reservar con luz",
+      "como pido luz para la cancha de noche",
+      "no me aparece la opción de luces"
+    ],
     "intro": "Sí, se puede dejar programado desde la reserva.",
     "steps": [
-      {"say": "Al armar tu reserva vas a ver una sección para definir si querés encendido de luces.", "chunk": 25, "quote": "Dentro de tu reserva tendrás la nueva sección donde se podrá definir si la reserva requerirá encendido de luces.", "mark": ["Programar Iluminación"]},
-      {"say": "Si elegís encendido, las luces se prenden unos minutos antes de tu horario.", "chunk": 25, "quote": "Si seleccionás encendido, las luces se encenderán unos minutos previos al horario de tu reserva."},
-      {"say": "En el listado de tus reservas vas a ver el ícono de luz encendida.", "chunk": 25, "quote": "Verás el ícono de luz encendida en el listado de tus reservas."}
+      {
+        "say": "Al armar tu reserva vas a ver una sección para definir si querés encendido de luces.",
+        "chunk": 25,
+        "quote": "Dentro de tu reserva tendrás la nueva sección donde se podrá definir si la reserva requerirá encendido de luces.",
+        "mark": [
+          "Programar Iluminación"
+        ]
+      },
+      {
+        "say": "Si elegís encendido, las luces se prenden unos minutos antes de tu horario.",
+        "chunk": 25,
+        "quote": "Si seleccionás encendido, las luces se encenderán unos minutos previos al horario de tu reserva."
+      },
+      {
+        "say": "En el listado de tus reservas vas a ver el ícono de luz encendida.",
+        "chunk": 25,
+        "quote": "Verás el ícono de luz encendida en el listado de tus reservas."
+      }
     ],
     "tips": [
-      {"say": "Solo funciona en los espacios que tu barrio tenga activados y configurados con luz programable.", "chunk": 25, "quote": "requiere que se active y se configuren previamente los espacios comunes con uso de luz programable"}
+      {
+        "say": "Solo funciona en los espacios que tu barrio tenga activados y configurados con luz programable.",
+        "chunk": 25,
+        "quote": "requiere que se active y se configuren previamente los espacios comunes con uso de luz programable"
+      }
     ]
   },
   {
     "id": "amenities-encender-luces-ahora",
     "module": "Amenities",
     "title": "Prender las luces si no lo programé antes",
-    "ask": ["me olvidé de programar las luces", "ya estoy en la cancha y está oscuro", "cómo enciendo la luz ahora", "no programé la iluminación y ya empezó el turno", "puedo prender las luces después", "se puede encender la luz durante la reserva"],
+    "ask": [
+      "me olvidé de programar las luces",
+      "ya estoy en la cancha y está oscuro",
+      "cómo enciendo la luz ahora",
+      "no programé la iluminación y ya empezó el turno",
+      "puedo prender las luces después",
+      "se puede encender la luz durante la reserva"
+    ],
     "intro": "No pasa nada, lo podés hacer igual.",
     "steps": [
-      {"say": "Una vez iniciada la reserva, tocala y activá las luces desde ahí.", "chunk": 25, "quote": "seleccionando en tu reserva, de activar las luces, iniciada la misma, en caso de no haberlo programado con anterioridad", "mark": ["Encender iluminación"]}
+      {
+        "say": "Una vez iniciada la reserva, tocala y activá las luces desde ahí.",
+        "chunk": 25,
+        "quote": "seleccionando en tu reserva, de activar las luces, iniciada la misma, en caso de no haberlo programado con anterioridad",
+        "mark": [
+          "Encender iluminación"
+        ]
+      }
     ],
     "tips": [
-      {"say": "Esto funciona solo en espacios con luz programable que tu barrio haya configurado.", "chunk": 25, "quote": "requiere que se active y se configuren previamente los espacios comunes con uso de luz programable"}
+      {
+        "say": "Esto funciona solo en espacios con luz programable que tu barrio haya configurado.",
+        "chunk": 25,
+        "quote": "requiere que se active y se configuren previamente los espacios comunes con uso de luz programable"
+      }
     ]
   },
   {
     "id": "timbre-que-es",
     "module": "Timbre virtual",
     "title": "Qué es el Timbre Virtual y cómo funciona",
-    "ask": ["qué es el timbre virtual", "cómo funciona el timbre de la app", "me llegó un llamado de guardia qué es", "para qué sirve el timbre virtual", "suena en todos los celulares de la casa?", "por qué me llama la app cuando viene alguien"],
+    "ask": [
+      "qué es el timbre virtual",
+      "cómo funciona el timbre de la app",
+      "me llegó un llamado de guardia qué es",
+      "para qué sirve el timbre virtual",
+      "suena en todos los celulares de la casa?",
+      "por qué me llama la app cuando viene alguien"
+    ],
     "intro": "Es como el timbre de tu casa, pero en el celular.",
     "steps": [
-      {"say": "Cuando llega una visita, te entra un llamado en la app identificado como Llamado de Guardia.", "chunk": 157, "quote": "recibirás un llamado desde la App, identificado como “Llamado de Guardia”"},
-      {"say": "En pantalla ves los datos de la visita: nombre, tipo de ingresante y foto.", "chunk": 158, "quote": "Cuando recibas el llamado, en pantalla verás:"},
-      {"say": "Desde ahí autorizás o rechazás el ingreso, sin tener que hablar con la guardia.", "chunk": 157, "quote": "autorizar o rechazar el ingreso desde tu celular, sin necesidad de hablar con el personal de Seguridad"}
+      {
+        "say": "Cuando llega una visita, te entra un llamado en la app identificado como Llamado de Guardia.",
+        "chunk": 157,
+        "quote": "recibirás un llamado desde la App, identificado como “Llamado de Guardia”"
+      },
+      {
+        "say": "En pantalla ves los datos de la visita: nombre, tipo de ingresante y foto.",
+        "chunk": 158,
+        "quote": "Cuando recibas el llamado, en pantalla verás:"
+      },
+      {
+        "say": "Desde ahí autorizás o rechazás el ingreso, sin tener que hablar con la guardia.",
+        "chunk": 157,
+        "quote": "autorizar o rechazar el ingreso desde tu celular, sin necesidad de hablar con el personal de Seguridad"
+      }
     ],
     "tips": [
-      {"say": "Suena en todos los teléfonos de tu unidad que tengan la app con sesión iniciada, y se corta cuando el primero responde y autoriza.", "chunk": 158, "quote": "El timbre dejará de sonar con la primera persona que responda y autorice el ingreso."},
-      {"say": "Si tu consorcio tiene ingresantes multilote, el aviso de ingreso te llega cuando se confirma por los canales de siempre.", "chunk": 161, "quote": "Si tu consorcio cuenta con ingresantes multilote, recibirás la notificación de ingreso una vez que sea confirmada por los canales tradicionales."},
-      {"say": "Dentro de la sección Timbre Virtual tenés un video explicativo arriba de todo.", "chunk": 161, "quote": "Podés acceder a videos tutoriales desde la sección Timbre Virtual dentro de la App"}
+      {
+        "say": "Suena en todos los teléfonos de tu unidad que tengan la app con sesión iniciada, y se corta cuando el primero responde y autoriza.",
+        "chunk": 158,
+        "quote": "El timbre dejará de sonar con la primera persona que responda y autorice el ingreso."
+      },
+      {
+        "say": "Si tu consorcio tiene ingresantes multilote, el aviso de ingreso te llega cuando se confirma por los canales de siempre.",
+        "chunk": 161,
+        "quote": "Si tu consorcio cuenta con ingresantes multilote, recibirás la notificación de ingreso una vez que sea confirmada por los canales tradicionales."
+      },
+      {
+        "say": "Dentro de la sección Timbre Virtual tenés un video explicativo arriba de todo.",
+        "chunk": 161,
+        "quote": "Podés acceder a videos tutoriales desde la sección Timbre Virtual dentro de la App"
+      }
     ]
   },
   {
     "id": "timbre-autorizar-rechazar",
     "module": "Timbre virtual",
     "title": "Autorizar o rechazar una visita desde el timbre",
-    "ask": ["cómo autorizo a una visita", "me sonó el timbre qué toco", "como rechazo a alguien que vino", "dejé pasar a alguien por error", "cómo sé si la visita ya entró", "qué pasa si rechazo el ingreso", "no sé cómo aceptar la visita en la app"],
+    "ask": [
+      "cómo autorizo a una visita",
+      "me sonó el timbre qué toco",
+      "como rechazo a alguien que vino",
+      "dejé pasar a alguien por error",
+      "cómo sé si la visita ya entró",
+      "qué pasa si rechazo el ingreso",
+      "no sé cómo aceptar la visita en la app"
+    ],
     "intro": "Es simple, te cuento.",
     "steps": [
-      {"say": "Cuando suena, mirá los datos de la visita que aparecen en pantalla.", "chunk": 158, "quote": "Cuando recibas el llamado, en pantalla verás:"},
-      {"say": "Tocá Autorizar o Denegar, según corresponda.", "chunk": 158, "quote": "Podés autorizar o rechazar el ingreso directamente desde la App", "mark": ["Autorizar", "Denegar"]},
-      {"say": "Tu respuesta le llega a la guardia en el momento.", "chunk": 158, "quote": "se comunica en tiempo real a la Guardia, sin necesidad de intervención adicional"},
-      {"say": "Si autorizaste, te llega un aviso cuando la persona pasa por el control de acceso.", "chunk": 158, "quote": "Una vez confirmada la autorización, recibirás una notificación cuando la persona haya pasado por el control de acceso."}
+      {
+        "say": "Cuando suena, mirá los datos de la visita que aparecen en pantalla.",
+        "chunk": 158,
+        "quote": "Cuando recibas el llamado, en pantalla verás:"
+      },
+      {
+        "say": "Tocá Autorizar o Denegar, según corresponda.",
+        "chunk": 158,
+        "quote": "Podés autorizar o rechazar el ingreso directamente desde la App",
+        "mark": [
+          "Autorizar",
+          "Denegar"
+        ]
+      },
+      {
+        "say": "Tu respuesta le llega a la guardia en el momento.",
+        "chunk": 158,
+        "quote": "se comunica en tiempo real a la Guardia, sin necesidad de intervención adicional"
+      },
+      {
+        "say": "Si autorizaste, te llega un aviso cuando la persona pasa por el control de acceso.",
+        "chunk": 158,
+        "quote": "Una vez confirmada la autorización, recibirás una notificación cuando la persona haya pasado por el control de acceso."
+      }
     ],
     "tips": [
-      {"say": "Si rechazás, la guardia sigue con el caso y cierra la operación.", "chunk": 158, "quote": "Si rechazás el ingreso, la Guardia continuará con la gestión del caso y cerrará la operación."},
-      {"say": "Si hubo un error, la guardia puede volver a mandarte el timbre o llamarte de la forma tradicional.", "chunk": 158, "quote": "En caso de error, la Guardia puede volver a enviar el timbre virtual o realizar un llamado tradicional."}
+      {
+        "say": "Si rechazás, la guardia sigue con el caso y cierra la operación.",
+        "chunk": 158,
+        "quote": "Si rechazás el ingreso, la Guardia continuará con la gestión del caso y cerrará la operación."
+      },
+      {
+        "say": "Si hubo un error, la guardia puede volver a mandarte el timbre o llamarte de la forma tradicional.",
+        "chunk": 158,
+        "quote": "En caso de error, la Guardia puede volver a enviar el timbre virtual o realizar un llamado tradicional."
+      }
     ]
   },
   {
     "id": "timbre-no-suena",
     "module": "Timbre virtual",
     "title": "El timbre virtual no me suena",
-    "ask": ["no me suena el timbre virtual", "no me llegan los llamados de la guardia", "a mi marido le suena y a mí no", "el timbre no suena en mi celular", "no recibo el timbre", "por qué no me llama la app cuando vienen visitas", "la visita llegó y no me sonó nada"],
+    "ask": [
+      "no me suena el timbre virtual",
+      "no me llegan los llamados de la guardia",
+      "a mi marido le suena y a mí no",
+      "el timbre no suena en mi celular",
+      "no recibo el timbre",
+      "por qué no me llama la app cuando vienen visitas",
+      "la visita llegó y no me sonó nada"
+    ],
     "intro": "Vamos a revisar un par de cosas.",
     "steps": [
-      {"say": "Fijate que tengas activa la opción Deseo recibir avisos de Timbre Virtual en este dispositivo.", "chunk": 159, "quote": "Asegurate de mantener activa la opción “Deseo recibir avisos de Timbre Virtual en este dispositivo”."},
-      {"say": "Si esa opción está apagada, el timbre no suena en tu teléfono.", "chunk": 159, "quote": "Si esta opción está desactivada, el timbre no sonará en tu teléfono."},
-      {"say": "Confirmá que tenés la app instalada y la sesión iniciada: solo suena en esos teléfonos.", "chunk": 158, "quote": "que tengan la aplicación descargada y sesión iniciada"},
-      {"say": "Consultá con el titular del lote si te incluyó entre quienes reciben el timbre.", "chunk": 159, "quote": "los titulares de lote pueden definir quiénes recibirán las notificaciones del timbre virtual"}
+      {
+        "say": "Fijate que tengas activa la opción Deseo recibir avisos de Timbre Virtual en este dispositivo.",
+        "chunk": 159,
+        "quote": "Asegurate de mantener activa la opción “Deseo recibir avisos de Timbre Virtual en este dispositivo”."
+      },
+      {
+        "say": "Si esa opción está apagada, el timbre no suena en tu teléfono.",
+        "chunk": 159,
+        "quote": "Si esta opción está desactivada, el timbre no sonará en tu teléfono."
+      },
+      {
+        "say": "Confirmá que tenés la app instalada y la sesión iniciada: solo suena en esos teléfonos.",
+        "chunk": 158,
+        "quote": "que tengan la aplicación descargada y sesión iniciada"
+      },
+      {
+        "say": "Consultá con el titular del lote si te incluyó entre quienes reciben el timbre.",
+        "chunk": 159,
+        "quote": "los titulares de lote pueden definir quiénes recibirán las notificaciones del timbre virtual"
+      }
     ],
     "tips": [
-      {"say": "Si tenés el desbloqueo con huella o Face ID, puede convenirte no activarlo para atender más rápido.", "chunk": 160, "quote": "puede ser más práctico no activar el desbloqueo mediante autenticación, para responder los llamados más rápido"}
+      {
+        "say": "Si tenés el desbloqueo con huella o Face ID, puede convenirte no activarlo para atender más rápido.",
+        "chunk": 160,
+        "quote": "puede ser más práctico no activar el desbloqueo mediante autenticación, para responder los llamados más rápido"
+      }
     ]
   },
   {
     "id": "timbre-elegir-destinatarios",
     "module": "Timbre virtual",
     "title": "Elegir quién del lote recibe el timbre",
-    "ask": ["cómo elijo quién recibe el timbre", "quiero que no le suene a mi hijo", "como saco a alguien del timbre virtual", "puedo elegir a quién le llega el llamado de guardia", "quiero agregar a mi esposa al timbre", "quién recibe el timbre virtual en mi casa"],
+    "ask": [
+      "cómo elijo quién recibe el timbre",
+      "quiero que no le suene a mi hijo",
+      "como saco a alguien del timbre virtual",
+      "puedo elegir a quién le llega el llamado de guardia",
+      "quiero agregar a mi esposa al timbre",
+      "quién recibe el timbre virtual en mi casa"
+    ],
     "intro": "Eso lo maneja el titular del lote, te explico.",
     "steps": [
-      {"say": "Si sos titular del lote, podés definir quiénes reciben las notificaciones del timbre.", "chunk": 159, "quote": "los titulares de lote pueden definir quiénes recibirán las notificaciones del timbre virtual"},
-      {"say": "Elegí qué residentes atienden los llamados y sacá de la lista a los que no quieras incluir.", "chunk": 159, "quote": "Podés seleccionar qué Residentes atenderán los llamados y excluir a quienes no quieras incluir en el listado."}
+      {
+        "say": "Si sos titular del lote, podés definir quiénes reciben las notificaciones del timbre.",
+        "chunk": 159,
+        "quote": "los titulares de lote pueden definir quiénes recibirán las notificaciones del timbre virtual"
+      },
+      {
+        "say": "Elegí qué residentes atienden los llamados y sacá de la lista a los que no quieras incluir.",
+        "chunk": 159,
+        "quote": "Podés seleccionar qué Residentes atenderán los llamados y excluir a quienes no quieras incluir en el listado."
+      }
     ],
     "tips": [
-      {"say": "Además, cada persona tiene que tener activa en su celular la opción para recibir avisos del timbre.", "chunk": 159, "quote": "Asegurate de mantener activa la opción “Deseo recibir avisos de Timbre Virtual en este dispositivo”."}
+      {
+        "say": "Además, cada persona tiene que tener activa en su celular la opción para recibir avisos del timbre.",
+        "chunk": 159,
+        "quote": "Asegurate de mantener activa la opción “Deseo recibir avisos de Timbre Virtual en este dispositivo”."
+      }
     ]
   },
   {
     "id": "timbre-historial",
     "module": "Timbre virtual",
     "title": "Ver el historial de llamadas del timbre",
-    "ask": ["dónde veo los llamados del timbre", "quiero ver quién tocó el timbre ayer", "historial del timbre virtual", "cómo sé quién atendió el timbre", "dónde veo las visitas que llamaron", "quién rechazó la visita"],
+    "ask": [
+      "dónde veo los llamados del timbre",
+      "quiero ver quién tocó el timbre ayer",
+      "historial del timbre virtual",
+      "cómo sé quién atendió el timbre",
+      "dónde veo las visitas que llamaron",
+      "quién rechazó la visita"
+    ],
     "intro": "Queda todo registrado, mirá.",
     "steps": [
-      {"say": "Entrá al módulo de Timbre Virtual en la app.", "chunk": 7, "quote": "Ingresá al módulo de Timbre Virtual en tu app."},
-      {"say": "Tocá Historial.", "chunk": 7, "quote": "Hacé clic en “Historial”.", "mark": ["Historial"]},
-      {"say": "Vas a ver todas las llamadas que recibió el timbre de tu unidad.", "chunk": 7, "quote": "Verás un listado de todas las llamadas recibidas por el Timbre Virtual de tu unidad funcional (UF)."},
-      {"say": "En cada tarjeta ves si se aprobó o rechazó y quién lo hizo.", "chunk": 7, "quote": "Resultado: Si fue aprobado o rechazado y por quién."}
+      {
+        "say": "Entrá al módulo de Timbre Virtual en la app.",
+        "chunk": 7,
+        "quote": "Ingresá al módulo de Timbre Virtual en tu app."
+      },
+      {
+        "say": "Tocá Historial.",
+        "chunk": 7,
+        "quote": "Hacé clic en “Historial”.",
+        "mark": [
+          "Historial"
+        ]
+      },
+      {
+        "say": "Vas a ver todas las llamadas que recibió el timbre de tu unidad.",
+        "chunk": 7,
+        "quote": "Verás un listado de todas las llamadas recibidas por el Timbre Virtual de tu unidad funcional (UF)."
+      },
+      {
+        "say": "En cada tarjeta ves si se aprobó o rechazó y quién lo hizo.",
+        "chunk": 7,
+        "quote": "Resultado: Si fue aprobado o rechazado y por quién."
+      }
     ],
     "tips": [
-      {"say": "También figura a quién se anunció la visita y quién registró el ingreso en la guardia.", "chunk": 7, "quote": "Visita a: A quién se anunció y quién registró el ingreso en la guardia."},
-      {"say": "Y qué respondió cada integrante de la unidad al llamado.", "chunk": 7, "quote": "Destinatarios del timbre: Resultado de la notificación para cada integrante de la UF."},
-      {"say": "Además ves el horario del llamado y de la autorización.", "chunk": 161, "quote": "Horario del llamado y autorización."}
+      {
+        "say": "También figura a quién se anunció la visita y quién registró el ingreso en la guardia.",
+        "chunk": 7,
+        "quote": "Visita a: A quién se anunció y quién registró el ingreso en la guardia."
+      },
+      {
+        "say": "Y qué respondió cada integrante de la unidad al llamado.",
+        "chunk": 7,
+        "quote": "Destinatarios del timbre: Resultado de la notificación para cada integrante de la UF."
+      },
+      {
+        "say": "Además ves el horario del llamado y de la autorización.",
+        "chunk": 161,
+        "quote": "Horario del llamado y autorización."
+      }
     ]
   },
   {
     "id": "timbre-quien-autorizo",
     "module": "Timbre virtual",
     "title": "Ver quién autorizó el ingreso de una visita",
-    "ask": ["quién autorizó a esta persona", "cómo sé quién dejó entrar a la visita", "dónde veo quién aprobó el ingreso", "entró alguien y no sé quién lo autorizó", "cómo veo si entró por timbre o por preacreditación", "en actividad dónde veo quién autorizó"],
+    "ask": [
+      "quién autorizó a esta persona",
+      "cómo sé quién dejó entrar a la visita",
+      "dónde veo quién aprobó el ingreso",
+      "entró alguien y no sé quién lo autorizó",
+      "cómo veo si entró por timbre o por preacreditación",
+      "en actividad dónde veo quién autorizó"
+    ],
     "intro": "Eso lo ves en Actividad, te cuento.",
     "steps": [
-      {"say": "Entrá al módulo Actividad.", "chunk": 8, "quote": "Ingresá al módulo de Actividad.", "mark": ["Actividad"]},
-      {"say": "Tocá el ingresante que quieras revisar.", "chunk": 8, "quote": "Hacé clic sobre un ingresante."},
-      {"say": "Ahí ves quién autorizó el ingreso y por qué vía entró, por ejemplo pre-acreditación o Timbre Virtual.", "chunk": 8, "quote": "Qué mecanismo se utilizó (por ejemplo, pre-acreditación o visita espontánea mediante Timbre Virtual)."}
+      {
+        "say": "Entrá al módulo Actividad.",
+        "chunk": 8,
+        "quote": "Ingresá al módulo de Actividad.",
+        "mark": [
+          "Actividad"
+        ]
+      },
+      {
+        "say": "Tocá el ingresante que quieras revisar.",
+        "chunk": 8,
+        "quote": "Hacé clic sobre un ingresante."
+      },
+      {
+        "say": "Ahí ves quién autorizó el ingreso y por qué vía entró, por ejemplo pre-acreditación o Timbre Virtual.",
+        "chunk": 8,
+        "quote": "Qué mecanismo se utilizó (por ejemplo, pre-acreditación o visita espontánea mediante Timbre Virtual)."
+      }
     ],
     "tips": [
-      {"say": "La notificación push de cada nuevo ingreso también te muestra quién autorizó la visita.", "chunk": 8, "quote": "Cuando recibas la notificación push de un nuevo ingreso, ahora podrás ver quién autorizó la visita"}
+      {
+        "say": "La notificación push de cada nuevo ingreso también te muestra quién autorizó la visita.",
+        "chunk": 8,
+        "quote": "Cuando recibas la notificación push de un nuevo ingreso, ahora podrás ver quién autorizó la visita"
+      }
     ]
   },
   {
     "id": "timbre-desbloqueo-autenticacion",
     "module": "Timbre virtual",
     "title": "Desactivar el desbloqueo con huella o Face ID para atender más rápido",
-    "ask": ["cada vez que suena el timbre me pide la huella", "cómo saco el face id de la app", "tardo mucho en atender el timbre", "como desactivo el desbloqueo con autenticación", "la app me pide patrón para abrir", "quiero sacar la huella de la app"],
+    "ask": [
+      "cada vez que suena el timbre me pide la huella",
+      "cómo saco el face id de la app",
+      "tardo mucho en atender el timbre",
+      "como desactivo el desbloqueo con autenticación",
+      "la app me pide patrón para abrir",
+      "quiero sacar la huella de la app"
+    ],
     "intro": "Sí, eso se cambia desde tu perfil.",
     "steps": [
-      {"say": "Entrá a Mi perfil.", "chunk": 26, "quote": "en cualquier momento desde: Mi perfil", "mark": ["Mi perfil"]},
-      {"say": "Tocá Configuración.", "chunk": 26, "quote": "Mi perfil Configuración", "mark": ["Configuración"]},
-      {"say": "Desactivá la opción Desbloquear app con autenticación.", "chunk": 26, "quote": "Desbloquear app con autenticación.", "mark": ["Desbloquear app con autenticación"]}
+      {
+        "say": "Entrá a Mi perfil.",
+        "chunk": 26,
+        "quote": "en cualquier momento desde: Mi perfil",
+        "mark": [
+          "Mi perfil"
+        ]
+      },
+      {
+        "say": "Tocá Configuración.",
+        "chunk": 26,
+        "quote": "Mi perfil Configuración",
+        "mark": [
+          "Configuración"
+        ]
+      },
+      {
+        "say": "Desactivá la opción Desbloquear app con autenticación.",
+        "chunk": 26,
+        "quote": "Desbloquear app con autenticación.",
+        "mark": [
+          "Desbloquear app con autenticación"
+        ]
+      }
     ],
     "tips": [
-      {"say": "Si en tu barrio está el Timbre Virtual, conviene no tener ese desbloqueo para responder más rápido.", "chunk": 26, "quote": "puede ser más práctico no activar el desbloqueo mediante autenticación, para responder los llamados más rápido"},
-      {"say": "Lo podés volver a cambiar cuando quieras.", "chunk": 26, "quote": "Podés cambiar esta configuración en cualquier momento"}
+      {
+        "say": "Si en tu barrio está el Timbre Virtual, conviene no tener ese desbloqueo para responder más rápido.",
+        "chunk": 26,
+        "quote": "puede ser más práctico no activar el desbloqueo mediante autenticación, para responder los llamados más rápido"
+      },
+      {
+        "say": "Lo podés volver a cambiar cuando quieras.",
+        "chunk": 26,
+        "quote": "Podés cambiar esta configuración en cualquier momento"
+      }
     ]
   },
   {
     "id": "paqueteria-ver-paquetes",
     "module": "Paquetería",
     "title": "Ver el estado de mis paquetes",
-    "ask": ["dónde veo si me llegó un paquete", "llegó mi pedido de mercado libre?", "cómo sé si la guardia recibió mi paquete", "estado de mis paquetes", "donde está paquetería en la app", "me llegó correspondencia?"],
+    "ask": [
+      "dónde veo si me llegó un paquete",
+      "llegó mi pedido de mercado libre?",
+      "cómo sé si la guardia recibió mi paquete",
+      "estado de mis paquetes",
+      "donde está paquetería en la app",
+      "me llegó correspondencia?"
+    ],
     "intro": "Lo ves en un toque desde Paquetería.",
     "steps": [
-      {"say": "Entrá al módulo Paquetería.", "chunk": 182, "quote": "Ingresá al módulo Paquetería", "mark": ["Paquetería"]},
-      {"say": "Ahí ves el estado de cada uno de tus paquetes.", "chunk": 182, "quote": "validá el estado de tus paquetes"},
-      {"say": "Tocá cualquiera para ver el detalle.", "chunk": 182, "quote": "Seleccioná cada uno para ver el detalle."}
+      {
+        "say": "Entrá al módulo Paquetería.",
+        "chunk": 182,
+        "quote": "Ingresá al módulo Paquetería",
+        "mark": [
+          "Paquetería"
+        ]
+      },
+      {
+        "say": "Ahí ves el estado de cada uno de tus paquetes.",
+        "chunk": 182,
+        "quote": "validá el estado de tus paquetes"
+      },
+      {
+        "say": "Tocá cualquiera para ver el detalle.",
+        "chunk": 182,
+        "quote": "Seleccioná cada uno para ver el detalle."
+      }
     ],
     "tips": [
-      {"say": "Ahí aparecen los paquetes y la correspondencia que recibe la guardia de tu barrio.", "chunk": 181, "quote": "gestionar los paquetes y correspondencia que reciba la operación de seguridad de tu consorcio"}
+      {
+        "say": "Ahí aparecen los paquetes y la correspondencia que recibe la guardia de tu barrio.",
+        "chunk": 181,
+        "quote": "gestionar los paquetes y correspondencia que reciba la operación de seguridad de tu consorcio"
+      }
     ]
   },
   {
     "id": "paqueteria-chat-guardia",
     "module": "Paquetería",
     "title": "Hablar con la guardia sobre un paquete",
-    "ask": ["cómo le aviso a la guardia que paso a buscar el paquete", "quiero preguntar por un paquete", "puedo chatear con la guardia por mi paquete", "cómo veo la foto del paquete", "no sé cuál es mi paquete", "quiero avisar que lo retiro"],
+    "ask": [
+      "cómo le aviso a la guardia que paso a buscar el paquete",
+      "quiero preguntar por un paquete",
+      "puedo chatear con la guardia por mi paquete",
+      "cómo veo la foto del paquete",
+      "no sé cuál es mi paquete",
+      "quiero avisar que lo retiro"
+    ],
     "intro": "Se puede hablar directo desde el paquete.",
     "steps": [
-      {"say": "Entrá a Paquetería y abrí el paquete.", "chunk": 182, "quote": "Seleccioná cada uno para ver el detalle.", "mark": ["Paquetería"]},
-      {"say": "Desde ahí chateá con la guardia si necesitás más info o para avisar que lo pasás a buscar.", "chunk": 182, "quote": "Chateá con la guardia si necesitás mayor información o avisá que estarás retirándolo."}
+      {
+        "say": "Entrá a Paquetería y abrí el paquete.",
+        "chunk": 182,
+        "quote": "Seleccioná cada uno para ver el detalle.",
+        "mark": [
+          "Paquetería"
+        ]
+      },
+      {
+        "say": "Desde ahí chateá con la guardia si necesitás más info o para avisar que lo pasás a buscar.",
+        "chunk": 182,
+        "quote": "Chateá con la guardia si necesitás mayor información o avisá que estarás retirándolo."
+      }
     ],
     "tips": [
-      {"say": "También te pueden mandar fotos del paquete para que lo reconozcas fácil.", "chunk": 182, "quote": "También podés recibir imágenes del paquete para su fácil identificación."}
+      {
+        "say": "También te pueden mandar fotos del paquete para que lo reconozcas fácil.",
+        "chunk": 182,
+        "quote": "También podés recibir imágenes del paquete para su fácil identificación."
+      }
     ]
   },
   {
     "id": "paqueteria-confirmar-recepcion",
     "module": "Paquetería",
     "title": "Confirmar que recibí el paquete",
-    "ask": ["cómo marco que ya retiré el paquete", "ya tengo el paquete qué hago en la app", "confirmar recepción del paquete", "dónde pongo que lo recibí", "me sigue figurando el paquete pendiente", "como cierro el paquete en la app"],
+    "ask": [
+      "cómo marco que ya retiré el paquete",
+      "ya tengo el paquete qué hago en la app",
+      "confirmar recepción del paquete",
+      "dónde pongo que lo recibí",
+      "me sigue figurando el paquete pendiente",
+      "como cierro el paquete en la app"
+    ],
     "intro": "Es un paso cortito.",
     "steps": [
-      {"say": "Entrá a Paquetería y abrí el paquete que retiraste.", "chunk": 182, "quote": "Seleccioná cada uno para ver el detalle.", "mark": ["Paquetería"]},
-      {"say": "Tocá Marcar el paquete como recibido para confirmar que te llegó bien y cerrar el circuito.", "chunk": 182, "quote": "Confirmá la recepción Ok de tu paquete para cerrar el circuito.", "mark": ["Marcar el paquete como recibido"]}
+      {
+        "say": "Entrá a Paquetería y abrí el paquete que retiraste.",
+        "chunk": 182,
+        "quote": "Seleccioná cada uno para ver el detalle.",
+        "mark": [
+          "Paquetería"
+        ]
+      },
+      {
+        "say": "Tocá Marcar el paquete como recibido para confirmar que te llegó bien y cerrar el circuito.",
+        "chunk": 182,
+        "quote": "Confirmá la recepción Ok de tu paquete para cerrar el circuito.",
+        "mark": [
+          "Marcar el paquete como recibido"
+        ]
+      }
     ]
   },
   {
     "id": "estoy-llegando-avisar",
     "module": "Estoy llegando",
     "title": "Avisarle a la guardia que estoy llegando",
-    "ask": ["cómo aviso que estoy llegando", "dónde está estoy llegando", "quiero avisar a la guardia que llego de noche", "como uso estoy llegando", "como le aviso a la guardia que voy por la barrera náutica", "no encuentro el botón estoy llegando"],
+    "ask": [
+      "cómo aviso que estoy llegando",
+      "dónde está estoy llegando",
+      "quiero avisar a la guardia que llego de noche",
+      "como uso estoy llegando",
+      "como le aviso a la guardia que voy por la barrera náutica",
+      "no encuentro el botón estoy llegando"
+    ],
     "intro": "Dale, son tres toques.",
     "steps": [
-      {"say": "Abrí la app y tocá el ícono Estoy Llegando en la pantalla principal.", "chunk": 75, "quote": "Localizá y tocá el ícono \"Estoy Llegando\" en la pantalla principal de la app.", "mark": ["Estoy Llegando"]},
-      {"say": "Se abre la lista de accesos disponibles.", "chunk": 75, "quote": "se abrirá una pantalla con una lista de accesos disponibles"},
-      {"say": "Elegí el acceso al que te estás acercando: un portón, el acceso náutico u otro.", "chunk": 75, "quote": "Elegí el punto de acceso al que te aproximás (puede ser un portón, acceso náutico u otro punto designado)."},
-      {"say": "La app le manda sola una alerta a la guardia con tu ubicación y el acceso que elegiste.", "chunk": 75, "quote": "la app enviará automáticamente una alerta a la guardia con tu geoposición actual y el acceso que has elegido"}
+      {
+        "say": "Abrí la app y tocá el ícono Estoy Llegando en la pantalla principal.",
+        "chunk": 75,
+        "quote": "Localizá y tocá el ícono \"Estoy Llegando\" en la pantalla principal de la app.",
+        "mark": [
+          "Estoy Llegando"
+        ]
+      },
+      {
+        "say": "Se abre la lista de accesos disponibles.",
+        "chunk": 75,
+        "quote": "se abrirá una pantalla con una lista de accesos disponibles"
+      },
+      {
+        "say": "Elegí el acceso al que te estás acercando: un portón, el acceso náutico u otro.",
+        "chunk": 75,
+        "quote": "Elegí el punto de acceso al que te aproximás (puede ser un portón, acceso náutico u otro punto designado)."
+      },
+      {
+        "say": "La app le manda sola una alerta a la guardia con tu ubicación y el acceso que elegiste.",
+        "chunk": 75,
+        "quote": "la app enviará automáticamente una alerta a la guardia con tu geoposición actual y el acceso que has elegido"
+      }
     ],
     "tips": [
-      {"say": "La guardia recibe el aviso y puede verificar los datos de tu llegada.", "chunk": 75, "quote": "La guardia recibirá la notificación y podrá verificar la información sobre tu llegada."}
+      {
+        "say": "La guardia recibe el aviso y puede verificar los datos de tu llegada.",
+        "chunk": 75,
+        "quote": "La guardia recibirá la notificación y podrá verificar la información sobre tu llegada."
+      }
     ]
   },
   {
     "id": "estoy-llegando-para-que",
     "module": "Estoy llegando",
     "title": "Para qué sirve Estoy Llegando",
-    "ask": ["para qué sirve estoy llegando", "qué es estoy llegando", "cuándo uso estoy llegando", "sirve para la barrera náutica?", "tengo que llamar a la guardia si llego tarde?", "qué ve la guardia cuando aviso"],
+    "ask": [
+      "para qué sirve estoy llegando",
+      "qué es estoy llegando",
+      "cuándo uso estoy llegando",
+      "sirve para la barrera náutica?",
+      "tengo que llamar a la guardia si llego tarde?",
+      "qué ve la guardia cuando aviso"
+    ],
     "intro": "Te cuento para qué está pensado.",
     "steps": [
-      {"say": "Sirve para avisarle a la guardia que te estás acercando, de noche o en accesos remotos como una barrera náutica.", "chunk": 74, "quote": "cuando te acercás a tu consorcio en horarios nocturnos o para accesos remotos, como es el caso de una barrera náutica"},
-      {"say": "La guardia ve tu ubicación y el acceso exacto por el que llegás.", "chunk": 76, "quote": "La guardia recibe información exacta sobre tu ubicación y acceso."},
-      {"say": "Así entrás sin tener que contactar a la guardia directamente.", "chunk": 76, "quote": "Facilita la entrada al consorcio sin la necesidad de contactar directamente a la guardia."}
+      {
+        "say": "Sirve para avisarle a la guardia que te estás acercando, de noche o en accesos remotos como una barrera náutica.",
+        "chunk": 74,
+        "quote": "cuando te acercás a tu consorcio en horarios nocturnos o para accesos remotos, como es el caso de una barrera náutica"
+      },
+      {
+        "say": "La guardia ve tu ubicación y el acceso exacto por el que llegás.",
+        "chunk": 76,
+        "quote": "La guardia recibe información exacta sobre tu ubicación y acceso."
+      },
+      {
+        "say": "Así entrás sin tener que contactar a la guardia directamente.",
+        "chunk": 76,
+        "quote": "Facilita la entrada al consorcio sin la necesidad de contactar directamente a la guardia."
+      }
     ]
   },
   {
     "id": "estoy-llegando-no-llega",
     "module": "Estoy llegando",
     "title": "El aviso de Estoy Llegando no le llega a la guardia",
-    "ask": ["la guardia no recibió mi aviso", "no le llega el estoy llegando a la guardia", "mandé el aviso y no me abrieron", "estoy llegando no funciona", "no se manda la alerta de llegada", "no anda estoy llegando"],
+    "ask": [
+      "la guardia no recibió mi aviso",
+      "no le llega el estoy llegando a la guardia",
+      "mandé el aviso y no me abrieron",
+      "estoy llegando no funciona",
+      "no se manda la alerta de llegada",
+      "no anda estoy llegando"
+    ],
     "intro": "Revisemos dos cositas del celular.",
     "steps": [
-      {"say": "Fijate que tengas activada la geolocalización en el celular.", "chunk": 76, "quote": "Aseguráte de que tu dispositivo tenga habilitadas las opciones de geolocalización"},
-      {"say": "Revisá que tengas Internet o datos móviles activos, así la alerta llega sin problemas.", "chunk": 76, "quote": "Verificá que tu conexión a Internet o datos móviles esté activa para que la alerta llegue sin inconvenientes a la guardia."}
+      {
+        "say": "Fijate que tengas activada la geolocalización en el celular.",
+        "chunk": 76,
+        "quote": "Aseguráte de que tu dispositivo tenga habilitadas las opciones de geolocalización"
+      },
+      {
+        "say": "Revisá que tengas Internet o datos móviles activos, así la alerta llega sin problemas.",
+        "chunk": 76,
+        "quote": "Verificá que tu conexión a Internet o datos móviles esté activa para que la alerta llegue sin inconvenientes a la guardia."
+      }
     ]
   },
   {
     "id": "estoy-llegando-aviso-desaparece",
     "module": "Estoy llegando",
     "title": "Se me borró el aviso de Estoy Llegando",
-    "ask": ["se me borró el aviso de estoy llegando", "desapareció la alerta de llegada", "tengo que borrar el aviso cuando entro", "por qué ya no aparece mi aviso", "el estoy llegando se quedó activo?", "se elimina solo el aviso?"],
+    "ask": [
+      "se me borró el aviso de estoy llegando",
+      "desapareció la alerta de llegada",
+      "tengo que borrar el aviso cuando entro",
+      "por qué ya no aparece mi aviso",
+      "el estoy llegando se quedó activo?",
+      "se elimina solo el aviso?"
+    ],
     "intro": "Es normal, funciona así.",
     "steps": [
-      {"say": "Cuando pasás por el acceso, el aviso se borra solo de la app.", "chunk": 76, "quote": "Una vez que hayas pasado por el punto de acceso, la notificación se eliminará automáticamente de la app."},
-      {"say": "Así la guardia está al tanto solo mientras llegás, sin alertas colgadas.", "chunk": 76, "quote": "Esto asegura que la guardia esté informada solo mientras estés llegando, sin mantener alertas innecesarias."}
+      {
+        "say": "Cuando pasás por el acceso, el aviso se borra solo de la app.",
+        "chunk": 76,
+        "quote": "Una vez que hayas pasado por el punto de acceso, la notificación se eliminará automáticamente de la app."
+      },
+      {
+        "say": "Así la guardia está al tanto solo mientras llegás, sin alertas colgadas.",
+        "chunk": 76,
+        "quote": "Esto asegura que la guardia esté informada solo mientras estés llegando, sin mantener alertas innecesarias."
+      }
     ]
   },
   {
     "id": "sos-donde-esta",
     "module": "Botón de emergencia",
     "title": "Dónde está el botón de emergencia y cuándo usarlo",
-    "ask": ["dónde está el botón de pánico", "cómo encuentro el botón de emergencia", "dónde está el sos", "cuándo uso el botón sos", "la app tiene botón antipánico?", "para qué emergencias sirve el sos"],
+    "ask": [
+      "dónde está el botón de pánico",
+      "cómo encuentro el botón de emergencia",
+      "dónde está el sos",
+      "cuándo uso el botón sos",
+      "la app tiene botón antipánico?",
+      "para qué emergencias sirve el sos"
+    ],
     "intro": "Está a mano, te muestro.",
     "steps": [
-      {"say": "Es el botón flotante del centro de la app, el que dice SOS.", "chunk": 59, "quote": "En el botón flotante central (SOS) de tu aplicación Silicon Access.", "mark": ["SOS"]}
+      {
+        "say": "Es el botón flotante del centro de la app, el que dice SOS.",
+        "chunk": 59,
+        "quote": "En el botón flotante central (SOS) de tu aplicación Silicon Access.",
+        "mark": [
+          "SOS"
+        ]
+      }
     ],
     "tips": [
-      {"say": "Usalo ante una emergencia médica, un incendio, una intrusión o una situación de violencia.", "chunk": 59, "quote": "Emergencia médica Incendio Intrusión Situación de violencia"}
+      {
+        "say": "Usalo ante una emergencia médica, un incendio, una intrusión o una situación de violencia.",
+        "chunk": 59,
+        "quote": "Emergencia médica Incendio Intrusión Situación de violencia"
+      }
     ]
   },
   {
     "id": "sos-enviar",
     "module": "Botón de emergencia",
     "title": "Enviar una alerta de emergencia",
-    "ask": ["cómo mando una emergencia", "cómo uso el botón sos", "cómo aviso a la guardia de un incendio", "quiero mandar una alerta de pánico", "cómo pido ayuda urgente desde la app", "cómo funciona el botón de emergencia"],
+    "ask": [
+      "cómo mando una emergencia",
+      "cómo uso el botón sos",
+      "cómo aviso a la guardia de un incendio",
+      "quiero mandar una alerta de pánico",
+      "cómo pido ayuda urgente desde la app",
+      "cómo funciona el botón de emergencia"
+    ],
     "intro": "Te explico paso a paso.",
     "steps": [
-      {"say": "Tocá el botón SOS.", "chunk": 60, "quote": "Tocá el botón SOS.", "mark": ["SOS"]},
-      {"say": "Elegí qué tipo de emergencia es.", "chunk": 60, "quote": "Seleccioná el tipo de emergencia."},
-      {"say": "Arranca un contador y la alerta se envía automáticamente.", "chunk": 60, "quote": "Se activará un contador de envío automático."},
-      {"say": "La guardia recibe una alerta sonora y un aviso en pantalla con el tipo de incidente.", "chunk": 61, "quote": "La guardia recibirá una alerta sonora y una notificación en pantalla con el tipo de incidente reportado."}
+      {
+        "say": "Tocá el botón SOS.",
+        "chunk": 60,
+        "quote": "Tocá el botón SOS.",
+        "mark": [
+          "SOS"
+        ]
+      },
+      {
+        "say": "Elegí qué tipo de emergencia es.",
+        "chunk": 60,
+        "quote": "Seleccioná el tipo de emergencia."
+      },
+      {
+        "say": "Arranca un contador y la alerta se envía automáticamente.",
+        "chunk": 60,
+        "quote": "Se activará un contador de envío automático."
+      },
+      {
+        "say": "La guardia recibe una alerta sonora y un aviso en pantalla con el tipo de incidente.",
+        "chunk": 61,
+        "quote": "La guardia recibirá una alerta sonora y una notificación en pantalla con el tipo de incidente reportado."
+      }
     ],
     "tips": [
-      {"say": "Dale permiso de ubicación a Silicon Access para que puedan saber dónde estás si lo necesitás.", "chunk": 61, "quote": "El permiso de geoposición deberá ser otorgado a Silicon Access para poder informar la ubicación en caso de una necesidad."}
+      {
+        "say": "Dale permiso de ubicación a Silicon Access para que puedan saber dónde estás si lo necesitás.",
+        "chunk": 61,
+        "quote": "El permiso de geoposición deberá ser otorgado a Silicon Access para poder informar la ubicación en caso de una necesidad."
+      }
     ]
   },
   {
     "id": "sos-cancelar",
     "module": "Botón de emergencia",
     "title": "Cancelar una emergencia enviada por error",
-    "ask": ["toqué el sos sin querer", "cómo cancelo la emergencia", "mandé una alerta por error", "se me activó el botón de pánico", "como freno el sos", "apreté emergencia por equivocación"],
+    "ask": [
+      "toqué el sos sin querer",
+      "cómo cancelo la emergencia",
+      "mandé una alerta por error",
+      "se me activó el botón de pánico",
+      "como freno el sos",
+      "apreté emergencia por equivocación"
+    ],
     "intro": "Tranqui, se puede cancelar.",
     "steps": [
-      {"say": "Cancelala antes de que termine el contador.", "chunk": 60, "quote": "Si fue un error, podés cancelarlo antes de que finalice", "mark": ["Cancelar emergencia"]},
-      {"say": "Contá brevemente el motivo de la cancelación.", "chunk": 60, "quote": "antes de que finalice y detallar el motivo", "mark": ["Confirmar cancelación"]}
+      {
+        "say": "Cancelala antes de que termine el contador.",
+        "chunk": 60,
+        "quote": "Si fue un error, podés cancelarlo antes de que finalice",
+        "mark": [
+          "Cancelar emergencia"
+        ]
+      },
+      {
+        "say": "Contá brevemente el motivo de la cancelación.",
+        "chunk": 60,
+        "quote": "antes de que finalice y detallar el motivo",
+        "mark": [
+          "Confirmar cancelación"
+        ]
+      }
     ],
     "tips": [
-      {"say": "Todo lo que pasa con el aviso queda registrado: horarios, mensajes y operadores que intervinieron.", "chunk": 61, "quote": "Todas las acciones e interacciones relacionadas con los avisos de pánico quedan registradas para auditoría administrativa"}
+      {
+        "say": "Todo lo que pasa con el aviso queda registrado: horarios, mensajes y operadores que intervinieron.",
+        "chunk": 61,
+        "quote": "Todas las acciones e interacciones relacionadas con los avisos de pánico quedan registradas para auditoría administrativa"
+      }
     ]
   },
   {
     "id": "sos-que-pasa-despues",
     "module": "Botón de emergencia",
     "title": "Qué pasa después de mandar un SOS",
-    "ask": ["mandé el sos y ahora qué pasa", "la guardia recibe mi emergencia?", "saben dónde estoy si aprieto sos", "me van a responder cuando mando la alerta", "queda registrado el botón de pánico?", "a quién le llega el sos"],
+    "ask": [
+      "mandé el sos y ahora qué pasa",
+      "la guardia recibe mi emergencia?",
+      "saben dónde estoy si aprieto sos",
+      "me van a responder cuando mando la alerta",
+      "queda registrado el botón de pánico?",
+      "a quién le llega el sos"
+    ],
     "intro": "Te cuento qué pasa del otro lado.",
     "steps": [
-      {"say": "La guardia recibe una alerta sonora y un aviso en pantalla con el tipo de incidente.", "chunk": 61, "quote": "La guardia recibirá una alerta sonora y una notificación en pantalla con el tipo de incidente reportado."},
-      {"say": "Si le diste permiso de ubicación a la app, también se informa dónde estás.", "chunk": 61, "quote": "El permiso de geoposición deberá ser otorgado a Silicon Access para poder informar la ubicación"},
-      {"say": "La administración puede tener respuestas automáticas cargadas para comunicarse más rápido con vos.", "chunk": 61, "quote": "configurar respuestas automáticas predeterminadas para agilizar la comunicación con el vecino"}
+      {
+        "say": "La guardia recibe una alerta sonora y un aviso en pantalla con el tipo de incidente.",
+        "chunk": 61,
+        "quote": "La guardia recibirá una alerta sonora y una notificación en pantalla con el tipo de incidente reportado."
+      },
+      {
+        "say": "Si le diste permiso de ubicación a la app, también se informa dónde estás.",
+        "chunk": 61,
+        "quote": "El permiso de geoposición deberá ser otorgado a Silicon Access para poder informar la ubicación"
+      },
+      {
+        "say": "La administración puede tener respuestas automáticas cargadas para comunicarse más rápido con vos.",
+        "chunk": 61,
+        "quote": "configurar respuestas automáticas predeterminadas para agilizar la comunicación con el vecino"
+      }
     ],
     "tips": [
-      {"say": "Todo queda registrado, con horarios, mensajes y operadores que intervinieron.", "chunk": 61, "quote": "incluyendo horarios, mensajes y operadores intervinientes"}
+      {
+        "say": "Todo queda registrado, con horarios, mensajes y operadores que intervinieron.",
+        "chunk": 61,
+        "quote": "incluyendo horarios, mensajes y operadores intervinientes"
+      }
     ]
   }
 ]

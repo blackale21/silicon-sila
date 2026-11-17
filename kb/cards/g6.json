@@ -50,12 +50,20 @@
       {
         "say": "Fijate de estar en el acceso y la vía correctos: módulo Entradas, vía Visitas.",
         "chunk": 213,
-        "quote": "En este caso, módulo Entradas, y vía Visitas."
+        "quote": "En este caso, módulo Entradas, y vía Visitas.",
+        "img": "b92a39d1-f86f-44cb-b1a5-9353010b5ddd",
+        "mark": [
+          "Visitas"
+        ]
       },
       {
         "say": "Cargá el DNI en Documento de la visita y tocá Buscar. Si ya está registrada, verificá los datos y seguí.",
         "chunk": 213,
-        "quote": "ingresar el numero de DNI en el campo Documento de la visita y Buscar."
+        "quote": "ingresar el numero de DNI en el campo Documento de la visita y Buscar.",
+        "img": "b92a39d1-f86f-44cb-b1a5-9353010b5ddd",
+        "mark": [
+          "Buscar"
+        ]
       },
       {
         "say": "Si es nueva: sacale la foto y completá sus datos.",
@@ -70,7 +78,11 @@
       {
         "say": "Tocá el botón verde Habilitar ingreso: como no hay autorización previa, se abre el Timbre Virtual para el residente.",
         "chunk": 213,
-        "quote": "Al no haber autorización previa, se abrirá la ventana para el envío del Timbre Virtual."
+        "quote": "Al no haber autorización previa, se abrirá la ventana para el envío del Timbre Virtual.",
+        "img": "b92a39d1-f86f-44cb-b1a5-9353010b5ddd",
+        "mark": [
+          "Habilitar ingreso"
+        ]
       }
     ],
     "tips": [
@@ -96,7 +108,11 @@
       {
         "say": "Cargá el DNI en Documento de la visita y tocá Buscar.",
         "chunk": 215,
-        "quote": "ingresar el numero de DNI en el campo Documento de la visita y presionar el botón Buscar."
+        "quote": "ingresar el numero de DNI en el campo Documento de la visita y presionar el botón Buscar.",
+        "img": "23824343-a19f-4244-8604-b1cf867bb19b",
+        "mark": [
+          "Buscar"
+        ]
       },
       {
         "say": "Abajo de la ficha te aparecen sus autorizaciones: elegí la que corresponde al horario.",
@@ -106,7 +122,11 @@
       {
         "say": "El lote se completa solo: tocá Habilitar Ingreso.",
         "chunk": 215,
-        "quote": "debiendo únicamente presionar el botón Habilitar Ingreso."
+        "quote": "debiendo únicamente presionar el botón Habilitar Ingreso.",
+        "img": "b92a39d1-f86f-44cb-b1a5-9353010b5ddd",
+        "mark": [
+          "Habilitar Ingreso"
+        ]
       }
     ],
     "tips": []
@@ -126,7 +146,11 @@
       {
         "say": "Elegí el acceso y la vía correctos: módulo Salidas.",
         "chunk": 214,
-        "quote": "En este caso, módulo Salidas, y vía Residentes."
+        "quote": "En este caso, módulo Salidas, y vía Residentes.",
+        "img": "23824343-a19f-4244-8604-b1cf867bb19b",
+        "mark": [
+          "Salidas"
+        ]
       },
       {
         "say": "Cargá el DNI y tocá Buscar (con lector de DNI se completa solo).",
@@ -181,7 +205,11 @@
       {
         "say": "Después de cargar los datos, abrí la ficha de la persona y en Tipo de Ingresante elegí el correcto. Queda guardado al completar el acceso.",
         "chunk": 217,
-        "quote": "abrir la ficha de la persona y en el campo Tipo de Ingresante, seleccionar el correcto."
+        "quote": "abrir la ficha de la persona y en el campo Tipo de Ingresante, seleccionar el correcto.",
+        "img": "33d17424-f3f2-44f4-a1aa-b500131a3875",
+        "mark": [
+          "Tipo de Ingresante"
+        ]
       }
     ],
     "tips": [
@@ -244,7 +272,11 @@
       {
         "say": "Tildá el casillero Excedidos.",
         "chunk": 219,
-        "quote": "Se tilda el casillero Excedidos."
+        "quote": "Se tilda el casillero Excedidos.",
+        "img": "23824343-a19f-4244-8604-b1cf867bb19b",
+        "mark": [
+          "Excedidos"
+        ]
       },
       {
         "say": "Seleccioná los perfiles y tocá Generar Salida.",
@@ -269,7 +301,11 @@
       {
         "say": "En la Web de Guardia abrí Paquetería y tocá Cargar Nuevo.",
         "chunk": 220,
-        "quote": "Presionar el botón Cargar Nuevo"
+        "quote": "Presionar el botón Cargar Nuevo",
+        "img": "514d6354-e5f9-49c5-8bed-7f2dda5bf5db",
+        "mark": [
+          "Cargar Nuevo"
+        ]
       },
       {
         "say": "En Destinatario poné el que figura en la etiqueta; si no aparece, buscá por Lote.",
@@ -279,7 +315,11 @@
       {
         "say": "Elegí el proveedor, sacá una foto, agregá un comentario y tocá Crear. Al residente le llega la notificación.",
         "chunk": 220,
-        "quote": "Una vez cargado el Destinatario, seleccionado el Proveedor, cargada una Foto y un Comentario, presionar Crear."
+        "quote": "Una vez cargado el Destinatario, seleccionado el Proveedor, cargada una Foto y un Comentario, presionar Crear.",
+        "img": "b4b7c3fa-812e-466e-9e9e-b913c7061b6e",
+        "mark": [
+          "Crear"
+        ]
       }
     ],
     "tips": [
@@ -316,7 +356,11 @@
       {
         "say": "Ignorar alerta: cierra la ventana y seguís operando (queda registrado).",
         "chunk": 221,
-        "quote": "Ignorar Alerta: cerrar la ventana emergente y seguir operando. Deja registro de auditoría"
+        "quote": "Ignorar Alerta: cerrar la ventana emergente y seguir operando. Deja registro de auditoría",
+        "img": "a249daf6-943d-40a5-b9d2-5cf1e7d98cc6",
+        "mark": [
+          "Ignorar"
+        ]
       }
     ],
     "tips": [
@@ -352,7 +396,11 @@
       {
         "say": "Si autoriza, tocá Ingresar, elegí la vía y tocá Habilitar Ingreso.",
         "chunk": 222,
-        "quote": "Luego deberá elegir la Vía y presionar Habilitar Ingreso."
+        "quote": "Luego deberá elegir la Vía y presionar Habilitar Ingreso.",
+        "img": "b92a39d1-f86f-44cb-b1a5-9353010b5ddd",
+        "mark": [
+          "Habilitar Ingreso"
+        ]
       }
     ],
     "tips": []
@@ -372,7 +420,11 @@
       {
         "say": "En la barra de abajo tocá Migrar Vía y elegí la vía libre: todo lo cargado pasa a esa vía y al habilitar se activan sus equipos.",
         "chunk": 223,
-        "quote": "En la barra inferior se encuentra el botón Migrar Vía, el cual abre la lista de vías disponibles."
+        "quote": "En la barra inferior se encuentra el botón Migrar Vía, el cual abre la lista de vías disponibles.",
+        "img": "b92a39d1-f86f-44cb-b1a5-9353010b5ddd",
+        "mark": [
+          "Migrar Vía"
+        ]
       }
     ],
     "tips": []
@@ -422,7 +474,11 @@
       {
         "say": "Activá Abrir Última Actividad por defecto en Entradas (o en Salidas).",
         "chunk": 225,
-        "quote": "Abrir Última Actividad por defecto en Entradas"
+        "quote": "Abrir Última Actividad por defecto en Entradas",
+        "img": "23824343-a19f-4244-8604-b1cf867bb19b",
+        "mark": [
+          "Última Actividad"
+        ]
       }
     ],
     "tips": []
@@ -949,17 +1005,29 @@
       {
         "say": "¿No tenés sus datos?: armás una invitación y la compartís por WhatsApp; la persona completa sus datos.",
         "chunk": 206,
-        "quote": "Permite generar una invitación general para compartir mediante WhatsApp u otros medios, sin necesidad de cargar previamente los datos de la persona invitada."
+        "quote": "Permite generar una invitación general para compartir mediante WhatsApp u otros medios, sin necesidad de cargar previamente los datos de la persona invitada.",
+        "img": "912f29a3-cffa-447a-9e62-570003d77cc7",
+        "mark": [
+          "No tenés sus datos"
+        ]
       },
       {
         "say": "Completá sus datos: cargás vos el nombre y DNI de quien va a entrar.",
         "chunk": 206,
-        "quote": "Permite crear una autorización personalizada, cargando manualmente el nombre y DNI de la persona que ingresará."
+        "quote": "Permite crear una autorización personalizada, cargando manualmente el nombre y DNI de la persona que ingresará.",
+        "img": "912f29a3-cffa-447a-9e62-570003d77cc7",
+        "mark": [
+          "Completá sus datos"
+        ]
       },
       {
         "say": "Autorizá empresas: para delivery, remis, proveedores u otros servicios.",
         "chunk": 206,
-        "quote": "Permite autorizar ingresos asociados a empresas o servicios, como delivery, remis, proveedores u otros prestadores."
+        "quote": "Permite autorizar ingresos asociados a empresas o servicios, como delivery, remis, proveedores u otros prestadores.",
+        "img": "912f29a3-cffa-447a-9e62-570003d77cc7",
+        "mark": [
+          "Autorizá empresas"
+        ]
       }
     ],
     "tips": [
@@ -968,6 +1036,10 @@
         "chunk": 207,
         "quote": "La app permite elegir entre 1 y 20 invitados."
       }
-    ]
+    ],
+    "video": {
+      "nombre": "autorizaciones",
+      "titulo": "Autorizaciones en la app"
+    }
   }
 ]

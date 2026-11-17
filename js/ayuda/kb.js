@@ -152,7 +152,7 @@
       K.cdf = new Map();
       K.cards = (hasCards ? rows('SELECT * FROM cards') : []).map((c) => {
         const body = JSON.parse(c.body);
-        const card = { ...c, ask: JSON.parse(c.ask), steps: body.steps || [], tips: body.tips || [] };
+        const card = { ...c, ask: JSON.parse(c.ask), steps: body.steps || [], tips: body.tips || [], video: body.video || null };
         const tf = new Map();
         const put = (s, w) => tokens(s).forEach((t) => tf.set(t, (tf.get(t) || 0) + w));
         card.ask.forEach((a) => put(a, 3));
