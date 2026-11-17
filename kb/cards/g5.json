@@ -104,7 +104,7 @@
     "id": "autogestion-agregar-corresidente",
     "module": "Autogestión: corresidentes e inquilinos",
     "title": "Agregar un corresidente o familiar",
-    "ask": ["quiero agregar un corresidente", "como agrego a mi esposa a la app", "sumar a un familiar a mi lote", "agregar a mi hijo como residente", "dar de alta a otra persona de mi casa", "agregar a mi pareja"],
+    "ask": ["quiero agregar un corresidente", "como cargo a un corresidente", "cargar un corresidente en la app", "dar de alta un corresidente", "sumar un corresidente", "como agrego a mi esposa a la app", "sumar a un familiar a mi lote", "agregar a mi hijo como residente", "dar de alta a otra persona de mi casa", "agregar a mi pareja"],
     "intro": "Lo cargás vos desde la app y después lo valida la administración.",
     "steps": [
       {"say": "Entrá a la app y abrí Autogestión.", "chunk": 200, "quote": "2 - Abrir el módulo \"Autogestión\"."},
