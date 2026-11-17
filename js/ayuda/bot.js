@@ -161,10 +161,12 @@
   const NO = /^(no|nop|nope|negativo|tampoco|todav[ií]a no|no pude|no funciona|no funcion[oó]|no anda|no sirvi[oó]|no me sirvi[oó]|sigue igual|sigue sin (andar|funcionar)|sigue (sin|igual)|no,? sigue igual|no,? por ahora|ahora no|mejor no)[\s!.,]*$/i;
 
   async function onText(t) {
+    cortarSilencio();
     try { await KB.load(); } catch (_) { note('No pude cargar la información de ayuda.', 'bad'); return; }
     if (st.phase !== 'confirm' && st.phase !== 'escalate' && SALUDO.test(t)) {
       return say(`<p>${pick(['¡Hola!', '¡Hola! ¿Cómo estás?'])} Contame qué te pasa con la app y lo vemos juntos.</p>`, 30);
     }
+    if (st.phase === 'done' && SI.test(t)) return say(`<p>${pick(['¡Genial!', '¡Buenísimo!'])} Si necesitás algo más, escribime.</p>`, 20);
     if (GRACIAS.test(t)) return say(`<p>${pick(['¡De nada!', '¡Un gusto!', '¡Para eso estoy!'])} Si necesitás algo más, escribime.</p>`, 20);
     if (st.phase === 'confirm') {
       if (SI.test(t)) return resolved();
@@ -353,10 +355,29 @@
     await say(`<p>${pick(['Probalo y contame: ¿pudiste resolverlo?', '¿Te funcionó? Contame.', 'Fijate y avisame, ¿se resolvió?'])}</p>`, 20);
     opts([{ label: '¡Sí, listo!', pri: true, run: () => { me('¡Sí, listo!'); resolved(); } },
       { label: 'No, sigue igual', run: () => { me('No, sigue igual'); notResolved(); } }]);
+    armarSilencio();
+  }
+  /* Si después de la respuesta nadie contesta en 5 minutos, se da por resuelto por el bot
+     (queda marcado distinto de "confirmado por el residente"). */
+  const SILENCIO_MS = 5 * 60 * 1000;
+  let silencio = null;
+  const cortarSilencio = () => { clearTimeout(silencio); silencio = null; };
+  function armarSilencio() {
+    cortarSilencio();
+    const caso = st.caso;
+    silencio = setTimeout(async () => {
+      if (st.caso !== caso || st.phase !== 'confirm') return;
+      st.caso.estado = 'resuelto';
+      st.caso.resultado = 'Resuelto por el bot: el residente no respondió en 5 minutos';
+      st.phase = 'done';
+      log.querySelectorAll('.ay-opts:not(.used)').forEach((b) => b.classList.add('used'));
+      await guardar('Sin respuesta del residente en 5 minutos: se da por resuelto', 'resuelto');
+    }, SILENCIO_MS);
   }
 
   /* ── cierre del caso ── */
   async function resolved() {
+    cortarSilencio();
     st.caso.estado = 'resuelto';
     st.caso.resultado = 'Resuelto: confirmado por el residente';
     st.phase = 'done';
@@ -366,6 +387,7 @@
   /* No le sirvió: antes de derivar, se sigue buscando con él (otra ficha cercana o que cuente qué ve).
      Recién al segundo intento sin solución queda pendiente y se ofrece la central. */
   async function notResolved() {
+    cortarSilencio();
     st.caso.resultado = 'No se resolvió con las indicaciones';
     st.probadas = (st.probadas || []).concat(st.card ? [st.card.id] : []);
     st.intentos = (st.intentos || 0) + 1;

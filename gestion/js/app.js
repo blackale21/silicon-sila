@@ -18,6 +18,7 @@
     equipo: 'Las personas que usan esta pantalla. Un operador ve sólo los barrios que le asignes; un técnico de campo ve sólo las visitas que le tocan.',
     rol: 'Operador: atiende los tickets de sus barrios. Técnico de campo: va al lugar a resolver. Dirección: ve todo y configura.',
     barrios: 'Se crean solos con lo que escribe el vecino en el chat. Si el mismo barrio aparece escrito de dos formas, podés unirlos.',
+    chats: 'Todas las charlas del chat de residentes, aunque no hayan pedido la central. “Resuelto por el bot · sin respuesta” = el bot le dio la solución y el vecino no contestó en 5 minutos. Tocá una charla para ver qué le explicó el bot.',
     google: 'Opcional: el link donde los vecinos dejan reseñas del barrio en Google, la calificación actual (estrellas) y cuántas reseñas tiene. Se usa en Reputación.',
     unir: 'Si el mismo barrio quedó escrito distinto (por ejemplo “Los Alamos” y “Los Álamos”), elegí con cuál es el mismo y se juntan.',
     semaforo: 'Verde: está en tiempo. Amarillo: se está por vencer. Rojo: ya se pasó del tiempo máximo. Gris: no tiene categoría, así que no se mide.',
@@ -96,7 +97,7 @@
     wa: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-3.8A8 8 0 1 1 8 19z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 9.5c.5 2 2.2 3.8 4.5 4.6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>',
     mail: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z M3 6l9 7 9-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
   };
-  const resueltoPorBot = (c) => c.derivado_central !== 'sí' && G.norm(c.estado) === 'resuelto';
+  const resueltoPorBot = (c) => G.resueltoPorBot(c);
   const idBarrioCaso = (c) => G.barrioDeCaso(c.barrio).id;
 
   /* ── alcance: el rol y los barrios los da el servidor; Dirección puede previsualizar como otro usuario ── */
@@ -302,6 +303,7 @@
   /* ════════ pestañas ════════ */
   const TABS = [
     ['tickets', 'Tickets', 'M4 6h16M4 12h16M4 18h10'],
+    ['chats', 'Chats', 'M4 5h16v11H8l-4 4z'],
     ['lotes', 'Lotes', 'M4 20V9l8-5 8 5v11zM9 20v-6h6v6'],
     ['exp', 'Experiencia', 'M5 5h14v10H9l-4 4z M9 10h.01M12 10h.01M15 10h.01'],
     ['rep', 'Reputación', 'M12 3l2.7 5.6 6.1.8-4.4 4.3 1 6.1L12 17l-5.4 2.8 1-6.1L3.2 9.4l6.1-.8z'],
@@ -687,6 +689,44 @@
     return { nps: Math.round(((p - d) / r.length) * 100), n: r.length, p, d, pa: r.length - p - d, csat: r.reduce((a, e) => a + e.csat, 0) / r.length };
   }
   const refEnc = (e) => (e.ticket ? `<button type="button" class="tkl" data-open="${esc(e.ticket)}">${esc(e.ticket)}</button>` : `<span class="mono">${esc(e.caso_id)}</span> · resuelto por el bot`);
+  /* ════════ vista: chats (todas las charlas del bot, derivadas o no) ════════ */
+  function vChats() {
+    const todos = S.casos.filter((c) => ui.barrio === '*' || idBarrioCaso(c) === ui.barrio)
+      .slice().sort((a, b) => ((a.creado || '') < (b.creado || '') ? 1 : -1));
+    const conE = todos.map((c) => [c, G.estadoChat(c)]);
+    const GR = [['todos', 'Todos', () => true], ['bot', 'Resueltos', (e) => e.k === 'bot' || e.k === 'ok'],
+      ['pend', 'Pendientes', (e) => e.k === 'pend'], ['derivado', 'Derivados', (e) => e.k === 'derivado'], ['curso', 'En curso', (e) => e.k === 'curso']];
+    if (!GR.some((g) => g[0] === ui.chatF)) ui.chatF = 'todos';
+    const f = GR.find((g) => g[0] === ui.chatF)[2];
+    const q = G.norm(ui.q);
+    const list = conE.filter(([c, e]) => f(e) && (!q || G.norm([c.caso_id, c.consulta, c.aclaraciones, c.residente, c.barrio, c.lote, c.modulo].join(' ')).includes(q))).slice(0, 150);
+    const tit = (c) => String(c.pasos_intentados || '').split(/\r?\n/)[0].replace(/:$/, '');
+    const fila = ([c, e]) => {
+      const ab = ui.chatAbierto === c.caso_id;
+      const ev = Array.isArray(c.eventos) ? c.eventos : [];
+      return `<article class="cht ${ab ? 'open' : ''}">
+        <button type="button" class="cht-h" data-chat="${esc(c.caso_id)}" aria-expanded="${ab}">
+          <span class="id">${esc(c.caso_id)}<small>${c.creado ? fdt(c.creado) : ''}</small></span>
+          <span class="q"><b>${esc(String(c.consulta || '').slice(0, 140))}</b>${c.aclaraciones ? `<small>Después: ${esc(String(c.aclaraciones).slice(0, 160))}</small>` : ''}</span>
+          <span class="r">${tit(c) ? esc(tit(c)) : '<i>sin respuesta de los manuales</i>'}</span>
+          <span class="chip ce-${e.k}">${esc(e.txt)}</span>
+        </button>
+        ${ab ? `<div class="cht-d">
+          ${c.residente || c.barrio || c.lote ? `<p class="mini">${esc([c.residente, c.barrio, c.lote ? 'Lote ' + c.lote : ''].filter(Boolean).join(' · '))}</p>` : '<p class="mini">El vecino no dejó sus datos (no pidió la central).</p>'}
+          ${c.pasos_intentados ? `<p class="lbl">Lo que le explicó el bot</p><pre>${esc(c.pasos_intentados)}</pre>` : ''}
+          ${c.fuentes_citadas ? `<p class="lbl">Fuente</p><p class="mini">${esc(c.fuentes_citadas)}</p>` : ''}
+          <p class="lbl">Recorrido</p><ol class="cht-ev">${ev.map((x) => `<li><small>${fdt(x.t)}</small> ${esc(x.txt)}</li>`).join('')}</ol>
+        </div>` : ''}
+      </article>`;
+    };
+    return `<section class="block">
+      <header class="bh"><h3>Chats del bot ${hlp('chats')}</h3></header>
+      <div class="filters"><div class="seg" role="group" aria-label="Filtro de chats">${GR.map(([k, l, fn]) => `<button type="button" data-cf="${k}" class="${ui.chatF === k ? 'on' : ''}">${l} <i>${conE.filter(([, e]) => fn(e)).length}</i></button>`).join('')}</div>
+        <input id="fq" type="search" placeholder="Buscar consulta, caso, barrio…" value="${esc(ui.q)}" aria-label="Buscar"></div>
+      ${list.length ? `<div class="chts">${list.map(fila).join('')}</div>` : `<p class="empty">${todos.length ? 'No hay chats con este filtro.' : 'Todavía no hubo charlas en el chat de residentes.'}</p>`}
+    </section>`;
+  }
+
   function vExp() {
     const enc = S.enc.filter(visEnc);
     if (!enc.length) return `<p class="empty"><b>Todavía no hay encuestas.</b><br>Se generan cuando la central cierra un ticket o cuando el bot resuelve una consulta en el chat. Los envíos son SIMULADOS.</p>`;
@@ -963,7 +1003,7 @@
   }
 
   /* ════════ render general ════════ */
-  const VISTAS = { tickets: vTickets, lotes: vLotes, exp: vExp, rep: vRep, sla: vSla };
+  const VISTAS = { tickets: vTickets, chats: vChats, lotes: vLotes, exp: vExp, rep: vRep, sla: vSla };
   function render() {
     if (document.body.classList.contains('locked')) return;
     renderTop();
@@ -1013,6 +1053,8 @@
     if (d.v2) { ui.vista = d.v2; render(); return; }
     if (d.f) { ui.filtro = d.f; render(); return; }
     if (d.ef) { ui.encF = d.ef; render(); return; }
+    if (d.cf) { ui.chatF = d.cf; render(); return; }
+    if (d.chat) { ui.chatAbierto = ui.chatAbierto === d.chat ? '' : d.chat; render(); return; }
     if (d.lote) { ui.lote = d.lote; render(); if (innerWidth < 900) $('.ldet').scrollIntoView({ behavior: 'smooth' }); return; }
     if (d.open) { abrirFicha(d.open); return; }
     if (b.id === 'bell') { const p = $('#pop'); p.hidden = !p.hidden; if (!p.hidden) renderPop(); return; }

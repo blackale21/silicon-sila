@@ -370,7 +370,19 @@
   }
   const ctxDe = (c) => ({ consulta: c.consulta || '', aclaraciones: c.aclaraciones || '', modulo: c.modulo || '', fuentes: c.fuentes_citadas || '',
     pasos: c.pasos_intentados || '', resultado: c.resultado || '', estado_bot: c.estado || '', creado_bot: c.creado || '', eventos: c.eventos || [], origen: c.origen || '' });
-  const resueltoPorBot = (c) => c.derivado_central !== 'sí' && norm(c.estado) === 'resuelto';
+  // el bot respondió y el residente no contestó en 5 minutos: se da por resuelto por el bot (aunque la pestaña se haya cerrado)
+  const SILENCIO_MS = 5 * 60 * 1000;
+  const sinRespuesta = (c) => norm(c.estado) === 'abierto' && !!c.pasos_intentados && !c.resultado && c.derivado_central !== 'sí' &&
+    now() - new Date(c.actualizado || c.creado).getTime() > SILENCIO_MS;
+  const resueltoPorBot = (c) => c.derivado_central !== 'sí' && (norm(c.estado) === 'resuelto' || sinRespuesta(c));
+  /** Cómo terminó cada charla del chat, en palabras de la central. */
+  function estadoChat(c) {
+    if (c.derivado_central === 'sí') return { k: 'derivado', txt: 'Derivado a la central' };
+    if (norm(c.estado) === 'resuelto') return /confirmado/i.test(c.resultado || '') ? { k: 'ok', txt: 'Resuelto · lo confirmó el vecino' } : { k: 'bot', txt: 'Resuelto por el bot · sin respuesta' };
+    if (sinRespuesta(c)) return { k: 'bot', txt: 'Resuelto por el bot · sin respuesta' };
+    if (norm(c.estado) === 'pendiente') return { k: 'pend', txt: /documentada/i.test(c.resultado || '') ? 'Pendiente · sin solución en los manuales' : 'Pendiente · no aceptó la central' };
+    return { k: 'curso', txt: 'En curso' };
+  }
   const idTicket = (c) => 'TK-' + String(c.caso_id).replace(/^RES-/i, '');
 
   /** Registra barrios nuevos (Dirección), crea tickets de casos derivados y encuestas de lo que resolvió el bot. */
@@ -588,5 +600,6 @@
     usuarios: () => usuarios, usuariosListar, usuarioGuardar, usuarioBaja,
     mut, tk, en, now, iso, sla, revisarSLA, barrio, persona, cats, cat, umbral, loteKey, norm, bid, titulo, evento, alerta, marcarLeidas, puedeBarrio, barrioDeCaso,
     categorizar, cerrar, responder, pedirResena, actualizarCaso, moverTicket, unirBarrios,
+    resueltoPorBot, estadoChat,
   };
 })();
