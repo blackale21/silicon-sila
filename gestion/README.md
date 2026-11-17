@@ -1,20 +1,28 @@
-# Central SILA · gestión + experiencia (demo)
+# Central SILA · gestión + experiencia
 
 Capas 2 y 3 de `SiliconAccess_2.docx`: la app propia que reemplaza Monday.com y la medición de experiencia.
-Vanilla HTML/CSS/JS, sin build. **Todo es simulado**: no sale ningún WhatsApp, email ni pedido de reseña; los datos son ficticios y viven en el `localStorage` del navegador.
+Vanilla HTML/CSS/JS, sin build. **Sin datos de ejemplo**: todo lo que se ve entró por el chat de residentes.
+Lo único simulado son los envíos (WhatsApp, email formal, pedido de reseña): se muestran rotulados SIMULADO y no sale nada.
 
-## Cómo se navega
-- **Ver como** (arriba): Dirección (todos los barrios + config), Operador (sólo su barrio: aislamiento multi-tenant) o Técnico de campo (sólo sus visitas). Cada pestaña del navegador puede tener otro rol.
-- **Tickets**: grilla en vivo ordenada por % de SLA consumido. Semáforo verde / ámbar (≥ 75 %, alerta automática) / rojo (vencido, escala a Dirección). Ficha con contexto del bot, gestión, bitácora y cierre.
-- **Reloj demo** (+15 min / +1 h): adelanta el tiempo para ver cruzar el 75 % y el vencimiento.
-- **Lotes**: historial consolidado Barrio → Lote → Usuarios; junta reportes de la familia, la guardia y el bot sobre la misma propiedad (los del mismo lote y categoría se vinculan y se cierran juntos).
-- **Experiencia**: al cerrar, encuesta CSAT/NPS por WhatsApp (resolvió el bot) o email formal (resolvió una persona). Detractores → protocolo de recuperación; promotores → pedido de reseña de Google por barrio.
-- **Reputación**: NPS, CSAT, Google (simulado), cumplimiento de SLA y tendencia semanal por barrio.
-- **SLA y config.**: horas por categoría y umbral de alerta (Dirección edita). Restablecer datos de ejemplo.
+## Conexión
+- Lee `../js/config.js → SILA_CONFIG.ayuda.backendUrl` (Apps Script, `backend/ayuda-casos.gs`). Vacío → "Falta conectar el backend" y no muestra nada.
+- `POST` con `Content-Type: text/plain;charset=utf-8` (sin preflight). Acciones:
+  `central_estado`, `central_crear_clave`, `casos_listar` (con `desde`), `caso_actualizar`, `kv_get`, `kv_set`.
+- **Clave de la central**: la primera vez se crea (dos veces, mínimo 8). Queda en `localStorage.sila_central_clave`; "Salir de esta PC" (Config.) la borra. Sin clave no se ve ningún dato.
+- **Casos**: refresco cada 9 s con `desde`. `BroadcastChannel('sila-demo')` sólo adelanta el refresco.
+  - `derivado_central === 'sí'` → ticket con consulta, pasos intentados, fuentes y contacto. Se anota `monday_ticket` en el caso.
+  - Cerrar el ticket → `caso_actualizar {estado:'resuelto', resultado}`.
+  - Casos que resolvió el bot → encuesta por WhatsApp (simulada) y métrica "Resueltos por el bot".
+  - Barrios y lotes se dan de alta solos con lo que escribe el residente (Dirección puede renombrarlos o unir duplicados).
+- **Estado compartido** (`kv_set` con versión, ~1 s de espera): `sila_central_tickets`, `_encuestas`, `_config`, `_equipo`, `_barrios`, `_alertas`.
+  Si otra PC escribió antes (`conflicto`), se toma la versión del backend y se vuelven a aplicar los cambios pendientes: no se pierde ninguno.
+- Indicador arriba: "Conectado · actualizado hace X s" / "Sin conexión".
 
-## Integración con el bot (`js/ayuda/`)
-- Lee `localStorage['sila_demo_casos_v1']` y escucha `BroadcastChannel('sila-demo')` (`{type:'caso', id}`), con sondeo de respaldo cada 5 s.
-- Cada caso con `derivado_central === 'sí'` se vuelve ticket con consulta, aclaraciones, módulo, fuentes y pasos intentados.
-- En el caso sólo se escribe `monday_ticket` (= id del ticket). Si el bot lo pisa, se vuelve a anotar.
-- Claves propias: `sila_demo_tickets_v1`, `sila_demo_encuestas_v1`, `sila_demo_gestion_v1`.
-- Para que el bot muestre el acceso: `js/config.js → ayuda.gestionUrl = 'gestion/'`.
+## Qué carga Dirección (Config.)
+- Categorías de SLA (nombre, horas, palabras clave para categorizar solo). Hay un atajo para los dos plazos del contrato: barrera caída 2 h, cambio de datos 24 h. Sin categoría el semáforo queda en gris.
+- Umbral de alerta (75 % por defecto).
+- Equipo: operadores (con sus barrios: aislamiento) y técnicos de campo (sólo ven sus visitas). "Ver como" cambia la vista en esa pestaña.
+- Barrios: nombre, perfil de Google (link, calificación, cantidad de reseñas) y "es el mismo que…" para unificar.
+
+## Vistas
+Tickets (semáforo SLA, alerta al umbral, vencido → Dirección) · Lotes (historial consolidado: tickets + consultas del chat del mismo lote) · Experiencia (CSAT/NPS, detractores con protocolo, pedidos de reseña) · Reputación por barrio · Config.
