@@ -231,8 +231,11 @@
 
   /* ── casos del chat ── */
   async function leerCasos() {
-    const j = await conToken(desde ? { action: 'casos_listar', desde } : { action: 'casos_listar' });
+    // cada tanto se relee todo: así desaparecen los casos que se borraron de la planilla
+    const completo = !desde || ciclo % 10 === 0;
+    const j = await conToken(completo ? { action: 'casos_listar' } : { action: 'casos_listar', desde });
     if (!j.ok) throw fallo(j.error || 'casos');
+    if (completo) casos.clear();
     (j.casos || []).forEach((c) => c && c.caso_id && casos.set(c.caso_id, c));
     if (j.ahora) desde = j.ahora;
     return (j.casos || []).length;
