@@ -97,19 +97,19 @@ function jevResponder(p) {
   return outp;
 }
 
-/* ───────────── Clave de la central ───────────── */
+/* ───────────── Usuarios de la central: Dirección + operadores/técnicos ───────────── */
+// Dirección: usuario "direccion", clave en Propiedades (CENTRAL_HASH/SALT). El resto: hoja oculta "Usuarios",
+// clave con hash iterado + sal. Sesión: token aleatorio en caché (6 h, se renueva con cada uso).
+const USR_SHEET = 'Usuarios';
+const USR_COLS = ['usuario', 'nombre', 'rol', 'barrios', 'hash', 'salt', 'activo', 'creado'];
+const ROLES = ['operador', 'tecnico'];
 function hashClave(clave, salt) {
   return Utilities.base64Encode(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, salt + '|' + clave));
 }
-function centralOk(clave) {
-  const cache = CacheService.getScriptCache();
-  if (Number(cache.get('central_fallos') || 0) >= 20) return 'bloqueado';
-  const props = PropertiesService.getScriptProperties();
-  const h = props.getProperty('CENTRAL_HASH'), s = props.getProperty('CENTRAL_SALT');
-  if (!h || !s) return 'sin_clave';
-  if (hashClave(String(clave || ''), s) === h) return 'ok';
-  cache.put('central_fallos', String(Number(cache.get('central_fallos') || 0) + 1), 600);
-  return 'clave';
+function hashFuerte(clave, salt) {
+  let h = hashClave(clave, salt);
+  for (let i = 0; i < 400; i++) h = hashClave(h, salt);
+  return h;
 }
 function centralCrearClave(clave) {
   clave = String(clave || '');
@@ -119,6 +119,125 @@ function centralCrearClave(clave) {
   const salt = Utilities.getUuid();
   props.setProperties({ CENTRAL_SALT: salt, CENTRAL_HASH: hashClave(clave, salt) });
   return { ok: true };
+}
+function usrSheet() {
+  const ss = libro();
+  let sh = ss.getSheetByName(USR_SHEET);
+  if (!sh) { sh = ss.insertSheet(USR_SHEET); sh.appendRow(USR_COLS); sh.hideSheet(); }
+  return sh;
+}
+function usrTodos() {
+  const sh = usrSheet();
+  const n = sh.getLastRow() - 1;
+  return n < 1 ? [] : sh.getRange(2, 1, n, USR_COLS.length).getValues().map((r, i) => {
+    const o = { fila: i + 2 };
+    USR_COLS.forEach((k, j) => { o[k] = r[j]; });
+    try { o.barrios = JSON.parse(String(o.barrios || '[]').replace(/^'/, '')); } catch (_) { o.barrios = []; }
+    o.activo = o.activo === true || o.activo === 'TRUE' || o.activo === 'sí';
+    return o;
+  });
+}
+const DIRECCION = { usuario: 'direccion', nombre: 'Dirección', rol: 'direccion', barrios: [] };
+function publico(u) { return { usuario: u.usuario, nombre: u.nombre, rol: u.rol, barrios: u.barrios || [] }; }
+
+function login(usuario, clave) {
+  usuario = String(usuario || '').trim().toLowerCase();
+  clave = String(clave || '');
+  const cache = CacheService.getScriptCache();
+  const kf = 'lf_' + usuario.replace(/[^a-z0-9._-]/g, '').slice(0, 30);
+  if (Number(cache.get(kf) || 0) >= 10 || Number(cache.get('lf_global') || 0) >= 80) return { ok: false, error: 'bloqueado' };
+  let yo = null;
+  if (usuario === 'direccion') {
+    const props = PropertiesService.getScriptProperties();
+    const h = props.getProperty('CENTRAL_HASH'), sa = props.getProperty('CENTRAL_SALT');
+    if (h && sa && hashClave(clave, sa) === h) yo = DIRECCION;
+  } else {
+    const u = usrTodos().find((x) => x.usuario === usuario);
+    if (u && hashFuerte(clave, u.salt) === u.hash) {
+      if (!u.activo) return { ok: false, error: 'inactivo' };
+      yo = publico(u);
+    }
+  }
+  if (!yo) {
+    cache.put(kf, String(Number(cache.get(kf) || 0) + 1), 600);
+    cache.put('lf_global', String(Number(cache.get('lf_global') || 0) + 1), 600);
+    return { ok: false, error: 'credenciales' };
+  }
+  const token = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
+  cache.put('tok_' + token, yo.usuario, 21600);
+  return { ok: true, token: token, yo: yo };
+}
+// Devuelve el usuario vigente (re-leído de la planilla: una baja o un cambio de barrios rige al instante)
+function sesion(token) {
+  token = String(token || '');
+  if (!/^[a-f0-9]{64}$/.test(token)) return null;
+  const cache = CacheService.getScriptCache();
+  const usuario = cache.get('tok_' + token);
+  if (!usuario) return null;
+  let yo = null;
+  if (usuario === 'direccion') yo = DIRECCION;
+  else {
+    const u = usrTodos().find((x) => x.usuario === usuario);
+    if (!u || !u.activo) { cache.remove('tok_' + token); return null; }
+    yo = publico(u);
+  }
+  cache.put('tok_' + token, usuario, 21600);
+  return yo;
+}
+function usuarioGuardar(p) {
+  const usuario = String(p.usuario || '').trim().toLowerCase();
+  if (!/^[a-z0-9._-]{3,30}$/.test(usuario) || usuario === 'direccion') return { ok: false, error: 'usuario_invalido' };
+  if (ROLES.indexOf(p.rol) === -1) return { ok: false, error: 'rol' };
+  const nombre = clip(String(p.nombre || '').trim(), 80);
+  if (!nombre) return { ok: false, error: 'nombre' };
+  const barrios = (Array.isArray(p.barrios) ? p.barrios : []).map(String).filter((b) => /^[a-z0-9]{1,40}$/.test(b)).slice(0, 100);
+  const sh = usrSheet();
+  const u = usrTodos().find((x) => x.usuario === usuario);
+  const clave = p.clave == null ? '' : String(p.clave);
+  if (!u && clave.length < 8) return { ok: false, error: 'clave_corta' };
+  if (u && clave && clave.length < 8) return { ok: false, error: 'clave_corta' };
+  const salt = clave ? Utilities.getUuid() : u.salt;
+  const hash = clave ? hashFuerte(clave, salt) : u.hash;
+  const fila = [usuario, nombre, p.rol, JSON.stringify(barrios), hash, salt, u ? (p.activo === false ? false : true) : true, u ? u.creado : new Date()];
+  if (u) sh.getRange(u.fila, 1, 1, USR_COLS.length).setValues([fila]);
+  else sh.appendRow(fila);
+  return { ok: true };
+}
+function usuarioBaja(usuario) {
+  const u = usrTodos().find((x) => x.usuario === String(usuario || '').toLowerCase());
+  if (!u) return { ok: false, error: 'no_existe' };
+  usrSheet().getRange(u.fila, USR_COLS.indexOf('activo') + 1).setValue(false);
+  return { ok: true };
+}
+function claveCambiar(yo, actual, nueva) {
+  nueva = String(nueva || '');
+  if (nueva.length < 8) return { ok: false, error: 'clave_corta' };
+  if (!login(yo.usuario, actual).ok) return { ok: false, error: 'credenciales' };
+  const salt = Utilities.getUuid();
+  if (yo.usuario === 'direccion') {
+    PropertiesService.getScriptProperties().setProperties({ CENTRAL_SALT: salt, CENTRAL_HASH: hashClave(nueva, salt) });
+  } else {
+    const u = usrTodos().find((x) => x.usuario === yo.usuario);
+    usrSheet().getRange(u.fila, USR_COLS.indexOf('hash') + 1, 1, 2).setValues([[hashFuerte(nueva, salt), salt]]);
+  }
+  return { ok: true };
+}
+
+/* ── permisos por barrio ── */
+function normTxt(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim(); }
+function mapaBarrios() {
+  const v = kvGet(['sila_central_cfg']).valores.sila_central_cfg;
+  const m = {};
+  ((v && v.valor && v.valor.barrios) || []).forEach((b) => {
+    [b.nombre].concat(b.alias || []).forEach((n) => { if (n) m[normTxt(n)] = String(b.id); });
+  });
+  return m;
+}
+function puedeKey(yo, key, escribir) {
+  if (yo.rol === 'direccion') return true;
+  if (key === 'sila_central_cfg') return !escribir;
+  const m = /^sila_central_b_([a-z0-9]+)_[a-z0-9_]+$/.exec(key);
+  return !!(m && (yo.barrios || []).indexOf(m[1]) >= 0);
 }
 
 /* ───────────── Planilla de casos ───────────── */
@@ -189,20 +308,25 @@ function guardarCaso(p) {
   return { ok: true, mail: mail, central: rec.derivado_central === 'sí' };
 }
 
-function casosListar(desde) {
+function casosListar(yo, desde) {
   const sh = sheet();
   const n = sh.getLastRow() - 1;
-  const casos = n < 1 ? [] : sh.getRange(2, 1, n, COLS.length).getValues().map(filaACaso);
+  let casos = n < 1 ? [] : sh.getRange(2, 1, n, COLS.length).getValues().map(filaACaso);
+  if (yo.rol !== 'direccion') {
+    const m = mapaBarrios();
+    casos = casos.filter((c) => (yo.barrios || []).indexOf(m[normTxt(c.barrio)]) >= 0);
+  }
   const d = desde ? new Date(desde) : null;
   return { ok: true, ahora: new Date().toISOString(), casos: d ? casos.filter((c) => new Date(c.actualizado) > d) : casos };
 }
 
-function casoActualizar(p) {
+function casoActualizar(yo, p) {
   const sh = sheet();
   const row = findRow(sh, String(p.caso_id || ''));
   if (!row) return { ok: false, error: 'no_existe' };
   const campos = p.campos || {};
   const prev = sh.getRange(row, 1, 1, COLS.length).getValues()[0];
+  if (yo.rol !== 'direccion' && (yo.barrios || []).indexOf(mapaBarrios()[normTxt(prev[COLS.indexOf('barrio')])]) === -1) return { ok: false, error: 'permiso' };
   const now = new Date();
   ['monday_ticket', 'estado', 'resultado'].forEach((k) => {
     if (!(k in campos)) return;
@@ -212,7 +336,7 @@ function casoActualizar(p) {
   prev[COLS.indexOf('actualizado')] = now;
   let ev = [];
   try { ev = JSON.parse(String(prev[COLS.indexOf('eventos')] || '[]').replace(/^'/, '')); } catch (_) { ev = []; }
-  ev.push({ t: now.toISOString(), txt: 'Central: ' + Object.keys(campos).filter((k) => ['monday_ticket', 'estado', 'resultado'].indexOf(k) >= 0).map((k) => k + ' = ' + campos[k]).join(', ') });
+  ev.push({ t: now.toISOString(), txt: (yo.nombre || 'Central') + ': ' + Object.keys(campos).filter((k) => ['monday_ticket', 'estado', 'resultado'].indexOf(k) >= 0).map((k) => k + ' = ' + campos[k]).join(', ') });
   prev[COLS.indexOf('eventos')] = JSON.stringify(ev.slice(-80)).slice(0, 45000);
   sh.getRange(row, 1, 1, COLS.length).setValues([prev]);
   return { ok: true };
@@ -279,18 +403,34 @@ function doPost(e) {
   try {
     if (p.action === 'jev') return out(jevResponder(p));
     if (p.action === 'central_estado') return out({ ok: true, tieneClave: !!PropertiesService.getScriptProperties().getProperty('CENTRAL_HASH') });
+    if (p.action === 'login') return out(login(p.usuario, p.clave));
+    if (p.action === 'logout') { CacheService.getScriptCache().remove('tok_' + String(p.token || '')); return out({ ok: true }); }
     const lock = LockService.getScriptLock();
     lock.waitLock(15000);
     try {
       if (p.action === 'upsert' || p.action === 'derivar') return out(guardarCaso(p));
       if (p.action === 'central_crear_clave') return out(centralCrearClave(p.clave));
-      const auth = centralOk(p.clave);
-      if (auth !== 'ok') return out({ ok: false, error: auth });
-      if (p.action === 'casos_listar') return out(casosListar(p.desde));
-      if (p.action === 'caso_actualizar') return out(casoActualizar(p));
-      if (p.action === 'kv_get') return out(kvGet(p.keys));
-      if (p.action === 'kv_set') return out(kvSet(p));
-      return out({ ok: false, error: 'accion' });
+      // compatibilidad: la versión anterior de la central manda la clave de Dirección en vez de token
+      const yo = sesion(p.token) || (p.clave && login('direccion', p.clave).ok ? DIRECCION : null);
+      if (!yo) return out({ ok: false, error: 'sesion' });
+      const dir = yo.rol === 'direccion';
+      switch (p.action) {
+        case 'yo': return out({ ok: true, yo: yo });
+        case 'clave_cambiar': return out(claveCambiar(yo, p.actual, p.nueva));
+        case 'casos_listar': return out(casosListar(yo, p.desde));
+        case 'caso_actualizar': return out(casoActualizar(yo, p));
+        case 'kv_get': {
+          const keys = (p.keys || []).map(String);
+          const r = kvGet(keys.filter((k) => puedeKey(yo, k, false)));
+          r.denegadas = keys.filter((k) => !puedeKey(yo, k, false));
+          return out(r);
+        }
+        case 'kv_set': return out(puedeKey(yo, String(p.key || ''), true) ? kvSet(p) : { ok: false, error: 'permiso' });
+        case 'usuarios_listar': return out(dir ? { ok: true, usuarios: usrTodos().map((u) => ({ usuario: u.usuario, nombre: u.nombre, rol: u.rol, barrios: u.barrios, activo: u.activo, creado: u.creado instanceof Date ? u.creado.toISOString() : u.creado })) } : { ok: false, error: 'permiso' });
+        case 'usuario_guardar': return out(dir ? usuarioGuardar(p) : { ok: false, error: 'permiso' });
+        case 'usuario_baja': return out(dir ? usuarioBaja(p.usuario) : { ok: false, error: 'permiso' });
+        default: return out({ ok: false, error: 'accion' });
+      }
     } finally {
       lock.releaseLock();
     }
