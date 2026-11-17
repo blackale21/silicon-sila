@@ -67,7 +67,9 @@ def build(con):
     man = json.load(open(os.path.join(KB, 'src', 'manifest.json'), encoding='utf-8'))
     byid = {m['id']: m['path'] for m in man if m.get('path')}
     for did, ids in con.execute('select id, drive_ids from documents'):
-        docs[did] = os.path.join(KB, byid[json.loads(ids)[0]])
+        first = json.loads(ids)[0]
+        if first in byid:  # las páginas de Confluence no tienen PDF (sin capturas)
+            docs[did] = os.path.join(KB, byid[first])
     opened, report, n = {}, [], 0
     for old in glob.glob(os.path.join(KB, 'shots', '*.webp')):
         os.remove(old)

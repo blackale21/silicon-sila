@@ -219,8 +219,10 @@
     if (!r.ok) { CASOS.enviar('upsert', st.caso, `Jev no disponible (${r.error}); se usó el buscador local`); return false; }
     const byId = (id) => KB.K.cards.find((c) => c.id === id);
     const log = `Jev eligió "${r.choice}" (confianza ${r.confidence})`;
-    if (r.choice === 'ninguna' && r.confidence >= 0.5) { if (st.ctx.previo && corto(q)) return false; await CASOS.enviar('upsert', st.caso, log); await notFound(); return true; }
+    if (r.choice === 'ninguna' && r.confidence >= 0.5) { if ((st.ctx.previo && corto(q)) || d.type === 'card') return false; await CASOS.enviar('upsert', st.caso, log); await notFound(); return true; }
     const best = byId(r.choice);
+    // si Jev vuelve a elegir algo que ya probó y no le sirvió, decide el buscador local
+    if (best && (st.probadas || []).indexOf(best.id) >= 0 && d.type === 'card' && d.card.id !== best.id) return false;
     if (best && r.confidence >= 0.55) { await CASOS.enviar('upsert', st.caso, log); await answerCard(best); return true; }
     const top = (r.top || []).filter(([id, p]) => id !== 'ninguna' && p >= 0.15);
     const dudas = top.map(([id]) => byId(id)).filter(Boolean);

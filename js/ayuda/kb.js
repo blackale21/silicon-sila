@@ -374,7 +374,7 @@
       return { type: 'card', A, card: best.card, score: best.score };
     }
     // sin ficha: sólo si una página para residentes coincide con mucha claridad
-    const ch = search(A, { module: ctx.module }).filter((h) => !isAdmin(h) && h.coverage >= 0.85 && h.score >= 8);
+    const ch = search(A, { module: ctx.module }).filter((h) => !isAdmin(h) && h.chunk.image && h.coverage >= 0.85 && h.score >= 8);
     if (ch.length) return { type: 'page', A, hit: ch[0] };
     return { type: 'none', A };
   }

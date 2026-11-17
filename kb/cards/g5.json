@@ -1,0 +1,303 @@
+[
+  {
+    "id": "acceso-olvide-contrasena",
+    "module": "Acceso y contraseña",
+    "title": "Me olvidé la contraseña o me dice que no puede iniciar sesión",
+    "ask": ["me olvidé la contraseña", "no me acuerdo la clave de la app", "me dice no puede iniciar sesión con las credenciales proporcionadas", "usuario o contraseña incorrecta", "quiero recuperar mi contraseña", "como blanqueo la clave", "no puedo entrar me dice clave incorrecta", "olvide mi clave"],
+    "intro": "Tranqui, la contraseña la recuperás vos mismo en un par de minutos.",
+    "steps": [
+      {"say": "Abrí la app y tocá Iniciar sesión.", "chunk": 185, "quote": "2 - En la pantalla principal, presiona Iniciar sesión."},
+      {"say": "Abajo del botón Ingresar, tocá ¿No recordás tu contraseña?", "chunk": 185, "quote": "selecciona la opción ¿No recordás tu contraseña?."},
+      {"say": "Escribí el correo de tu cuenta y tocá Solicitar nueva contraseña. Te va a aparecer el aviso de que se envió el mail.", "chunk": 185, "quote": "ingresa el correo electrónico asociado a tu usuario y presiona Solicitar nueva contraseña."},
+      {"say": "Abrí el mail que te llegó y tocá Cambiar Contraseña.", "chunk": 185, "quote": "5 - Abrir el correo recibido y presionar en Cambiar Contraseña."},
+      {"say": "Se abre una página de Silicon Access: escribí la contraseña nueva dos veces y tocá Guardar nueva contraseña.", "chunk": 186, "quote": "7 - Presiona Guardar nueva contraseña."},
+      {"say": "Volvé a la app y entrá con tu usuario y la contraseña nueva.", "chunk": 186, "quote": "inicia sesión utilizando el usuario informado en el correo y la nueva contraseña"}
+    ],
+    "tips": [
+      {"say": "Si te llegaron varios mails, usá el último.", "chunk": 184, "quote": "asegurarse de utilizar el último recibido"},
+      {"say": "En ese mismo mail figura tu usuario, por si tampoco te acordás cuál es.", "chunk": 185, "quote": "El correo también indica el usuario asociado a la cuenta"},
+      {"say": "La contraseña nueva tiene que cumplir los requisitos que te muestra la pantalla.", "chunk": 186, "quote": "La contraseña debe cumplir con los requisitos de seguridad indicados en la pantalla."}
+    ]
+  },
+  {
+    "id": "acceso-cual-es-mi-usuario",
+    "module": "Acceso y contraseña",
+    "title": "No sé cuál es mi usuario",
+    "ask": ["olvidé mi usuario", "no sé cuál es mi usuario", "con qué usuario entro a la app", "el usuario es el dni o el mail", "no me acuerdo el usuario"],
+    "intro": "Te cuento, es más simple de lo que parece.",
+    "steps": [
+      {"say": "Tu usuario es tu correo electrónico o tu DNI.", "chunk": 187, "quote": "Usuario: tu correo electrónico o DNI"},
+      {"say": "Si no te sale con ninguno de los dos, pedí una contraseña nueva desde ¿No recordás tu contraseña?: en el mail que te llega figura tu usuario.", "chunk": 185, "quote": "El correo también indica el usuario asociado a la cuenta"}
+    ],
+    "tips": []
+  },
+  {
+    "id": "acceso-cambiar-contrasena",
+    "module": "Acceso y contraseña",
+    "title": "Cambiar mi contraseña desde la app",
+    "ask": ["quiero cambiar mi contraseña", "como cambio la clave estando adentro de la app", "cambiar la clave temporal", "me dieron una clave temporal", "donde se cambia la contraseña"],
+    "intro": "Se cambia desde tu perfil, te guío.",
+    "steps": [
+      {"say": "Dentro de la app, entrá a Mi Perfil.", "chunk": 188, "quote": "1 - Dentro de la App, ingresar en Mi Perfil"},
+      {"say": "Abrí Configuración.", "chunk": 188, "quote": "2 - Abrir \"Configuración\""},
+      {"say": "Abajo de todo, en Seguridad, tocá Editar.", "chunk": 188, "quote": "en \"Seguridad\" presionar \"Editar\""},
+      {"say": "Escribí la clave temporal que te dieron y después tu contraseña nueva en los dos campos siguientes. Guardá.", "chunk": 188, "quote": "Escribir la clave temporal Bienvenida, y luego la nueva contraseña de su elección en los 2 campos siguientes."}
+    ],
+    "tips": [
+      {"say": "Si no te acordás la contraseña y no podés entrar, lo que sirve es recuperarla desde ¿No recordás tu contraseña? en la pantalla de inicio de sesión.", "chunk": 185, "quote": "selecciona la opción ¿No recordás tu contraseña?."}
+    ]
+  },
+  {
+    "id": "acceso-activar-con-codigo",
+    "module": "Acceso y contraseña",
+    "title": "Activar mi usuario con el código que me llegó",
+    "ask": ["me llegó el código de activación y no sé qué hacer", "como activo mi usuario con el código", "tengo el código de validación", "donde pongo el código", "primera vez que entro a la app"],
+    "intro": "Buenísimo, con el código ya tenés casi todo. Hacé así:",
+    "steps": [
+      {"say": "Abrí la app y elegí Primera vez que entro.", "chunk": 193, "quote": "2 - Seleccionar la opción \"Primera vez que entro\""},
+      {"say": "Escribí tu DNI sin puntos ni espacios.", "chunk": 193, "quote": "3 - Ingresa tu DNI (sin puntos ni espacios)"},
+      {"say": "Poné el Código de Activación que te llegó por mail y tocá Validar Código.", "chunk": 193, "quote": "5 - Presionar Validar Código."},
+      {"say": "Fijate que tu correo esté bien y creá tu contraseña.", "chunk": 193, "quote": "6 - Verificar que el correo electrónico es correcto. 7 - Ingresar una contraseña."},
+      {"say": "Listo: de ahí en más entrás con Ya tengo una cuenta.", "chunk": 193, "quote": "De esta forma, podrás ingresar en la App desde la opción \"Ya tengo una cuenta\""}
+    ],
+    "tips": [
+      {"say": "Si al validar te sale un error, anotá qué dice: con eso te pueden orientar.", "chunk": 193, "quote": "En el caso de recibir el mensaje de error, te pedimos que lo anotes"}
+    ]
+  },
+  {
+    "id": "acceso-no-llega-codigo",
+    "module": "Acceso y contraseña",
+    "title": "No me llega el código de activación",
+    "ask": ["no me llega el código de activación", "no me llegó el código de validación", "no recibo el código para activar la app", "el mail con el código no llega", "necesito el código para entrar"],
+    "intro": "Vamos por partes, que suele ser algo simple.",
+    "steps": [
+      {"say": "Revisá la carpeta de Spam o Correo no deseado de tu mail.", "chunk": 192, "quote": "te pedimos verificar en la carpeta de Spam de tu casilla de correo."},
+      {"say": "El código te lo manda la administración de tu barrio, al mail que tenés registrado en tu perfil.", "chunk": 194, "quote": "el cual es enviado por la Administración de tu barrio en un correo de invitación a la dirección de mail que tenés registrada en tu perfil."},
+      {"say": "Si no te llegó o ese mail ya no lo usás, pedile a la administración que te lo reenvíe o que corrija tu mail.", "chunk": 194, "quote": "será necesario que te pongas en contacto con la Administración de tu barrio para solicitarles el envío, o validar la dirección de mail que tenés registrada."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "acceso-codigo-da-error",
+    "module": "Acceso y contraseña",
+    "title": "Pongo el código y me da error",
+    "ask": ["pongo el código y me da error", "el código de activación no funciona", "me dice código inválido", "el código está vencido", "ingreso el código que me enviaron y no puedo entrar"],
+    "intro": "Eso casi siempre es un dato mal cargado. Esto es lo que hay que hacer:",
+    "steps": [
+      {"say": "Pedile a la administración de tu barrio que revise tu DNI y tu mail tal como los tienen cargados.", "chunk": 195, "quote": "deberás ponerte en contacto con la Administración de tu barrio para solicitarles la revisión de los datos registrados, tanto DNI como dirección de mail."},
+      {"say": "Si los datos están bien y sigue el error, sacale una captura de pantalla al mensaje: con eso lo revisa Soporte Técnico.", "chunk": 195, "quote": "deberás comunicarte con nuestro Soporte Técnico, enviando captura de pantalla en donde pueda verse el error."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "acceso-desde-computadora",
+    "module": "Acceso y contraseña",
+    "title": "Entrar desde la computadora (Web de Residente)",
+    "ask": ["puedo entrar desde la computadora", "hay una página web para residentes", "no tengo la app puedo usar la web", "entrar desde el navegador", "web de residente"],
+    "intro": "Sí, también tenés una versión web.",
+    "steps": [
+      {"say": "Desde cualquier navegador entrá a web.silicon-access.com con el mismo usuario y contraseña de la app. Es una versión más simple que la app.", "chunk": 191, "quote": "también podés acceder desde cualquier navegador a la Web de Residente usando el mismo usuario y clave para tener una versión simplificada de las funcionalidades de la App."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "autogestion-agregar-corresidente",
+    "module": "Autogestión: corresidentes e inquilinos",
+    "title": "Agregar un corresidente o familiar",
+    "ask": ["quiero agregar un corresidente", "como agrego a mi esposa a la app", "sumar a un familiar a mi lote", "agregar a mi hijo como residente", "dar de alta a otra persona de mi casa", "agregar a mi pareja"],
+    "intro": "Lo cargás vos desde la app y después lo valida la administración.",
+    "steps": [
+      {"say": "Entrá a la app y abrí Autogestión.", "chunk": 200, "quote": "2 - Abrir el módulo \"Autogestión\"."},
+      {"say": "En la solapa Corresidentes tocá el botón +.", "chunk": 200, "quote": "3 - En la solapa \"Corresidentes\" presionar el botón mas (+) para agregar un corresidente."},
+      {"say": "Leé el aviso y tocá Continuar.", "chunk": 200, "quote": "4 - Leer el aviso, y \"Continuar\"."},
+      {"say": "Completá nombre, apellido, documento, fecha de nacimiento, teléfono y un mail válido: ese mail va a ser su usuario y ahí le llega el código.", "chunk": 200, "quote": "Ingresá un email válido. A este email se le enviará el código de validación, y será el usuario de acceso."},
+      {"say": "Tocá Guardar.", "chunk": 200, "quote": "6 - Presionar \"Guardar\"."},
+      {"say": "Después avisale a la administración de tu barrio para que lo valide y le mande el código de validación.", "chunk": 200, "quote": "deberás comunicarte con la administración de tu barrio para validar la información y solicitarles el envío del código de validación."}
+    ],
+    "tips": [
+      {"say": "La foto que subís ahí es la de perfil, no la del Face ID.", "chunk": 200, "quote": "Subir una foto, será la foto de perfil (no es la foto de Face ID)."},
+      {"say": "Si no te aparece Autogestión, tocá el + de la pantalla principal y agregalo.", "chunk": 198, "quote": "Si no aparece, tocá el icono más y selecciónalo de la lista."}
+    ]
+  },
+  {
+    "id": "autogestion-agregar-inquilino",
+    "module": "Autogestión: corresidentes e inquilinos",
+    "title": "Agregar un inquilino",
+    "ask": ["quiero agregar un inquilino", "como cargo a mi inquilino", "alquilé la casa como doy de alta al inquilino", "sumar inquilinos en la app", "cargar contrato de alquiler"],
+    "intro": "Si tu barrio lo tiene habilitado, lo cargás vos desde la app.",
+    "steps": [
+      {"say": "Entrá a la app y abrí Autogestión.", "chunk": 198, "quote": "2 - Abrir el ícono “Autogestión”"},
+      {"say": "Andá a la solapa Inquilinos y tocá el botón +.", "chunk": 198, "quote": "4 - Presionar el botón más para agregar cualquiera de las opciones."},
+      {"say": "Cargá sus datos y la fecha de vigencia del contrato.", "chunk": 199, "quote": "podrás gestionar tus inquilinos desde esta sección, agregando fecha de vigencia del contrato."},
+      {"say": "Después avisale a la administración de tu barrio para que le mande el mail con el código para su primer ingreso.", "chunk": 199, "quote": "Una vez creado un perfil de inquilino, deberás informar a la Administración de tu barrio para que envíen por mail el correo de invitación"}
+    ],
+    "tips": [
+      {"say": "Esta opción depende de cómo lo configuró tu barrio; si no te aparece, es por eso.", "chunk": 199, "quote": "Inquilinos: Si la configuración del barrio lo permite"}
+    ]
+  },
+  {
+    "id": "autogestion-vehiculos-mascotas",
+    "module": "Autogestión: corresidentes e inquilinos",
+    "title": "Cargar un vehículo o una mascota",
+    "ask": ["quiero cargar mi auto", "registrar un vehículo", "agregar la patente de mi auto", "cargar mi mascota", "registrar mi perro"],
+    "intro": "Se hace desde Autogestión, es corto.",
+    "steps": [
+      {"say": "Entrá a la app y abrí Autogestión.", "chunk": 198, "quote": "2 - Abrir el ícono “Autogestión”"},
+      {"say": "Elegí la solapa Vehículos o Mascotas.", "chunk": 198, "quote": "3 - Verás las solapas de Corresidentes, Vehículos, Mascotas e Inquilinos"},
+      {"say": "Tocá el botón + y completá los datos.", "chunk": 199, "quote": "Vehículos y Mascotas: Podrás agregar vehículos y mascotas con sus respectivos datos."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "autogestion-mail-corresidente",
+    "module": "Autogestión: corresidentes e inquilinos",
+    "title": "Cambiar o agregar el mail de un corresidente",
+    "ask": ["cambiar el mail de mi corresidente", "a mi esposa no le llega el código porque el mail está mal", "agregar el mail de un familiar", "corregir el correo de un corresidente"],
+    "intro": "Lo podés corregir vos desde Autogestión.",
+    "steps": [
+      {"say": "Abrí Autogestión y entrá a la solapa Corresidentes.", "chunk": 201, "quote": "3 - En la solapa Corresidentes verás el listado actual de todos tus corresidentes."},
+      {"say": "Tocá el ícono de llaves azul de esa persona.", "chunk": 201, "quote": "4 - Haciendo clic en el ícono de llaves azul podrás modificar sus datos."},
+      {"say": "En el campo Email, escribí o corregí su correo y guardá.", "chunk": 201, "quote": "5 - En el campo Email, ingresar o modificar la dirección de correo."}
+    ],
+    "tips": [
+      {"say": "Ese mail es al que le llega el código para activar la app y el que se usa para recuperar la contraseña.", "chunk": 201, "quote": "También se utiliza en el proceso de cambio de contraseña."}
+    ]
+  },
+  {
+    "id": "perfil-cambiar-mis-datos",
+    "module": "Mi perfil",
+    "title": "Cambiar mis datos (teléfono, mail, DNI, nombre)",
+    "ask": ["quiero cambiar mis datos", "cambiar mi número de teléfono", "cambiar mi mail", "mi DNI está mal cargado", "cambiar mi nombre en la app"],
+    "intro": "Depende del dato, te explico.",
+    "steps": [
+      {"say": "Tu fecha de nacimiento y tu teléfono los cambiás vos desde Mi Perfil, en Mis Datos.", "chunk": 202, "quote": "Podrás cambiar tu fecha de nacimiento y tu numero de teléfono."},
+      {"say": "El nombre, el DNI o el mail los cambia la administración de tu barrio: pediselo a ellos.", "chunk": 202, "quote": "Si necesitas modificar tu nombre, DNI, email, o algún otro dato, comunicate con la Administración de tu barrio."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "perfil-foto",
+    "module": "Mi perfil",
+    "title": "Cambiar mi foto de perfil",
+    "ask": ["cambiar mi foto de perfil", "la foto que ve la guardia", "quiero cambiar la foto de la app", "actualizar mi foto"],
+    "intro": "Se cambia desde Mi Perfil.",
+    "steps": [
+      {"say": "Entrá a Mi Perfil, en Mis Datos, y cambiá tu foto de perfil.", "chunk": 202, "quote": "Podrás modificar tu foto de perfil."}
+    ],
+    "tips": [
+      {"say": "Ojo: esa es la foto que ve la guardia, no la que se usa para el Face ID.", "chunk": 202, "quote": "Esta foto se visualiza en los accesos de la guardia. No es la que se utiliza para Face ID/Selfie ID."}
+    ]
+  },
+  {
+    "id": "perfil-sesiones-dispositivos",
+    "module": "Mi perfil",
+    "title": "Cerrar sesión o ver en qué celulares tengo la cuenta abierta",
+    "ask": ["cambié de celular", "cerrar sesión en el celular viejo", "como cierro sesión", "en qué dispositivos está abierta mi cuenta", "dar de baja mi cuenta"],
+    "intro": "Todo eso está en tu perfil.",
+    "steps": [
+      {"say": "En Mi Perfil, entrá a Mis Dispositivos: ahí ves dónde tenés la sesión abierta (celulares y navegadores) y podés cerrar las que quieras.", "chunk": 203, "quote": "Podrás ver una lista de las sesiones activas de tu usuario, tanto de celulares como de navegadores, y podrás cerrarlas en caso de ser necesario"},
+      {"say": "En Configuración también podés cerrar tu sesión, cambiar la contraseña o pedir la baja de tu cuenta.", "chunk": 203, "quote": "Podrás editar tu contraseña, cerrar tu sesión, o solicitar la baja de tu cuenta en la App."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "notificaciones-no-me-llegan",
+    "module": "Notificaciones",
+    "title": "No me llegan las notificaciones",
+    "ask": ["no me llegan las notificaciones", "no me avisa cuando entra alguien", "activar las notificaciones", "la app no me notifica nada", "no recibo avisos en el celular"],
+    "intro": "Vamos a revisar la app y el celular.",
+    "steps": [
+      {"say": "En la app, entrá a Mi Perfil y abrí Configuración.", "chunk": 205, "quote": "2 - Abrir ícono Mi Perfil 3 - Abrir Configuración"},
+      {"say": "Activá Notificarme Ingresos/Egresos si está apagado.", "chunk": 205, "quote": "4 - Activar Notificarme Ingresos/Egresos en caso de estar desactivado."},
+      {"say": "Tocá Configurar Notificaciones: se abre la configuración del celular. En Android entrá a Notificaciones y activalas; en iPhone, en Notificaciones, activá Permitir notificaciones.", "chunk": 205, "quote": "Haciendo clic en Configurar Notificaciones, se abrirá la configuración de tu celular, ya sea Android o iPhone."}
+    ],
+    "tips": [
+      {"say": "Fijate que el modo No molestar o Concentración esté apagado.", "chunk": 205, "quote": "Asegurate de que el modo “No molestar” o “Concentración” esté desactivado."},
+      {"say": "Revisá que la app no esté limitada por el ahorro de batería.", "chunk": 205, "quote": "Verificá que no esté restringida por ahorro de batería."}
+    ]
+  },
+  {
+    "id": "autorizaciones-permanente",
+    "module": "Autorizaciones",
+    "title": "Autorizar a alguien de forma permanente (empleada, jardinero)",
+    "ask": ["autorizar a mi empleada todos los días", "autorización permanente", "dejar autorizado al jardinero siempre", "que pueda entrar siempre sin autorizar cada vez", "autorizar a la niñera de forma fija"],
+    "intro": "Sí, se puede dejar fija. Así:",
+    "steps": [
+      {"say": "En Autorizaciones elegí Completá sus datos y buscá a la persona por nombre o DNI.", "chunk": 208, "quote": "En la sección “Autorizo a”, buscá a la persona ingresando nombre o DNI."},
+      {"say": "Si no la tenés cargada, tocá Registrar nuevo contacto y completá sus datos.", "chunk": 208, "quote": "En ese caso, presioná Registrar nuevo contacto."},
+      {"say": "Activá Autorización permanente: queda vigente sin fecha de vencimiento.", "chunk": 208, "quote": "Si activás esta opción, la autorización quedará vigente de manera indefinida."},
+      {"say": "Tocá Autorizar.", "chunk": 208, "quote": "Una vez completados todos los campos, presioná Autorizar."}
+    ],
+    "tips": [
+      {"say": "Podés dejarle una nota a la guardia en Notas para la guardia.", "chunk": 208, "quote": "Permite agregar observaciones visibles para la guardia al momento del ingreso."}
+    ]
+  },
+  {
+    "id": "autorizaciones-cancelar-renovar",
+    "module": "Autorizaciones",
+    "title": "Cancelar o renovar una autorización de empresa",
+    "ask": ["cancelar una autorización", "borrar una autorización que hice", "se venció la autorización del delivery", "renovar una autorización vencida", "eliminar autorización de empresa"],
+    "intro": "Las dos cosas se hacen desde Ver autorizaciones e invitaciones.",
+    "steps": [
+      {"say": "Entrá a Autorizaciones y tocá Ver autorizaciones e invitaciones.", "chunk": 209, "quote": "Seleccioná Ver autorizaciones e invitaciones."},
+      {"say": "Para cancelarla: elegí la autorización y tocá Eliminar.", "chunk": 209, "quote": "Presioná la opción Eliminar."},
+      {"say": "Para volver a usar una vencida: elegila, cambiale la vigencia y tocá Guardar. No hace falta crear otra.", "chunk": 209, "quote": "Modificá la vigencia de la autorización."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "selfie-consejos-foto",
+    "module": "Selfie ID · autoempadronamiento",
+    "title": "Cómo sacar bien la foto de Selfie ID (si no te reconoce)",
+    "ask": ["el face id no me reconoce", "la cámara de la entrada no me reconoce", "me rechazaron la foto del face id", "como saco bien la foto para el reconocimiento facial", "no me abre con la cara"],
+    "intro": "Casi siempre es la foto. Fijate estos consejos y volvé a cargarla desde Selfie ID:",
+    "steps": [
+      {"say": "Sacala de frente, desde los hombros para arriba.", "chunk": 197, "quote": "La foto debe ser tomada de frente, desde los hombros hacia arriba."},
+      {"say": "Con fondo blanco o claro, sin brillos ni sombras.", "chunk": 197, "quote": "Utilizá un fondo blanco o claro, evitando brillos y sombras."},
+      {"say": "Sin gorra, anteojos ni nada que te tape la cara.", "chunk": 197, "quote": "No utilices gorras, gafas u otros accesorios que cubran su rostro."},
+      {"say": "Con cara neutra, sin gestos.", "chunk": 197, "quote": "Mantené una expresión neutral, sin gestos ni muecas."}
+    ],
+    "tips": [
+      {"say": "Después la revisa la administración del barrio y te llega una notificación cuando la aprueban.", "chunk": 197, "quote": "Cuando se apruebe, recibirás una notificación a través de la app con el resultado."},
+      {"say": "Si no ves Selfie ID, tocá el + de abajo en la pantalla principal y activala.", "chunk": 197, "quote": "tocá el botón con el símbolo “+”, buscá la opción Selfie ID y activala."}
+    ]
+  },
+  {
+    "id": "mis-lotes-varios-barrios",
+    "module": "Mi perfil",
+    "title": "Tengo lotes en más de un barrio",
+    "ask": ["tengo lotes en dos barrios", "como cambio de barrio en la app", "no veo mi otro lote", "mis lotes", "tengo casa en otro barrio"],
+    "intro": "La app te deja pasar de un barrio a otro.",
+    "steps": [
+      {"say": "Si tenés lotes en más de un barrio, en Mis Lotes ves la lista de barrios y entrás directo al que quieras.", "chunk": 204, "quote": "En caso de tener lotes en mas de 1 barrio, verás el listado de barrios y podrás ingresar directamente."},
+      {"say": "Lo encontrás también en Mi Perfil, en Mis Barrios.", "chunk": 202, "quote": "Acceso directo al módulo Mis Lotes donde podrás ver y acceder a tus lotes en tus barrios."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "documentos-del-barrio",
+    "module": "Mi perfil",
+    "title": "Dónde encuentro el reglamento u otros documentos del barrio",
+    "ask": ["donde está el reglamento del barrio", "documentos del barrio", "busco los planos del barrio", "donde veo los papeles que sube la administración"],
+    "intro": "Están en el módulo Documentos.",
+    "steps": [
+      {"say": "Entrá a la app y abrí Documentos.", "chunk": 210, "quote": "Abrir el módulo Documentos."},
+      {"say": "Si no lo ves, agregalo con el + de abajo en la pantalla principal.", "chunk": 210, "quote": "En caso de no encontrarlo, agregarlo con el ícono más en la parte inferior de la pantalla principal."}
+    ],
+    "tips": [
+      {"say": "Ahí aparece lo que tu barrio haya cargado: reglamentos, informes, planos, etc.", "chunk": 210, "quote": "ya sea informes, reglamentos, procedimientos, planos, etc."}
+    ]
+  },
+  {
+    "id": "telefonos-utiles",
+    "module": "Mi perfil",
+    "title": "Teléfonos útiles del barrio",
+    "ask": ["teléfono de la administración", "números útiles del barrio", "como contacto a la guardia", "teléfonos del barrio"],
+    "intro": "Tu barrio los carga en Teléfonos Útiles.",
+    "steps": [
+      {"say": "En la app abrí Teléfonos Útiles: ahí la administración carga los contactos más importantes del barrio.", "chunk": 211, "quote": "En esta sección, la administración del barrio registra los contactos mas relevantes para los residentes."},
+      {"say": "Tocá un contacto y podés llamar, mandar mail o WhatsApp, o copiar el número.", "chunk": 211, "quote": "tendrás la posibilidad de enviar correo, llamada telefónica o contacto por Whatsapp, o podrás copiar el numero."}
+    ],
+    "tips": []
+  }
+]

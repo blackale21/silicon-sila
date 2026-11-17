@@ -189,6 +189,26 @@ def main():
             ord_ += 1
             con.execute('INSERT INTO chunks (doc_id,page,section,ord,text,image) VALUES (?,?,?,?,?,?)', (did, page, sec, ord_, txt, img))
         report.append(f'{status:9} {audience(name):14} {mod:30} {clean_title(name)}')
+    # páginas de Confluence "Casos de Soporte" (sólo las de cara al cliente), copiadas a kb/src/confluence/paginas.json.
+    # Van DESPUÉS de los manuales de Drive para no correr los ids de fragmento que usan las fichas.
+    cf = os.path.join(SRC, 'confluence', 'paginas.json')
+    ncf = 0
+    if os.path.exists(cf):
+        for pg in json.load(open(cf, encoding='utf-8')):
+            txt_all = nfc(pg['text'])
+            did = 'cf' + pg['id']
+            sha = hashlib.sha256(txt_all.encode('utf-8')).hexdigest()
+            con.execute('INSERT INTO documents VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)', (
+                did, pg['title'], pg['module'], 'residente', '', pg['title'], 'text/plain', 0, sha, len(txt_all.encode('utf-8')),
+                json.dumps(['confluence:' + pg['id']]), json.dumps(['Confluence/CDS/' + pg['path']], ensure_ascii=False), '', 'ok'))
+            for part in [x.strip() for x in re.split(r'\n\s*\n', txt_all) if x.strip()]:
+                if len(part) < 20:
+                    continue
+                ord_ += 1
+                con.execute('INSERT INTO chunks (doc_id,page,section,ord,text,image) VALUES (?,?,?,?,?,?)', (did, None, pg['title'], ord_, part, None))
+            ncf += 1
+            report.append(f'ok        confluence     {pg["module"]:30} {pg["title"]}')
+    con.commit()
     # fichas humanas: primero se validan las citas literales, después se ubican los círculos
     con.commit()
     import subprocess, sys as _sys
@@ -207,7 +227,7 @@ def main():
         jev_criterios.main()
     now = datetime.datetime.now().isoformat(timespec='seconds')
     con.executemany('INSERT INTO kb_meta VALUES (?,?)', [('schema_version', '2'), ('built_at', now),
-                    ('source', 'Google Drive (2 carpetas compartidas por link)'), ('documents', str(len(docs)))])
+                    ('source', 'Google Drive (2 carpetas compartidas por link)'), ('documents', str(len(docs) + ncf))])
     con.commit()
     con.execute('VACUUM')
     n = con.execute('select count(*), sum(length(text)) from chunks').fetchone()

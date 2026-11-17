@@ -38,13 +38,13 @@ const JEV_MAX_POR_SESION_10MIN = 120;
 
 function criterios() {
   const c = CacheService.getScriptCache();
-  const hit = c.get('jev_criterios');
+  const hit = c.get('jev_criterios_v2');
   if (hit) return JSON.parse(hit);
   const r = UrlFetchApp.fetch(CRITERIOS_URL, { muteHttpExceptions: true });
   if (r.getResponseCode() !== 200) throw new Error('criterios ' + r.getResponseCode());
   const j = JSON.parse(r.getContentText());
   if (!j.ninguna || Object.keys(j).length < 10) throw new Error('criterios invalidos');
-  c.put('jev_criterios', JSON.stringify(j), 21600);
+  c.put('jev_criterios_v2', JSON.stringify(j), 1800); // 30 min: las fichas nuevas llegan rápido
   return j;
 }
 
@@ -56,7 +56,7 @@ function jevResponder(p) {
   if (/(https?:\/\/|www\.|<\/?[a-z]|\{[\s\S]*\}|;\s*(drop|select|insert)\b)/i.test(q)) return { ok: false, error: 'consulta_invalida' };
   if (!/[a-záéíóúñü]{3,}/i.test(q)) return { ok: false, error: 'consulta_invalida' };
   const cache = CacheService.getScriptCache();
-  const ck = 'jev_' + Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, q.toLowerCase())).slice(0, 40);
+  const ck = 'jev_' + Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, q.toLowerCase() + '|' + Object.keys(criterios()).length)).slice(0, 40);
   const hit = cache.get(ck);
   if (hit) return JSON.parse(hit);
   const now = new Date();

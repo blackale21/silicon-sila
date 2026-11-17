@@ -35,7 +35,7 @@
   {"q": "me aparece un cartel que dice barrio sin conexion", "ok": ["barrio-sin-conexion-banner"]},
   {"q": "como voto en la encuesta", "ok": ["encuestas-donde-las-veo", "encuestas-no-puedo-votar"]},
   {"q": "se me rompio el caño de agua del baño", "ok": []},
-  {"q": "quiero cambiar mi contraseña", "ok": []},
+  {"q": "quiero cambiar mi contraseña", "ok": ["acceso-cambiar-contrasena", "acceso-olvide-contrasena"]},
   {"q": "cuanto sale la expensa este mes", "ok": []},
   {"q": "el vecino tiene el perro suelto", "ok": []},
   {"q": "a que hora abre la administracion", "ok": []}
