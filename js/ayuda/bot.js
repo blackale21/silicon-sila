@@ -139,7 +139,22 @@
       ['Me da error al cargar documentos o seguros', ['autogestion-de-documentacion-seguro-art', 'autogestion-de-documentacion-antecedentes-penales', 'autogestion-de-documentacion-estado']]]]];
   function menu() {
     opts([...MENU.map(([tema, frases]) => ({ label: tema, run: () => { me(tema); submenu(tema, frases); } })),
+      { label: 'Ver todos los temas', run: () => { me('Ver todos los temas'); todos(); } },
       { label: 'Otra consulta', run: () => { me('Otra consulta'); otraConsulta(); } }]);
+  }
+  // si venía de una consulta abierta sin respuesta todavía, sigue el mismo caso; si no, abre uno nuevo
+  async function asegurarCaso(t, como) {
+    if (st.caso && (st.phase === 'clar' || st.phase === 'choose') && !st.card) {
+      appendClar(t);
+      st.phase = 'busy'; st.query = t; st.ctx = {};
+      return guardar(`Eligió en el ${como}: ${t}`);
+    }
+    st = { phase: 'busy', caso: newCaso(t), query: t, ctx: {}, card: null };
+    return guardar(`Consulta registrada desde el ${como}`, 'registrado');
+  }
+  async function todos() {
+    await say('<p>Estos son todos los temas de la app. ¿Cuál es?</p>', 20);
+    opts(KB.cardModules().map((m) => ({ label: m, run: async () => { me(m); await asegurarCaso(m, 'listado de temas'); offerCards(m); } })));
   }
   async function submenu(tema, frases) {
     await say(`<p>${pick(['Dale.', 'Perfecto.', 'Lo vemos.'])} ¿Cuál de estas te pasa? Si no está, contámelo con tus palabras.</p>`, 30);
@@ -151,8 +166,7 @@
   }
   async function desdeMenu(tema, frase, ids) {
     try { await KB.load(); } catch (_) { note('No pude cargar la información de ayuda.', 'bad'); return; }
-    st = { phase: 'busy', caso: newCaso(frase), query: frase, ctx: {}, card: null };
-    await guardar(`Consulta registrada desde el menú (${tema})`, 'registrado');
+    await asegurarCaso(frase, `menú: ${tema}`);
     const cards = ids.map((id) => KB.K.cards.find((c) => c.id === id)).filter(Boolean);
     if (!cards.length) return notFound();
     if (cards.length === 1) return answerCard(cards[0]);
@@ -179,11 +193,18 @@
     await onText(t);
   });
 
+  const SALUDO = /^(hola+|holis|buen[oa]?s?( d[ií]as?| tardes| noches)?|qu[eé] tal|hey|ey|hello|hi)[\s!.,¡¿?]*(c[oó]mo (est[aá]s|va|andas)[\s!.,?]*)?$/i;
+  const GRACIAS = /^(muchas )?(gracias|grax|genial gracias|ok gracias|listo gracias|mil gracias)[\s!.,]*$/i;
   const SI = /^(si|sí|s|dale|ok|okey|listo|joya|genial|perfecto|resuelto|se resolvio|se resolvió|funciono|funcionó|ya esta|ya está|pude)\b/i;
   const NO = /^(no|nop|sigue|tampoco|todavia no|todavía no|no pude|no funciona)\b/i;
 
   async function onText(t) {
     try { await KB.load(); } catch (_) { note('No pude cargar la información de ayuda.', 'bad'); return; }
+    if (st.phase !== 'confirm' && st.phase !== 'escalate' && SALUDO.test(t)) {
+      await say(`<p>${pick(['¡Hola!', '¡Hola! ¿Cómo estás?'])} Contame qué te pasa con la app, o elegí un tema:</p>`, 30);
+      return menu();
+    }
+    if (GRACIAS.test(t)) return say(`<p>${pick(['¡De nada!', '¡Un gusto!', '¡Para eso estoy!'])} Si necesitás algo más, escribime.</p>`, 20);
     if (st.phase === 'confirm') {
       if (SI.test(t)) return resolved();
       if (NO.test(t)) return notResolved();
@@ -275,9 +296,8 @@
     if (d.type === 'vague') {
       if (ctx.clarified) return notFound();
       st.phase = 'clar';
-      await say(`<p>${pick(['Te ayudo.', 'Dale, lo vemos.', 'Contá conmigo.'])} ¿Con qué parte de la app es? Elegí una o contame un poco más qué te pasa.</p>`);
-      opts(KB.cardModules().map((m) => ({ label: m, run: () => { me(m); offerCards(m); } })));
-      return;
+      await say(`<p>${pick(['Te ayudo.', 'Dale, lo vemos.', 'Contá conmigo.'])} ¿Con qué es? Elegí un tema o contame un poco más qué te pasa.</p>`);
+      return menu();
     }
     if (d.type === 'narrow') return offerCards(d.module, true);
     if (d.type === 'choose') {
