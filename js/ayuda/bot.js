@@ -156,8 +156,9 @@
 
   const SALUDO = /^(hola+|holis|buen[oa]?s?( d[ií]as?| tardes| noches)?|qu[eé] tal|hey|ey|hello|hi)[\s!.,¡¿?]*(c[oó]mo (est[aá]s|va|andas)[\s!.,?]*)?$/i;
   const GRACIAS = /^(muchas )?(gracias|grax|genial gracias|ok gracias|listo gracias|mil gracias)[\s!.,]*$/i;
-  const SI = /^(si|sí|s|dale|ok|okey|listo|joya|genial|perfecto|resuelto|se resolvio|se resolvió|funciono|funcionó|ya esta|ya está|pude)\b/i;
-  const NO = /^(no|nop|sigue|tampoco|todavia no|todavía no|no pude|no funciona)\b/i;
+  // Sólo cuentan como sí/no las respuestas cortas. "no puedo ingresar" NO es un "no": es información nueva.
+  const SI = /^(s[ií]|s|dale|ok|okey|listo|joya|genial|perfecto|buen[ií]simo|resuelto|se resolvi[oó]|funcion[oó]|ya (est[aá]|anda|funciona)|pude|ahora s[ií]( anda| funciona)?)([\s!.,]+(gracias|muchas gracias|ya (est[aá]|anda)|listo|dale|por favor|porfa))*[\s!.,]*$/i;
+  const NO = /^(no|nop|nope|negativo|tampoco|todav[ií]a no|no pude|no funciona|no funcion[oó]|no anda|no sirvi[oó]|no me sirvi[oó]|sigue igual|sigue sin (andar|funcionar)|sigue (sin|igual)|no,? sigue igual|no,? por ahora|ahora no|mejor no)[\s!.,]*$/i;
 
   async function onText(t) {
     try { await KB.load(); } catch (_) { note('No pude cargar la información de ayuda.', 'bad'); return; }
@@ -175,6 +176,7 @@
       if (SI.test(t)) return showForm();
       if (NO.test(t)) return keepPending();
     }
+    if (st.phase === 'clar' && st.intentos && NO.test(t)) return notResolved();
     if (st.phase === 'clar' || st.phase === 'choose') {
       appendClar(t);
       return seguir(t);
@@ -308,6 +310,12 @@
       <figcaption>Paso ${n}</figcaption></figure>`;
   }
   async function answerCard(card) {
+    if ((st.probadas || []).indexOf(card.id) >= 0) {
+      // lo que dicen los manuales para esto ya se probó: no se repite, se dice y se ofrece la central
+      await guardar(`Ya había probado: ${card.title}; no hay otra solución documentada`);
+      await say('<p>Lo que tengo en los manuales para eso es lo que ya probamos, y no alcanzó. No te quiero dar vueltas.</p>', 30);
+      return pending();
+    }
     st.card = card;
     st.caso.modulo = card.module;
     const all = card.steps.concat(card.tips);
@@ -353,10 +361,23 @@
     await say(`<p>${pick(['¡Genial! Me alegra mucho.', '¡Buenísimo!', '¡Qué bueno!'])} Cualquier otra cosa, acá estoy.</p>`);
     await guardar('El residente confirmó que se resolvió', 'resuelto');
   }
+  /* No le sirvió: antes de derivar, se sigue buscando con él (otra ficha cercana o que cuente qué ve).
+     Recién al segundo intento sin solución queda pendiente y se ofrece la central. */
   async function notResolved() {
     st.caso.resultado = 'No se resolvió con las indicaciones';
-    await say('<p>Uh, qué macana. Gracias por avisarme.</p>', 20);
-    return pending();
+    st.probadas = (st.probadas || []).concat(st.card ? [st.card.id] : []);
+    st.intentos = (st.intentos || 0) + 1;
+    if (st.intentos >= 2) {
+      await say('<p>Uh, qué macana. Gracias por la paciencia.</p>', 20);
+      return pending();
+    }
+    await guardar('No le sirvió; se sigue buscando con el residente');
+    const otras = st.card ? KB.cardsOf(st.card.module).filter((c) => st.probadas.indexOf(c.id) === -1).slice(0, 3) : [];
+    st.phase = 'clar';
+    st.ctx = {};
+    await say(`<p>Uh, qué macana. No te suelto todavía: contame qué te pasa exactamente cuando lo probás (qué ves en la pantalla, en qué paso te trabás o si te sale algún mensaje).</p>${otras.length ? '<p>O si es alguna de estas, tocala:</p>' : ''}`, 60);
+    opts([...otras.map((c) => ({ label: c.title, run: () => { me(c.title); appendClar(c.title); answerCard(c); } })),
+      { label: 'Prefiero hablar con la central', run: () => { me('Prefiero hablar con la central'); pending(); } }]);
   }
   async function notFound() {
     st.caso.resultado = st.caso.resultado || 'Sin solución documentada';
