@@ -30,7 +30,16 @@
     googleRep: 'Calificación promedio en Google de los barrios y cuántas reseñas tienen (lo carga Dirección en Configuración).',
     encuestas: 'Encuestas que se mandan al cerrar cada caso: por WhatsApp si lo resolvió el chat y por correo si lo resolvió una persona. Por ahora son simuladas: no se envía nada.',
     respuesta: 'De las encuestas enviadas, qué porcentaje respondieron los vecinos.',
-    verComo: 'Para ver la pantalla como la vería cada persona: Dirección ve todo; un operador, sólo sus barrios; un técnico, sólo sus visitas.',
+    verComo: 'Sólo para Dirección: muestra la pantalla como la ve cada usuario (sus barrios, sus visitas). Es una vista previa: no cambia permisos y lo que hagas queda a tu nombre.',
+    usuarios: 'Las personas que entran a esta pantalla, cada una con su usuario y su clave. Las crea Dirección.',
+    uNombre: 'Nombre y apellido de la persona, como querés que aparezca en los tickets.',
+    usuario: 'Con lo que la persona entra, junto con su clave. Sólo minúsculas, números, punto, guion o guion bajo, de 3 a 30 caracteres. Ejemplo: jperez.',
+    claveInicial: 'La primera clave de la persona: la escribís vos y se la pasás. Mínimo 8 caracteres. Después la puede cambiar desde “Mi cuenta”.',
+    uBarrios: 'Los barrios que puede ver y atender. Un operador ve todos los casos de esos barrios; un técnico, sólo las visitas que le asignan en ellos.',
+    uEstado: 'Activo: puede entrar. Dado de baja: ya no puede entrar y, si estaba conectado, se le corta la sesión.',
+    reset: 'Le pone una clave nueva (por ejemplo, si se la olvidó). La vieja deja de servir.',
+    miClave: 'Cambiá tu propia clave. Necesitás la actual; la nueva tiene que tener al menos 8 caracteres.',
+    conectado: 'Quién está usando la central en esta PC. El rol y los barrios los define Dirección.',
   };
   const hlp = (k) => `<button type="button" class="hlp" data-hlp="${k}" aria-label="¿Qué es esto?">?</button>`;
   window.SILA_HLP = hlp;
@@ -62,7 +71,7 @@
 
   /* ── estado de la pestaña (cada pestaña puede mirar con otro rol) ── */
   const UI_KEY = 'sila_gestion_ui';
-  const ui = Object.assign({ rol: 'dir', vista: 'tickets', barrio: '*', filtro: 'abiertos', cat: '', q: '', lote: null, encF: 'todas' }, (() => { try { return JSON.parse(sessionStorage.getItem(UI_KEY)) || {}; } catch (_) { return {}; } })());
+  const ui = Object.assign({ ver: '', vista: 'tickets', barrio: '*', filtro: 'abiertos', cat: '', q: '', lote: null, encF: 'todas' }, (() => { try { return JSON.parse(sessionStorage.getItem(UI_KEY)) || {}; } catch (_) { return {}; } })());
   const keep = () => { try { sessionStorage.setItem(UI_KEY, JSON.stringify(ui)); } catch (_) { /* privado */ } };
   let openId = null;
   const fresh = new Set();
@@ -88,25 +97,27 @@
     mail: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z M3 6l9 7 9-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
   };
   const resueltoPorBot = (c) => c.derivado_central !== 'sí' && G.norm(c.estado) === 'resuelto';
-  const idBarrioCaso = (c) => { const s = G.slug(c.barrio); if (!s) return G.SIN_BARRIO.id; const b = S.barrios.find((x) => x.id === s || (x.alias || []).includes(s)); return b ? b.id : s; };
+  const idBarrioCaso = (c) => G.barrioDeCaso(c.barrio).id;
 
-  /* ── alcance (multi-tenant): qué ve cada rol ── */
-  const me = () => G.persona(ui.rol) || G.DIR;
+  /* ── alcance: el rol y los barrios los da el servidor; Dirección puede previsualizar como otro usuario ── */
+  const yoP = () => { const y = G.yo() || {}; return { usuario: y.usuario || '', nombre: y.nombre || '', rol: y.rol || 'operador', barrios: y.barrios || [] }; };
+  const me = () => { if (G.esDir() && ui.ver) { const p = S.equipo.find((x) => x.usuario === ui.ver); if (p) return p; } return yoP(); };
+  const previa = () => G.esDir() && me().usuario !== yoP().usuario;
   function barriosRol() {
     const p = me();
-    if (p.rol === 'direccion') return [...S.barrios.map((b) => b.id), G.SIN_BARRIO.id];
+    if (p.rol === 'direccion') return [...S.barrios.map((b) => b.id), G.SIN];
     if (p.rol === 'operador') return (p.barrios || []).slice();
     return [];
   }
   const enAlcance = (bid) => barriosRol().includes(bid) && (ui.barrio === '*' || ui.barrio === bid);
-  function vis(t) { const p = me(); return p.rol === 'tecnico' ? t.asignado === p.id : enAlcance(t.barrio); }
+  function vis(t) { const p = me(); return p.rol === 'tecnico' ? !!p.usuario && t.asignado === p.usuario : enAlcance(t.barrio); }
   const visEnc = (e) => me().rol !== 'tecnico' && enAlcance(e.barrio);
   const barriosVis = () => S.barrios.filter((b) => enAlcance(b.id));
   const puede = (accion) => {
     const r = me().rol;
-    return { gestionar: r !== 'tecnico', configurar: r === 'direccion', reasignarBarrio: r === 'direccion', campo: r === 'tecnico' }[accion];
+    return { gestionar: r !== 'tecnico', configurar: r === 'direccion', reasignarBarrio: r === 'direccion', campo: r === 'tecnico', usuarios: G.esDir() && !previa() }[accion];
   };
-  const quienSoy = () => (me().rol === 'direccion' ? 'Dirección' : `${me().nombre} (${G.ROL_TXT[me().rol]})`);
+  const quienSoy = () => { const y = yoP(); return `${y.nombre || y.usuario} (${G.ROL_TXT[y.rol] || y.rol})`; };
 
   /* ── avisos ── */
   function toast(msg, kind) {
@@ -118,11 +129,13 @@
     setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 400); }, 5200);
   }
 
-  /* ════════ acceso: clave de la central ════════ */
+  /* ════════ acceso: usuario y clave ════════ */
+  const LS_U = 'sila_central_usuario';
+  const ultimoU = () => { try { return localStorage.getItem(LS_U) || ''; } catch (_) { return ''; } };
   function gate(modo, msg) {
     document.body.classList.add('locked');
     cerrarFicha(); cerrarModal();
-    $('#view').innerHTML = ''; $('#tabs').innerHTML = ''; $('#scope').innerHTML = ''; $('#role').innerHTML = '';
+    $('#view').innerHTML = ''; $('#tabs').innerHTML = ''; $('#scope').innerHTML = ''; $('#role').innerHTML = ''; $('#me').innerHTML = '';
     const g = $('#gate');
     g.hidden = false;
     const err = msg ? `<p class="gerr" role="alert">${esc(msg)}</p>` : '';
@@ -133,30 +146,39 @@
     else if (modo === 'sinRed') body = `${head('Sin conexión con el backend', 'No se pudo consultar el estado de la central.')}${err}
       <button type="button" class="primary cut" data-g="reintentar">Reintentar</button>`;
     else if (modo === 'cargando') body = `${head('Conectando…')}<p class="mini">Consultando el backend.</p>`;
-    else if (modo === 'crear') body = `${head('Crear la clave de la central', 'Es la primera vez: la clave protege los casos de los residentes. Se pide una sola vez por PC.')}${err}
+    else if (modo === 'crear') body = `${head('Crear la clave de Dirección', 'Es la primera vez. Con esta clave entra Dirección (usuario <b>direccion</b>) y después crea los usuarios del equipo, cada uno con su clave.')}${err}
       <form data-g="crear" autocomplete="off" novalidate><label>Clave nueva<input type="password" id="gk1" minlength="8" required autocomplete="new-password" placeholder="Mínimo 8 caracteres"></label>
       <label>Repetila<input type="password" id="gk2" minlength="8" required autocomplete="new-password"></label>
       <button type="submit" class="primary cut">Crear clave y entrar</button></form>`;
-    else body = `${head('Ingresar clave', 'Clave de la central. Queda guardada en esta PC hasta que toques “Salir”.')}${err}
-      <form data-g="ingresar" autocomplete="off" novalidate><label>Clave<input type="password" id="gk1" required autocomplete="current-password"></label>
+    else body = `${head('Ingresar', 'Cada persona entra con su usuario y su clave. Los usuarios los crea Dirección.')}${err}
+      <form data-g="login" novalidate><label>Usuario<input id="gu" autocomplete="username" autocapitalize="none" spellcheck="false" value="${esc(ultimoU())}" placeholder="ej. direccion"></label>
+      <label>Clave<input type="password" id="gk1" autocomplete="current-password"></label>
       <button type="submit" class="primary cut">Entrar</button></form>`;
     g.innerHTML = `<div class="gbox cut">${body}</div>`;
-    const f = $('#gk1');
+    const f = $('#gu') && !$('#gu').value ? $('#gu') : $('#gk1');
     f && f.focus();
     renderNet();
   }
-  const ERR = { clave: 'Clave incorrecta.', bloqueado: 'Demasiados intentos fallidos. Esperá 10 minutos y volvé a probar.', ya_existe: 'Ya hay una clave creada para la central: ingresala.', red: 'Sin conexión con el backend.', corta: 'La clave tiene que tener al menos 8 caracteres.', distintas: 'Las dos claves no coinciden.' };
+  const ERR = {
+    credenciales: 'Usuario o clave incorrectos.', clave: 'Usuario o clave incorrectos.', inactivo: 'Ese usuario fue dado de baja. Consultá con Dirección.',
+    bloqueado: 'Demasiados intentos fallidos. Esperá 10 minutos y volvé a probar.', ya_existe: 'Ya hay una clave de Dirección: entrá con el usuario “direccion”.',
+    red: 'Sin conexión con el backend.', corta: 'La clave tiene que tener al menos 8 caracteres.', clave_corta: 'La clave tiene que tener al menos 8 caracteres.', distintas: 'Las dos claves no coinciden.',
+    sesion: 'Tu sesión venció o fue cerrada: volvé a entrar.', permiso: 'No tenés permiso para eso.', vacio: 'Completá usuario y clave.',
+  };
   async function iniciar(msg) {
     if (!G.url()) return gate('sinBackend');
-    if (G.clave()) return entrar();
     gate('cargando');
-    try { const j = await G.estado(); gate(j.tieneClave ? 'ingresar' : 'crear', msg); }
-    catch (_) { gate('sinRed', ERR.red); }
+    try {
+      if (G.token() && await G.retomar()) return entrar();
+      const j = await G.estado();
+      gate(j.tieneClave ? 'login' : 'crear', msg);
+    } catch (_) { gate('sinRed', ERR.red); }
   }
   function entrar() {
     $('#gate').hidden = true;
     $('#gate').innerHTML = '';
     document.body.classList.remove('locked');
+    if (!G.esDir()) ui.ver = '';
     render();
     G.arrancar();
   }
@@ -170,27 +192,64 @@
         if (k1.length < 8) return gate('crear', ERR.corta);
         if (k1 !== k2) return gate('crear', ERR.distintas);
         const j = await G.crearClave(k1);
-        if (!j.ok) return gate(j.error === 'ya_existe' ? 'ingresar' : 'crear', ERR[j.error] || 'No se pudo crear la clave.');
-        G.guardarClave(k1);
+        if (!j.ok) return gate(j.error === 'ya_existe' ? 'login' : 'crear', ERR[j.error] || 'No se pudo crear la clave.');
+        try { localStorage.setItem(LS_U, 'direccion'); } catch (_) { /* */ }
+        const l = await G.login('direccion', k1);
+        if (!l.ok) return gate('login', ERR[l.error] || 'Clave creada. Entrá con el usuario “direccion”.');
         entrar();
-        toast('Clave creada · queda guardada en esta PC');
+        toast('Clave de Dirección creada · ahora podés crear los usuarios del equipo en Config.');
       } else {
-        const j = await G.probarClave(k1);
-        if (!j.ok) return gate('ingresar', ERR[j.error] || 'No se pudo entrar.');
-        G.guardarClave(k1);
+        const u = ($('#gu').value || '').trim().toLowerCase();
+        try { localStorage.setItem(LS_U, u); } catch (_) { /* */ }
+        if (!u || !k1) return gate('login', ERR.vacio);
+        const j = await G.login(u, k1);
+        if (!j.ok) return gate('login', ERR[j.error] || 'No se pudo entrar.');
         entrar();
       }
-    } catch (_) { gate(form.dataset.g, ERR.red); }
+    } catch (_) { gate(form.dataset.g === 'crear' ? 'crear' : 'login', ERR.red); }
     finally { btn.disabled = false; }
+  }
+
+  /* ════════ mi cuenta ════════ */
+  function modalCuenta(msg, ok) {
+    const y = yoP();
+    modal(`<h3>Mi cuenta ${hlp('conectado')}</h3>
+      <dl class="kv"><dt>Nombre</dt><dd>${esc(y.nombre || '—')}</dd><dt>Usuario</dt><dd class="mono">${esc(y.usuario)}</dd><dt>Rol</dt><dd>${esc(G.ROL_TXT[y.rol] || y.rol)}</dd>
+        ${y.rol === 'direccion' ? '' : `<dt>Barrios</dt><dd>${(y.barrios || []).map((b) => esc(G.barrio(b).nombre)).join(', ') || 'ninguno asignado'}</dd>`}</dl>
+      <h4>Cambiar mi clave ${hlp('miClave')}</h4>
+      ${msg ? `<p class="${ok ? 'gok' : 'gerr'}" role="alert">${esc(msg)}</p>` : ''}
+      <form class="uform" data-a="miClave" novalidate>
+        <label><span>Clave actual</span><input type="password" id="mc0" autocomplete="current-password"></label>
+        <label><span>Clave nueva</span><input type="password" id="mc1" autocomplete="new-password" placeholder="Mínimo 8 caracteres"></label>
+        <label><span>Repetila</span><input type="password" id="mc2" autocomplete="new-password"></label>
+        <div class="mact"><button type="button" class="ghost" data-m="cancel">Cerrar</button><button type="submit" class="primary cut">Cambiar clave</button></div>
+      </form>`);
+  }
+  async function cambiarMiClave() {
+    const a = $('#mc0').value, n1 = $('#mc1').value, n2 = $('#mc2').value;
+    if (!a) return modalCuenta('Escribí tu clave actual.');
+    if (n1.length < 8) return modalCuenta(ERR.corta);
+    if (n1 !== n2) return modalCuenta(ERR.distintas);
+    try {
+      const j = await G.cambiarClave(a, n1);
+      if (!j.ok) return modalCuenta(j.error === 'credenciales' || j.error === 'clave' ? 'La clave actual no es correcta.' : ERR[j.error] || 'No se pudo cambiar la clave.');
+      modalCuenta('Listo: tu clave cambió. La próxima vez entrá con la nueva.', true);
+    } catch (e) { if (e.code !== 'sesion') modalCuenta(ERR.red); }
   }
 
   /* ════════ barra superior ════════ */
   function renderTop() {
-    $('#role').innerHTML = G.PERSONAS().map((p) => {
-      const bs = p.rol === 'operador' ? ((p.barrios || []).length > 1 ? `${p.barrios.length} barrios` : (p.barrios || []).length ? G.barrio(p.barrios[0]).nombre : 'sin barrios') : '';
-      const nom = p.rol === 'direccion' ? 'Dirección (todo)' : `${G.ROL_TXT[p.rol]}${bs ? ' · ' + bs : ''} — ${p.nombre}`;
-      return `<option value="${esc(p.id)}" ${p.id === me().id ? 'selected' : ''}>${esc(nom)}</option>`;
-    }).join('');
+    const y = yoP();
+    $('#me').innerHTML = `<span class="yo" title="Conectado"><i></i><span><b>${esc(y.nombre || y.usuario)}</b><small>${esc(G.ROL_TXT[y.rol] || y.rol)} · ${esc(y.usuario)}</small></span>${hlp('conectado')}</span>
+      <button type="button" class="ghost sm" data-a="cuenta">Mi cuenta</button><button type="button" class="ghost sm" data-a="salir">Salir</button>`;
+    $('.who').classList.toggle('off', !G.esDir());
+    if (G.esDir()) {
+      const opt = (p) => {
+        const bs = (p.barrios || []).length > 1 ? `${p.barrios.length} barrios` : (p.barrios || []).length ? G.barrio(p.barrios[0]).nombre : 'sin barrios';
+        return `<option value="${esc(p.usuario)}" ${ui.ver === p.usuario ? 'selected' : ''}>${esc(`${G.ROL_TXT[p.rol]} · ${bs} — ${p.nombre}`)}</option>`;
+      };
+      $('#role').innerHTML = `<option value="" ${ui.ver ? '' : 'selected'}>Yo · Dirección (todo)</option>${S.equipo.map(opt).join('')}`;
+    }
     const p = me();
     let h;
     if (p.rol === 'tecnico') h = '<span class="lock">AISLADO</span> Sólo tickets asignados a vos';
@@ -201,6 +260,7 @@
         <option value="*">${p.rol === 'direccion' ? 'Todos los barrios' : 'Mis barrios'}</option>
         ${bs.map((b) => `<option value="${esc(b)}" ${ui.barrio === b ? 'selected' : ''}>${esc(G.barrio(b).nombre)}</option>`).join('')}</select>`;
     }
+    if (previa()) h = `<span class="lock prev">VISTA PREVIA</span> ${h}`;
     $('#scope').innerHTML = h;
     renderBell();
   }
@@ -343,7 +403,8 @@
     const c = G.cat(t.cat);
     const mismos = S.tickets.filter((x) => x !== t && vis(x) && t.lote && G.loteKey(x) === G.loteKey(t));
     const enc = t.encuesta && S.enc.find((e) => e.id === t.encuesta);
-    const tecs = S.equipo.filter((p) => p.rol === 'tecnico');
+    const tecs = S.equipo.filter((p) => p.rol === 'tecnico' && (p.barrios || []).includes(t.barrio));
+    const tecAsig = t.asignado && !tecs.some((p) => p.usuario === t.asignado) ? G.persona(t.asignado) : null;
     const gest = puede('gestionar') && t.estado !== 'cerrado';
     const x = t.ctx;
     return `
@@ -379,8 +440,8 @@
         ${gest ? `<h4>Gestión</h4>
           <div class="estados">${['nuevo', 'en_curso', 'en_campo'].map((e) => `<button type="button" data-a="estado" data-k="${e}" class="${t.estado === e ? 'on' : ''}">${EST[e]}</button>`).join('')}</div>
           <div class="form2">
-            <label>Técnico de campo<select data-a="asignar"><option value="">${tecs.length ? 'Sin asignar' : 'Sin técnicos cargados'}</option>${tecs.map((p) => `<option value="${esc(p.id)}" ${t.asignado === p.id ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}</select></label>
-            <label>Categoría ${hlp('categoria')}<select data-a="cat"><option value="" ${t.cat ? '' : 'selected'}>Sin categoría</option>${G.cats().map((k) => `<option value="${esc(k.id)}" ${t.cat === k.id ? 'selected' : ''}>${esc(k.nombre)} · ${k.h} h</option>`).join('')}</select></label>
+            <label><span>Técnico de campo ${hlp('tecnico')}</span><select data-a="asignar"><option value="">${tecs.length ? 'Sin asignar' : 'Ningún técnico tiene este barrio'}</option>${tecAsig ? `<option value="${esc(t.asignado)}" selected>${esc(tecAsig.nombre)} (sin este barrio)</option>` : ''}${tecs.map((p) => `<option value="${esc(p.usuario)}" ${t.asignado === p.usuario ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}</select></label>
+            <label><span>Categoría ${hlp('categoria')}</span><select data-a="cat"><option value="" ${t.cat ? '' : 'selected'}>Sin categoría</option>${G.cats().map((k) => `<option value="${esc(k.id)}" ${t.cat === k.id ? 'selected' : ''}>${esc(k.nombre)} · ${k.h} h</option>`).join('')}</select></label>
             ${puede('reasignarBarrio') ? `<label>Barrio<select data-a="barrio">${[...S.barrios, G.SIN_BARRIO].map((b) => `<option value="${esc(b.id)}" ${t.barrio === b.id ? 'selected' : ''}>${esc(b.nombre)}</option>`).join('')}</select></label>` : ''}
           </div>` : ''}
         ${puede('campo') && t.estado !== 'cerrado' ? `<h4>En campo</h4><div class="estados"><button type="button" data-a="estado" data-k="en_campo" class="${t.estado === 'en_campo' ? 'on' : ''}">Llegué al lugar</button></div>` : ''}
@@ -449,8 +510,7 @@
         G.evento(x, `Categoría: ${prev.nombre}${prev.h ? ` (${prev.h} h)` : ''} → ${nueva.nombre}${nueva.h ? ` (${nueva.h} h)` : ''} · SLA recalculado`, quien);
       });
     } else if (a === 'barrio') {
-      const de = G.barrio(t.barrio).nombre, a2 = G.barrio(val).nombre;
-      G.tk(id, (x) => { G.evento(x, `Barrio reasignado: ${de} → ${a2}`, quien); x.barrio = val; });
+      G.moverTicket(id, val, quien);
     } else if (a === 'nota') {
       const v = $('#nota').value.trim();
       if (!v) return;
@@ -778,16 +838,8 @@
             <span class="mini">Al cruzarlo: aviso al operador de turno y al supervisor. Al 100 %: escalado a Dirección. Avisos SIMULADOS.</span></div>
         </div>
       </section>
-      <section class="block">
-        <header class="bh"><h3>Equipo ${hlp('equipo')}</h3><span class="mini">Operadores (ven sólo sus barrios) y técnicos de campo (ven sólo sus visitas)</span></header>
-        <div class="conn cut cfgl">
-          ${S.equipo.length ? `<ul class="team">${S.equipo.map((p) => `<li><b>${esc(p.nombre)}</b><span class="chip">${G.ROL_TXT[p.rol]}</span>
-            ${p.rol === 'operador' ? (dir ? `<span class="bchk">${S.barrios.map((b) => `<label><input type="checkbox" data-cfg="pb" data-k="${esc(p.id)}" value="${esc(b.id)}" ${(p.barrios || []).includes(b.id) ? 'checked' : ''}>${esc(b.nombre)}</label>`).join('') || '<small>sin barrios todavía</small>'}</span>` : `<small>${(p.barrios || []).map((b) => esc(G.barrio(b).nombre)).join(', ') || 'sin barrios'}</small>`) : ''}
-            ${dir ? `<button type="button" class="x sm" data-a="pDel" data-k="${esc(p.id)}" aria-label="Quitar a ${esc(p.nombre)}">✕</button>` : ''}</li>`).join('')}</ul>` : '<p class="mini">Sin personas cargadas. Mientras tanto, todo se ve como Dirección.</p>'}
-          ${dir ? `<form class="addrow" data-a="pAdd"><input id="npNom" placeholder="Nombre y apellido" maxlength="60" required aria-label="Nombre">${hlp('rol')}<select id="npRol" aria-label="Rol"><option value="operador">Operador</option><option value="tecnico">Técnico de campo</option></select><button type="submit" class="ghost">Agregar</button></form>` : ''}
-        </div>
-      </section>
-      <section class="block">
+      ${puede('usuarios') ? vUsuarios() : ''}
+      ${dir ? `<section class="block">
         <header class="bh"><h3>Barrios ${hlp('barrios')}</h3><span class="mini">Se dan de alta solos con lo que escribe el residente en el chat</span></header>
         <div class="conn cut cfgl">
           ${S.barrios.length ? `<ul class="team brs">${S.barrios.map((b) => {
@@ -798,16 +850,110 @@
                 ${S.barrios.length > 1 ? `${hlp('unir')}<select data-cfg="bunir" data-k="${esc(b.id)}" aria-label="Unir ${esc(b.nombre)} con otro barrio"><option value="">Es el mismo que…</option>${S.barrios.filter((x) => x.id !== b.id).map((x) => `<option value="${esc(x.id)}">${esc(x.nombre)}</option>`).join('')}</select>` : ''}` : `<small>${g.rating ? `Google ${g.rating}★ · ${g.n || 0} reseñas` : 'Google sin cargar'}</small>`}</li>`;
           }).join('')}</ul>` : '<p class="mini">Todavía no entró ningún barrio.</p>'}
         </div>
-      </section>
+      </section>` : ''}
       <section class="block">
         <header class="bh"><h3>Conexión</h3></header>
         <div class="conn cut">
           <p><span class="dotlive"></span>Backend <span class="mono">${esc(host)}</span></p>
           <p><b>${casos.length}</b> casos del chat · <b>${casos.filter((c) => c.derivado_central === 'sí').length}</b> derivados a la central · <b>${casos.filter(resueltoPorBot).length}</b> resueltos por el bot</p>
           <p class="mini">Cada caso derivado aparece como ticket con su consulta, pasos intentados y fuentes. Al caso sólo se le anota el número de ticket y, al cerrarlo, que quedó resuelto. Encuestas, WhatsApp, emails y reseñas: SIMULADOS.</p>
-          <div class="rowb"><a class="primary cut" href="../index.html?ayuda=1" target="_blank" rel="noopener">Abrir el chat de residentes ↗</a><button type="button" class="ghost" data-a="salir">Salir de esta PC</button></div>
+          <div class="rowb"><a class="primary cut" href="../index.html?ayuda=1" target="_blank" rel="noopener">Abrir el chat de residentes ↗</a><button type="button" class="ghost" data-a="cuenta">Mi cuenta</button><button type="button" class="ghost" data-a="salir">Salir</button></div>
         </div>
       </section>`;
+  }
+
+  const ROLES = [
+    ['direccion', 'Dirección', ['Ve todos los barrios y todos los tickets', 'Crea usuarios, les asigna barrios y les resetea la clave', 'Define tipos de problema, tiempos y alertas', 'Une barrios duplicados y carga el perfil de Google']],
+    ['operador', 'Operador', ['Ve sólo los casos y tickets de sus barrios', 'Toma tickets, asigna técnicos, categoriza y cierra', 'Ve la experiencia y la reputación de sus barrios', 'No ve usuarios ni cambia la configuración']],
+    ['tecnico', 'Técnico de campo', ['Ve sólo las visitas que le asignan, en sus barrios', 'Marca “llegué al lugar”, agrega notas y cierra en campo', 'No ve el resto de los tickets ni la configuración']],
+  ];
+  const bchecks = (sel, name) => S.barrios.map((b) => `<label><input type="checkbox" name="${name}" value="${esc(b.id)}" ${sel.includes(b.id) ? 'checked' : ''}>${esc(b.nombre)}</label>`).join('') || '<small>Todavía no entró ningún barrio por el chat.</small>';
+  let pidiendoUsuarios = false;
+  function vUsuarios() {
+    const us = G.usuarios();
+    if (!us && !pidiendoUsuarios) { pidiendoUsuarios = true; G.usuariosListar().catch(() => {}).finally(() => { pidiendoUsuarios = false; renderRemoto(); }); }
+    const fila = (u) => {
+      const dirU = u.rol === 'direccion', baja = u.activo === false;
+      return `<li class="${baja ? 'baja' : ''}"><span class="un"><b>${esc(u.nombre || u.usuario)}</b><small class="mono">${esc(u.usuario)}</small></span>
+        <span class="chip r-${esc(u.rol)}">${esc(G.ROL_TXT[u.rol] || u.rol)}</span>
+        <small class="ub">${dirU ? 'todos los barrios' : (u.barrios || []).map((b) => esc(G.barrio(b).nombre)).join(', ') || 'sin barrios'}</small>
+        <span class="ue ${baja ? 'off' : 'on'}">${baja ? 'Dado de baja' : 'Activo'}</span>
+        ${dirU || baja ? '' : `<span class="uacts"><button type="button" class="ghost sm" data-a="uEditar" data-k="${esc(u.usuario)}">Editar</button><button type="button" class="ghost sm" data-a="uReset" data-k="${esc(u.usuario)}">Resetear clave</button><button type="button" class="ghost sm danger" data-a="uBaja" data-k="${esc(u.usuario)}">Dar de baja</button></span>`}</li>`;
+    };
+    return `<section class="block" id="usuarios">
+        <header class="bh"><h3>Usuarios ${hlp('usuarios')}</h3><span class="mini">Cada persona entra con su usuario y su clave · sólo Dirección ve esta sección</span></header>
+        <div class="roles cut"><h4>Qué puede hacer cada rol ${hlp('rol')}</h4><div class="rgrid">${ROLES.map(([k, n, l]) => `<div class="rcol r-${k}"><b>${n}</b><ul>${l.map((x) => `<li>${x}</li>`).join('')}</ul></div>`).join('')}</div></div>
+        <div class="conn cut cfgl">
+          ${!us ? '<p class="mini">Cargando usuarios…</p>' : `<ul class="team users-l"><li class="uh" aria-hidden="true"><span>Nombre · usuario</span><span>Rol</span><span>Barrios ${hlp('uBarrios')}</span><span>Estado ${hlp('uEstado')}</span><span></span></li>${us.slice().sort((a, b) => (a.rol === 'direccion' ? -1 : b.rol === 'direccion' ? 1 : (a.activo === false) - (b.activo === false) || String(a.nombre).localeCompare(b.nombre))).map(fila).join('')}</ul>`}
+          <h4 class="uf-h">Crear usuario</h4>
+          <form class="uform grid2" data-a="uCrear" novalidate autocomplete="off">
+            <label><span>Nombre y apellido ${hlp('uNombre')}</span><input id="unom" maxlength="60" placeholder="ej. Juan Pérez"></label>
+            <label><span>Usuario ${hlp('usuario')}</span><input id="uusr" maxlength="30" autocapitalize="none" spellcheck="false" placeholder="ej. jperez"></label>
+            <label><span>Rol ${hlp('rol')}</span><select id="urol"><option value="operador">Operador</option><option value="tecnico">Técnico de campo</option></select></label>
+            <label><span>Clave inicial ${hlp('claveInicial')}</span><input id="ucla" type="text" autocomplete="off" spellcheck="false" placeholder="mínimo 8 caracteres"></label>
+            <fieldset class="bchk ubar"><legend>Barrios ${hlp('uBarrios')}</legend>${bchecks([], 'ub')}</fieldset>
+            <p class="gerr" id="uerr" hidden></p>
+            <button type="submit" class="primary cut">Crear usuario</button>
+          </form>
+        </div>
+      </section>`;
+  }
+  const RX_U = /^[a-z0-9._-]{3,30}$/;
+  const errU = (e) => ({ existe: 'Ese usuario ya existe.', ya_existe: 'Ese usuario ya existe.', usuario: 'El usuario no es válido.', usuario_invalido: 'Usuario: de 3 a 30 caracteres, sólo minúsculas, números, punto, guion o guion bajo (“direccion” está reservado).', nombre: 'Falta el nombre.', no_existe: 'Ese usuario ya no existe.', rol: 'Elegí un rol.', clave_corta: ERR.corta, corta: ERR.corta, permiso: ERR.permiso, reservado: 'El usuario “direccion” está reservado.' }[e] || `No se pudo guardar (${e || 'error'}).`);
+  const marcados = (root, name) => $$(`input[name=${name}]:checked`, root).map((x) => x.value);
+  async function crearUsuario(f) {
+    const err = (m) => { const p = $('#uerr', f); p.textContent = m; p.hidden = false; };
+    const nombre = $('#unom', f).value.trim(), usuario = $('#uusr', f).value.trim().toLowerCase(), rol = $('#urol', f).value, clave = $('#ucla', f).value, barrios = marcados(f, 'ub');
+    if (!nombre) return err('Falta el nombre.');
+    if (!RX_U.test(usuario)) return err('Usuario: de 3 a 30 caracteres, sólo minúsculas, números, punto, guion o guion bajo.');
+    if (usuario === 'direccion') return err('El usuario “direccion” está reservado.');
+    if ((G.usuarios() || []).some((u) => u.usuario === usuario)) return err('Ese usuario ya existe.');
+    if (clave.length < 8) return err('La clave inicial tiene que tener al menos 8 caracteres.');
+    if (!barrios.length && !confirm('No marcaste ningún barrio: no va a ver ningún caso hasta que le asignes uno. ¿Crear igual?')) return;
+    const btn = $('button[type=submit]', f); btn.disabled = true;
+    try {
+      const j = await G.usuarioGuardar({ usuario, nombre, rol, barrios, clave });
+      if (!j.ok) return err(errU(j.error));
+      render();
+      toast(`Usuario <b>${esc(usuario)}</b> creado · ${esc(G.ROL_TXT[rol])}. Pasale su clave inicial.`);
+    } catch (e) { if (e.code !== 'sesion') err(ERR.red); } finally { btn.disabled = false; }
+  }
+  function modalUsuario(usr, modo, msg) {
+    const u = (G.usuarios() || []).find((x) => x.usuario === usr);
+    if (!u) return;
+    if (modo === 'reset') return modal(`<h3>Resetear clave · ${esc(u.nombre)}</h3><p class="sub">Usuario <span class="mono">${esc(u.usuario)}</span>. La clave vieja deja de servir. ${hlp('reset')}</p>
+      ${msg ? `<p class="gerr" role="alert">${esc(msg)}</p>` : ''}
+      <form class="uform" data-a="uResetOk" data-k="${esc(u.usuario)}" novalidate autocomplete="off"><label><span>Clave nueva ${hlp('claveInicial')}</span><input id="urc" type="text" spellcheck="false" placeholder="mínimo 8 caracteres"></label>
+      <div class="mact"><button type="button" class="ghost" data-m="cancel">Cancelar</button><button type="submit" class="primary cut">Resetear clave</button></div></form>`);
+    modal(`<h3>Editar · ${esc(u.nombre)}</h3><p class="sub">Usuario <span class="mono">${esc(u.usuario)}</span> (no se puede cambiar).</p>
+      ${msg ? `<p class="gerr" role="alert">${esc(msg)}</p>` : ''}
+      <form class="uform" data-a="uEditarOk" data-k="${esc(u.usuario)}" novalidate autocomplete="off">
+        <label><span>Nombre y apellido ${hlp('uNombre')}</span><input id="uen" maxlength="60" value="${esc(u.nombre)}"></label>
+        <label><span>Rol ${hlp('rol')}</span><select id="uer"><option value="operador" ${u.rol === 'operador' ? 'selected' : ''}>Operador</option><option value="tecnico" ${u.rol === 'tecnico' ? 'selected' : ''}>Técnico de campo</option></select></label>
+        <fieldset class="bchk ubar"><legend>Barrios ${hlp('uBarrios')}</legend>${bchecks(u.barrios || [], 'ueb')}</fieldset>
+        <div class="mact"><button type="button" class="ghost" data-m="cancel">Cancelar</button><button type="submit" class="primary cut">Guardar</button></div>
+      </form>`);
+  }
+  async function guardarUsuario(f, reset) {
+    const usr = f.dataset.k;
+    const u = (G.usuarios() || []).find((x) => x.usuario === usr);
+    if (!u) return;
+    let datos;
+    if (reset) {
+      const clave = $('#urc').value;
+      if (clave.length < 8) return modalUsuario(usr, 'reset', ERR.corta);
+      datos = { usuario: u.usuario, nombre: u.nombre, rol: u.rol, barrios: u.barrios || [], clave };
+    } else {
+      const nombre = $('#uen').value.trim();
+      if (!nombre) return modalUsuario(usr, 'editar', 'Falta el nombre.');
+      datos = { usuario: u.usuario, nombre, rol: $('#uer').value, barrios: marcados(f, 'ueb') };
+    }
+    try {
+      const j = await G.usuarioGuardar(datos);
+      if (!j.ok) return modalUsuario(usr, reset ? 'reset' : 'editar', errU(j.error));
+      cerrarModal(); render();
+      toast(reset ? `Clave de <b>${esc(usr)}</b> reseteada · pasale la nueva` : `Usuario <b>${esc(usr)}</b> actualizado`);
+    } catch (e) { if (e.code !== 'sesion') modalUsuario(usr, reset ? 'reset' : 'editar', ERR.red); }
   }
 
   /* ════════ render general ════════ */
@@ -839,20 +985,17 @@
     const f = ev.target;
     ev.preventDefault();
     if (f.dataset.g) { enviarGate(f); return; }
+    if (f.dataset.a === 'miClave') { cambiarMiClave(); return; }
+    if (f.dataset.a === 'uCrear' && puede('usuarios')) { crearUsuario(f); return; }
+    if ((f.dataset.a === 'uEditarOk' || f.dataset.a === 'uResetOk') && puede('usuarios')) { guardarUsuario(f, f.dataset.a === 'uResetOk'); return; }
     if (!puede('configurar')) return;
     if (f.dataset.a === 'catAdd') {
       const nombre = $('#ncNom').value.trim(), h = Math.max(1, Math.min(240, +$('#ncH').value || 0)), claves = $('#ncCl').value.trim();
       if (!nombre || !h) return;
-      let id = G.slug(nombre) || 'cat';
+      let id = G.bid(nombre) || 'cat';
       if (G.cats().some((c) => c.id === id)) id += '-' + uid();
-      G.mut('cfg', (d) => { if (!d.cats.some((c) => c.id === id)) d.cats.push({ id, nombre, h, claves }); });
+      G.mut(G.CFG, (d) => { if (!d.cats.some((c) => c.id === id)) d.cats.push({ id, nombre, h, claves }); });
       render(); toast(`Categoría “${esc(nombre)}” · ${h} h`);
-    } else if (f.dataset.a === 'pAdd') {
-      const nombre = $('#npNom').value.trim(), rol = $('#npRol').value;
-      if (!nombre) return;
-      const p = { id: 'p-' + uid(), rol, nombre, barrios: [] };
-      G.mut('equipo', (d) => d.list.push({ ...p, barrios: [] }));
-      render(); toast(`${esc(nombre)} · ${G.ROL_TXT[rol]}`);
     }
   });
   document.addEventListener('click', (ev) => {
@@ -901,29 +1044,32 @@
         break;
       }
       case 'al': {
-        G.mut('alertas', (x) => x.list.forEach((a) => { if (a.id === d.idAl) a.leida = true; }));
+        G.marcarLeidas([d.idAl]);
         $('#pop').hidden = true;
         if (d.k === 'detractor') { ui.vista = 'exp'; render(); } else if (d.t) { render(); abrirFicha(d.t); }
         break;
       }
-      case 'leer': { const ids = new Set(alertasVis().map((a) => a.id)); G.mut('alertas', (x) => x.list.forEach((a) => { if (ids.has(a.id)) a.leida = true; })); renderBell(); renderPop(); break; }
+      case 'leer': G.marcarLeidas(alertasVis().map((a) => a.id)); renderBell(); renderPop(); break;
       case 'catDel': {
         const c = G.cat(d.k);
         const n = S.tickets.filter((t) => t.cat === d.k && t.estado !== 'cerrado').length;
         if (!confirm(`¿Quitar la categoría “${c.nombre}”?${n ? ` ${plural(n, 'ticket abierto queda', 'tickets abiertos quedan')} sin categoría.` : ''}`)) break;
-        G.mut('cfg', (x) => { x.cats = x.cats.filter((k) => k.id !== d.k); });
+        G.mut(G.CFG, (x) => { x.cats = x.cats.filter((k) => k.id !== d.k); });
         S.tickets.filter((t) => t.cat === d.k && t.estado !== 'cerrado').forEach((t) => G.tk(t.id, (x) => { x.cat = ''; G.evento(x, `Categoría “${c.nombre}” eliminada por Dirección · ticket sin SLA`, 'Dirección'); }));
         render(); break;
       }
-      case 'catDoc': G.mut('cfg', (x) => G.CATS_DOC.forEach((c) => { if (!x.cats.some((k) => k.id === c.id)) x.cats.push({ ...c }); })); render(); toast('Categorías del contrato cargadas'); break;
-      case 'pDel': {
-        const p = G.persona(d.k);
-        if (!p || !confirm(`¿Quitar a ${p.nombre} del equipo?`)) break;
-        G.mut('equipo', (x) => { x.list = x.list.filter((q) => q.id !== d.k); });
-        if (ui.rol === d.k) ui.rol = 'dir';
-        render(); break;
+      case 'catDoc': G.mut(G.CFG, (x) => G.CATS_DOC.forEach((c) => { if (!x.cats.some((k) => k.id === c.id)) x.cats.push({ ...c }); })); render(); toast('Categorías del contrato cargadas'); break;
+      case 'cuenta': modalCuenta(); break;
+      case 'salir': G.salir('fuera'); break;
+      case 'uEditar': if (puede('usuarios')) modalUsuario(d.k, 'editar'); break;
+      case 'uReset': if (puede('usuarios')) modalUsuario(d.k, 'reset'); break;
+      case 'uBaja': {
+        if (!puede('usuarios')) break;
+        const u = (G.usuarios() || []).find((x) => x.usuario === d.k);
+        if (!u || !confirm(`¿Dar de baja a ${u.nombre} (${u.usuario})? No va a poder entrar más y, si está conectado, se le corta la sesión.`)) break;
+        G.usuarioBaja(d.k).then((j) => { if (j.ok) { if (ui.ver === d.k) ui.ver = ''; render(); toast(`${esc(u.nombre)} dado de baja · su sesión se cortó`); } else toast(esc(errU(j.error)), 'bad'); }).catch(() => {});
+        break;
       }
-      case 'salir': if (confirm('¿Salir de la central en esta PC? Se borra la clave guardada.')) G.salir('fuera'); break;
       default:
     }
   });
@@ -936,9 +1082,10 @@
   });
   document.addEventListener('change', (ev) => {
     const el = ev.target;
-    if (el.id === 'role') { ui.rol = el.value; ui.barrio = '*'; ui.q = ''; ui.lote = null; cerrarFicha(); $('#pop').hidden = true; render(); toast(`Viendo como ${esc(me().rol === 'direccion' ? 'Dirección' : G.ROL_TXT[me().rol] + ' · ' + me().nombre)}`); return; }
+    if (el.id === 'role') { if (!G.esDir()) return; ui.ver = el.value; ui.barrio = '*'; ui.q = ''; ui.lote = null; cerrarFicha(); $('#pop').hidden = true; render(); toast(ui.ver ? `Vista previa: ${esc(G.ROL_TXT[me().rol] + ' · ' + me().nombre)}` : 'Viendo como vos (Dirección)'); return; }
     if (el.id === 'tenant') { ui.barrio = el.value; ui.lote = null; cerrarFicha(); render(); return; }
     if (el.id === 'fcat') { ui.cat = el.value; render(); return; }
+    if (el.name === 'ub' || el.name === 'ueb') return;
     if (el.dataset.a && ['asignar', 'cat', 'barrio'].includes(el.dataset.a)) { accionFicha(el.dataset.a, null, el.value); return; }
     if (el.dataset.paso != null) {
       const id = el.dataset.k, i = +el.dataset.paso, on = el.checked;
@@ -950,28 +1097,19 @@
     const c = el.dataset.cfg;
     if (!c || !puede('configurar')) return;
     const k = el.dataset.k, v = el.value;
-    if (c === 'h') { const h = Math.max(1, Math.min(240, Math.round(+v) || 0)); if (h) G.mut('cfg', (x) => { const q = x.cats.find((y) => y.id === k); if (q) q.h = h; }); toast('Motor de SLA actualizado'); }
-    else if (c === 'cnom' && v.trim()) G.mut('cfg', (x) => { const q = x.cats.find((y) => y.id === k); if (q) q.nombre = v.trim().slice(0, 50); });
-    else if (c === 'claves') G.mut('cfg', (x) => { const q = x.cats.find((y) => y.id === k); if (q) q.claves = v.trim().slice(0, 300); });
-    else if (c === 'umbral') { const u = Math.max(50, Math.min(95, +v || 75)); G.mut('cfg', (x) => { x.umbral = u; }); toast('Umbral de alerta actualizado'); }
-    else if (c === 'pb') { const on = el.checked; G.mut('equipo', (x) => { const p = x.list.find((q) => q.id === k); if (!p) return; p.barrios = (p.barrios || []).filter((b) => b !== v); if (on) p.barrios.push(v); }); }
-    else if (c === 'bnom' && v.trim()) G.mut('barrios', (x) => { const b = x.list.find((q) => q.id === k); if (b) b.nombre = v.trim().slice(0, 60); });
+    if (c === 'h') { const h = Math.max(1, Math.min(240, Math.round(+v) || 0)); if (h) G.mut(G.CFG, (x) => { const q = x.cats.find((y) => y.id === k); if (q) q.h = h; }); toast('Motor de SLA actualizado'); }
+    else if (c === 'cnom' && v.trim()) G.mut(G.CFG, (x) => { const q = x.cats.find((y) => y.id === k); if (q) q.nombre = v.trim().slice(0, 50); });
+    else if (c === 'claves') G.mut(G.CFG, (x) => { const q = x.cats.find((y) => y.id === k); if (q) q.claves = v.trim().slice(0, 300); });
+    else if (c === 'umbral') { const u = Math.max(50, Math.min(95, +v || 75)); G.mut(G.CFG, (x) => { x.umbral = u; }); toast('Umbral de alerta actualizado'); }
+    else if (c === 'bnom' && v.trim()) G.mut(G.CFG, (x) => { const b = x.barrios.find((q) => q.id === k); if (b) { if (G.norm(b.nombre) !== G.norm(v)) b.alias = [...new Set([...(b.alias || []), b.nombre])]; b.nombre = v.trim().slice(0, 60); } });
     else if (c === 'gurl' || c === 'grat' || c === 'gn') {
       const campo = { gurl: 'url', grat: 'rating', gn: 'n' }[c];
       const val = c === 'gurl' ? v.trim().slice(0, 200) : c === 'grat' ? (v ? Math.max(1, Math.min(5, +v)) : null) : (v ? Math.max(0, Math.round(+v)) : null);
-      G.mut('barrios', (x) => { const b = x.list.find((q) => q.id === k); if (b) b.google = { ...(b.google || {}), [campo]: val }; });
+      G.mut(G.CFG, (x) => { const b = x.barrios.find((q) => q.id === k); if (b) b.google = { ...(b.google || {}), [campo]: val }; });
     } else if (c === 'bunir' && v) {
       const de = G.barrio(k), a = G.barrio(v);
       if (!confirm(`¿“${de.nombre}” es el mismo barrio que “${a.nombre}”? Sus tickets y encuestas pasan a “${a.nombre}”.`)) { el.value = ''; return; }
-      G.mut('barrios', (x) => {
-        const src = x.list.find((q) => q.id === k), dst = x.list.find((q) => q.id === v);
-        if (!src || !dst) return;
-        dst.alias = [...new Set([...(dst.alias || []), src.id, ...(src.alias || [])])];
-        x.list = x.list.filter((q) => q.id !== k);
-      });
-      S.tickets.filter((t) => t.barrio === k).forEach((t) => G.tk(t.id, (x) => { x.barrio = v; G.evento(x, `Barrio unificado: ${de.nombre} → ${a.nombre}`, 'Dirección'); }));
-      if (S.enc.some((e) => e.barrio === k)) G.mut('enc', (x) => x.list.forEach((e) => { if (e.barrio === k) e.barrio = v; }));
-      G.mut('equipo', (x) => x.list.forEach((p) => { if ((p.barrios || []).includes(k)) p.barrios = [...new Set(p.barrios.map((b) => (b === k ? v : b)))]; }));
+      G.unirBarrios(k, v, quienSoy()).then(() => render());
       toast(`${esc(de.nombre)} unificado con ${esc(a.nombre)}`);
     } else return;
     render();
@@ -997,7 +1135,8 @@
       l.forEach((t) => { fresh.add(t.id); setTimeout(() => fresh.delete(t.id), 4000); });
       l.filter(vis).forEach((t) => toast(`<b>NUEVO TICKET ${t.id}</b> desde el chat · ${esc(G.barrio(t.barrio).nombre)}${t.lote ? ' · ' + esc(loteTxt(t.lote)) : ''}`, 'info'));
     },
-    salir: (m) => iniciar(m === 'clave' ? 'La clave guardada ya no es válida: ingresala de nuevo.' : m === 'bloqueado' ? ERR.bloqueado : ''),
+    salir: (m) => iniciar(m === 'sesion' ? ERR.sesion : ''),
+    aviso: (k) => { if (k === 'permiso') toast('No tenés permiso para guardar ese cambio: se descartó.', 'bad'); },
   });
 
   setInterval(tick, 1000);
