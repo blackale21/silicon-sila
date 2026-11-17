@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#070b14">
+  <title>Central SILA · Gestión y experiencia (simulación)</title>
+  <link rel="icon" href="https://cdn.prod.website-files.com/6182a6498e5d9c44fad44d26/6189369488195832cdd4269d_Favicon%2032.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/gestion.css?v=20261116">
+</head>
+<body>
+  <div class="plan" aria-hidden="true"></div>
+
+  <header class="top">
+    <a class="brand" href="../crm.html" title="Ir a la bandeja comercial">
+      <svg viewBox="0 0 3 3" aria-hidden="true"><path d="M1 0H2V1H3V2L2 3H1V2H0V1Z" fill="#006bf2"/></svg>
+      <span><b>Central SILA</b><small>Gestión · Experiencia</small></span>
+    </a>
+    <span class="sim" title="Nada de lo que pasa acá sale del navegador">SIMULACIÓN<span class="sim-x"> · reemplaza Monday.com</span></span>
+    <span class="scope" id="scope"></span>
+    <div class="clock" id="clock" title="Reloj de la demo: adelantalo para ver correr el SLA">
+      <span class="lbl">RELOJ DEMO</span>
+      <b id="clockTime">--:--</b>
+      <span class="off" id="clockOff"></span>
+      <button type="button" data-adv="15">+15 min</button>
+      <button type="button" data-adv="60">+1 h</button>
+      <button type="button" data-adv="0" class="rst" title="Volver a la hora real">⟲</button>
+    </div>
+    <button type="button" class="bell" id="bell" aria-label="Alertas" aria-haspopup="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4l2-2Zm4 3h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <i id="bellN" hidden>0</i>
+    </button>
+    <label class="who">
+      <span>Ver como</span>
+      <select id="role"></select>
+    </label>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+
+  <main id="view" tabindex="-1"></main>
+
+  <aside class="drawer" id="drawer" aria-hidden="true"></aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" hidden></div>
+  <section class="pop" id="pop" hidden aria-label="Alertas"></section>
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+  <script src="js/data.js?v=20261116"></script>
+  <script src="js/app.js?v=20261116"></script>
+</body>
+</html>
