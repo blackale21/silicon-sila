@@ -191,16 +191,16 @@ def main():
         report.append(f'{status:9} {audience(name):14} {mod:30} {clean_title(name)}')
     # páginas de Confluence "Casos de Soporte" (sólo las de cara al cliente), copiadas a kb/src/confluence/paginas.json.
     # Van DESPUÉS de los manuales de Drive para no correr los ids de fragmento que usan las fichas.
-    cf = os.path.join(SRC, 'confluence', 'paginas.json')
+    # paginas.json, paginas2_*.json, paginas3_*.json… en ese orden (agregar SIEMPRE en un archivo nuevo al final)
     ncf = 0
-    if os.path.exists(cf):
+    for cf in sorted(glob.glob(os.path.join(SRC, 'confluence', 'paginas*.json'))):
         for pg in json.load(open(cf, encoding='utf-8')):
             txt_all = nfc(pg['text'])
-            did = 'cf' + pg['id']
+            did = ('cf' + pg['id'])[:40] if not pg['id'].startswith('pl-') else pg['id']
             sha = hashlib.sha256(txt_all.encode('utf-8')).hexdigest()
             con.execute('INSERT INTO documents VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)', (
-                did, pg['title'], pg['module'], 'residente', '', pg['title'], 'text/plain', 0, sha, len(txt_all.encode('utf-8')),
-                json.dumps(['confluence:' + pg['id']]), json.dumps(['Confluence/CDS/' + pg['path']], ensure_ascii=False), '', 'ok'))
+                did, pg['title'], pg['module'], pg.get('audience', 'residente'), '', pg['title'], 'text/plain', 0, sha, len(txt_all.encode('utf-8')),
+                json.dumps(['confluence:' + pg['id']]), json.dumps([('Confluence/CDS/' if not pg['id'].startswith('pl-') else '') + pg['path']], ensure_ascii=False), '', 'ok'))
             for part in [x.strip() for x in re.split(r'\n\s*\n', txt_all) if x.strip()]:
                 if len(part) < 20:
                     continue

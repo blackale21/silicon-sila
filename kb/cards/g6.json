@@ -1,0 +1,405 @@
+[
+  {
+    "id": "guardia-entrar-web",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: entrar a la Web de Guardia y elegir el acceso",
+    "ask": ["como entro a la web de guardia", "no sé la dirección de la web de guardia", "donde inicio sesión como guardia", "elegir el punto de acceso en la web de guardia"],
+    "intro": "Si sos de la guardia, así se entra:",
+    "steps": [
+      {"say": "Entrá a la Web de Guardia (la dirección es guardia- seguido del nombre de tu empresa o barrio, .silicon-access.com).", "chunk": 212, "quote": "La URL de acceso es: guardia-nombredelaempresa.silicon-access.com"},
+      {"say": "Poné tu usuario y clave y tocá Aceptar.", "chunk": 212, "quote": "Ingresar usuario y clave y Aceptar"},
+      {"say": "Si el barrio tiene varios accesos, elegí el Punto de Acceso donde estás.", "chunk": 212, "quote": "seleccionar el Punto de Acceso en donde se encuentra el operador."},
+      {"say": "Para empezar a operar, elegí el acceso y la vía correctos.", "chunk": 212, "quote": "Para comenzar a operar, seleccionar el acceso y la vía correctas."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-ingreso-sin-autorizacion",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: ingreso de una visita o trabajador sin autorización previa",
+    "ask": ["como hago entrar a una visita que no está autorizada", "llegó un trabajador sin autorización", "registrar una visita nueva en la guardia", "ingreso manual de visita", "cargar una persona nueva en la guardia"],
+    "intro": "Si sos de la guardia, este es el paso a paso:",
+    "steps": [
+      {"say": "Fijate de estar en el acceso y la vía correctos: módulo Entradas, vía Visitas.", "chunk": 213, "quote": "En este caso, módulo Entradas, y vía Visitas."},
+      {"say": "Cargá el DNI en Documento de la visita y tocá Buscar. Si ya está registrada, verificá los datos y seguí.", "chunk": 213, "quote": "ingresar el numero de DNI en el campo Documento de la visita y Buscar."},
+      {"say": "Si es nueva: sacale la foto y completá sus datos.", "chunk": 213, "quote": "Paso 2: Tomar Foto de la persona. Paso 3: Completar datos."},
+      {"say": "Cargá seguro y antecedentes si los pide, la patente si viene en vehículo y el lote o nombre del residente.", "chunk": 213, "quote": "Paso 6: Cargar Lote del residente o Nombre del residente."},
+      {"say": "Tocá el botón verde Habilitar ingreso: como no hay autorización previa, se abre el Timbre Virtual para el residente.", "chunk": 213, "quote": "Al no haber autorización previa, se abrirá la ventana para el envío del Timbre Virtual."}
+    ],
+    "tips": [
+      {"say": "Si el residente no tiene la app, te aparece directo la opción de borrar el timbre o hacer el ingreso manual; no hace falta esperar la cuenta regresiva.", "chunk": 213, "quote": "Si el residente no tiene instalada la App Silicon Access, se mostrará directamente la opción de borrar el Timbre Virtual o realizar el ingreso de forma manual."}
+    ]
+  },
+  {
+    "id": "guardia-ingreso-preautorizado",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: ingreso de alguien que ya está autorizado",
+    "ask": ["la visita viene autorizada como la hago entrar", "ingreso de trabajador pre autorizado", "donde veo las autorizaciones de una persona en la guardia", "el residente ya lo autorizó desde la app"],
+    "intro": "Si ya está autorizado es rapidísimo:",
+    "steps": [
+      {"say": "Cargá el DNI en Documento de la visita y tocá Buscar.", "chunk": 215, "quote": "ingresar el numero de DNI en el campo Documento de la visita y presionar el botón Buscar."},
+      {"say": "Abajo de la ficha te aparecen sus autorizaciones: elegí la que corresponde al horario.", "chunk": 215, "quote": "Se mostrarán en la parte inferior de la ficha del ingresante, todas las autorizaciones que tiene vinculadas a su perfil."},
+      {"say": "El lote se completa solo: tocá Habilitar Ingreso.", "chunk": 215, "quote": "debiendo únicamente presionar el botón Habilitar Ingreso."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-salida",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: registrar una salida",
+    "ask": ["como registro una salida", "dar salida a una persona en la guardia", "habilitar egreso", "registrar egreso de un trabajador"],
+    "intro": "Así se registra una salida:",
+    "steps": [
+      {"say": "Elegí el acceso y la vía correctos: módulo Salidas.", "chunk": 214, "quote": "En este caso, módulo Salidas, y vía Residentes."},
+      {"say": "Cargá el DNI y tocá Buscar (con lector de DNI se completa solo).", "chunk": 214, "quote": "Si la guardia cuenta con Lector de DNI, al escanear se cargarán los datos automáticamente."},
+      {"say": "Verificá los datos; si sale con otro vehículo distinto al que entró, te aparece una alerta.", "chunk": 214, "quote": "En caso de salir con vehículo diferente con el que ingresó, se visualizará una alerta."},
+      {"say": "Abajo, tocá Habilitar egreso.", "chunk": 214, "quote": "En la barra inferior, habilitar la salida con el botón Habilitar egreso."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-multilote",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: una persona que va a varios lotes",
+    "ask": ["ingreso a varios lotes", "una visita que va a dos lotes", "ingreso multi lote", "el trabajador va a más de un lote"],
+    "intro": "Se cargan todos los lotes en el mismo ingreso:",
+    "steps": [
+      {"say": "En Lote Destino cargá los lotes de a uno, apretando Enter y eligiendo al residente de cada uno. Se van sumando.", "chunk": 216, "quote": "en el campo Lote Destino ingresar los lotes destino uno por vez presionando Enter para seleccionar al corresidente de cada lote. Los lotes se irán sumando."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-tipo-ingresante",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: cambiar el tipo de ingresante de una persona",
+    "ask": ["un trabajador está cargado como visita", "cambiar el tipo de ingresante", "la empleada figura como trabajador de obra", "corregir si es visita o trabajador"],
+    "intro": "Si tu barrio lo permite, lo podés corregir vos:",
+    "steps": [
+      {"say": "Después de cargar los datos, abrí la ficha de la persona y en Tipo de Ingresante elegí el correcto. Queda guardado al completar el acceso.", "chunk": 217, "quote": "abrir la ficha de la persona y en el campo Tipo de Ingresante, seleccionar el correcto."}
+    ],
+    "tips": [
+      {"say": "Depende de la configuración del barrio.", "chunk": 217, "quote": "si la configuración del consorcio lo permite, es posible para el operador de guardia modificar el tipo de ingresante"}
+    ]
+  },
+  {
+    "id": "guardia-seguro-vencido",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: el trabajador tiene el seguro vencido o faltan datos",
+    "ask": ["el trabajador tiene la ART vencida", "me dice verifica los datos ingresados", "no me deja ingresar al trabajador por el seguro", "seguro vencido en la guardia", "no puedo modificar el seguro del trabajador"],
+    "intro": "El sistema frena el ingreso hasta que esté la documentación al día:",
+    "steps": [
+      {"say": "Pedile al trabajador el seguro actualizado y cargá los datos nuevos en pantalla; ahí el sistema permite el acceso.", "chunk": 218, "quote": "será necesario que el trabajador presente la documentación del seguro actualizada para que el operador de guardia pueda actualizar los datos en pantalla"},
+      {"say": "Si te aparece Verifica los datos ingresados, es que falta algún dato que pide ese tipo de ingresante.", "chunk": 218, "quote": "Siempre que falte alguna información que sea requerida para el ingreso, se mostrará la leyenda “Verifica los datos ingresados” debajo del nombre de la persona."}
+    ],
+    "tips": [
+      {"say": "Si no podés editar el seguro o los antecedentes, es por los permisos de tu usuario: hablá con la administración del barrio.", "chunk": 218, "quote": "En caso de no poder modificar los datos de Seguro o Antecedentes Penales, es debido a los permisos que tiene el usuario de Operador de Guardia. En este caso comunicarse con la administración del barrio."}
+    ]
+  },
+  {
+    "id": "guardia-excedidos",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: limpiar la lista de Excedidos",
+    "ask": ["como limpio los excedidos", "la lista de excedidos está llena", "dar salida a los excedidos", "gente que figura adentro y ya se fue"],
+    "intro": "Una vez que confirmás que ya no están adentro:",
+    "steps": [
+      {"say": "Filtrá la lista por tipo de ingresante (por ejemplo, Visita).", "chunk": 219, "quote": "Se filtra la lista por Tipo de Ingresante Visita."},
+      {"say": "Tildá el casillero Excedidos.", "chunk": 219, "quote": "Se tilda el casillero Excedidos."},
+      {"say": "Seleccioná los perfiles y tocá Generar Salida.", "chunk": 219, "quote": "Se presiona el botón Generar Salida."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-paquete-nuevo",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: registrar un paquete que llegó",
+    "ask": ["llegó un paquete como lo cargo", "registrar una encomienda en la guardia", "cargar correspondencia para un residente", "el destinatario del paquete no aparece"],
+    "intro": "Así se carga en Paquetería:",
+    "steps": [
+      {"say": "En la Web de Guardia abrí Paquetería y tocá Cargar Nuevo.", "chunk": 220, "quote": "Presionar el botón Cargar Nuevo"},
+      {"say": "En Destinatario poné el que figura en la etiqueta; si no aparece, buscá por Lote.", "chunk": 220, "quote": "En el campo Destinatario se deberá cargar el destinatario que figura en la etiqueta del paquete o correspondencia."},
+      {"say": "Elegí el proveedor, sacá una foto, agregá un comentario y tocá Crear. Al residente le llega la notificación.", "chunk": 220, "quote": "Una vez cargado el Destinatario, seleccionado el Proveedor, cargada una Foto y un Comentario, presionar Crear."}
+    ],
+    "tips": [
+      {"say": "Si nadie del lote tiene la app, el paquete no se puede cargar desde Paquetería.", "chunk": 220, "quote": "En el caso que ningún residente del lote cuente con acceso, no se mostrarán resultados y el paquete no podrá ser procesado desde el módulo Paquetería."}
+    ]
+  },
+  {
+    "id": "guardia-emergencia",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: qué hacer con una alerta de emergencia o botón de pánico",
+    "ask": ["saltó una emergencia en la guardia", "como cierro una alerta de pánico", "finalizar emergencia", "código para cerrar la emergencia", "un residente apretó el botón de pánico"],
+    "intro": "Con la alerta en pantalla tenés estas opciones:",
+    "steps": [
+      {"say": "Responder alerta: le manda el mensaje de respuesta al residente.", "chunk": 221, "quote": "Responder alerta: envía el mensaje de respuesta al residente."},
+      {"say": "Finalizar emergencia: la cierra, pidiendo el código de verificación.", "chunk": 221, "quote": "Finalizar emergencia: Da por finalizada la alerta luego de solicitar el código de verificación"},
+      {"say": "Ignorar alerta: cierra la ventana y seguís operando (queda registrado).", "chunk": 221, "quote": "Ignorar Alerta: cerrar la ventana emergente y seguir operando. Deja registro de auditoría"}
+    ],
+    "tips": [
+      {"say": "El código de 6 dígitos lo tienen solo supervisores o jefes de turno.", "chunk": 221, "quote": "Solamente quienes tengan el código de verificación necesario (supervisores, jefes de turno) podrán finalizar la emergencia"}
+    ]
+  },
+  {
+    "id": "guardia-timbre-virtual",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: hacer un ingreso con Timbre Virtual",
+    "ask": ["como uso el timbre virtual desde la guardia", "mandar el timbre al residente", "el residente autorizó por el timbre y ahora qué", "ingreso con timbre virtual"],
+    "intro": "Así funciona desde la guardia:",
+    "steps": [
+      {"say": "Registrá la visita como siempre y, al habilitar el ingreso, el sistema te ofrece el Timbre Virtual.", "chunk": 222, "quote": "Al habilitar el ingreso, el sistema ofrece al operador el uso del Timbre Virtual."},
+      {"say": "Al residente le llega al celular y autoriza o rechaza desde la app.", "chunk": 222, "quote": "El residente puede entonces Autorizar o Denegar el ingreso desde la App con un solo toque desde su celular."},
+      {"say": "Si autoriza, tocá Ingresar, elegí la vía y tocá Habilitar Ingreso.", "chunk": 222, "quote": "Luego deberá elegir la Vía y presionar Habilitar Ingreso."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-migrar-via",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: pasar un vehículo a otra vía (Migrar Vía)",
+    "ask": ["como paso un auto a otra vía", "migrar vía", "se me trabó la fila de autos", "cambiar de vía un ingreso"],
+    "intro": "Se hace con Migrar Vía, sin perder lo cargado:",
+    "steps": [
+      {"say": "En la barra de abajo tocá Migrar Vía y elegí la vía libre: todo lo cargado pasa a esa vía y al habilitar se activan sus equipos.", "chunk": 223, "quote": "En la barra inferior se encuentra el botón Migrar Vía, el cual abre la lista de vías disponibles."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-doble-validacion",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: dónde veo Doble Validación y Estoy Llegando",
+    "ask": ["donde veo los avisos de estoy llegando en la guardia", "doble validación", "parpadea naranja la barra de la derecha", "un residente avisó que está llegando"],
+    "intro": "Están en la barra de la derecha:",
+    "steps": [
+      {"say": "Tocá la barra del borde derecho, la del ícono de la barrera.", "chunk": 224, "quote": "deberá hacer clic la barra derecha con el ícono de una barrera."},
+      {"say": "Cuando hay un evento nuevo, esa barra se pone naranja y parpadea.", "chunk": 224, "quote": "se pondrá de color naranja parpadeante cada vez que haya un evento de Doble Validación o de Estoy Llegando."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-ultima-actividad",
+    "module": "Guardia: Web de Guardia",
+    "title": "Guardia: que se abra sola la Última Actividad",
+    "ask": ["última actividad automática", "ver el último ingreso de una persona", "que se muestre la última actividad al buscar el dni", "ajustes de la web de guardia"],
+    "intro": "Se activa en Ajustes:",
+    "steps": [
+      {"say": "Abrí el módulo Ajustes de la Web de Guardia.", "chunk": 225, "quote": "Abrir el módulo Ajustes en la Web de Guardia"},
+      {"say": "Activá Abrir Última Actividad por defecto en Entradas (o en Salidas).", "chunk": 225, "quote": "Abrir Última Actividad por defecto en Entradas"}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-no-conecta-servidor",
+    "module": "Guardia: equipos y conexión",
+    "title": "Guardia: \"No es posible conectarse con el Servidor\" o \"Error recuperando\"",
+    "ask": ["no es posible conectarse con el servidor", "error recuperando invitado", "error recuperando actividades", "se cortó la luz y el sistema no anda", "la pc de la guardia no conecta"],
+    "intro": "Pasa mucho después de un corte de luz. Probá esto en orden:",
+    "steps": [
+      {"say": "Fijate si la PC tiene internet: abrí el navegador y entrá a google.com.", "chunk": 228, "quote": "Confirmar que la desktop tenga o no conexión a internet abriendo una ventana de Chrome, Edge, Safari e ingresar a una página"},
+      {"say": "Fijate si pasa en todas las PC o solo en esa.", "chunk": 228, "quote": "Confirmar si ocurre en todas las PC si es puntual en esa terminal."},
+      {"say": "Reiniciá la PC y volvé a iniciar sesión.", "chunk": 228, "quote": "Reiniciar PC y confirmar el login."}
+    ],
+    "tips": [
+      {"say": "Si sigue igual, hace falta soporte técnico.", "chunk": 228, "quote": "Solicitar soporte presencial técnico."}
+    ]
+  },
+  {
+    "id": "guardia-app-ya-abierta",
+    "module": "Guardia: equipos y conexión",
+    "title": "Guardia: dice que Silicon ya está abierto en la PC",
+    "ask": ["dice que ya existe una instancia ejecutándose", "silicon ya está abierto y no abre", "cerré el programa y no lo puedo volver a abrir", "la aplicación de la guardia no abre"],
+    "intro": "Hay que cerrar el proceso que quedó colgado:",
+    "steps": [
+      {"say": "Abrí el Administrador de tareas, buscá SiliconAccess.App (32 bits), clic derecho y finalizalo.", "chunk": 229, "quote": "buscar el proceso “SiliconAccess.App (32 bits)” tocar click derecho y eliminar el proceso."},
+      {"say": "Volvé a abrir la aplicación e iniciá sesión.", "chunk": 229, "quote": "Luego confirmar abriendo la aplicación y haciendo login."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-barrera-no-abre",
+    "module": "Guardia: equipos y conexión",
+    "title": "Guardia: no abren las barreras",
+    "ask": ["la barrera no levanta", "no abren las barreras", "la barrera no abre desde el sistema", "se trabó la barrera vehicular", "no funciona la barrera"],
+    "intro": "Revisemos lo básico en este orden:",
+    "steps": [
+      {"say": "Fijate que la térmica de las barreras esté levantada.", "chunk": 230, "quote": "Validar que la térmica de las barreras vehiculares esté prendida."},
+      {"say": "Probá abrir con la botonera.", "chunk": 230, "quote": "Validar que haya apertura por botonera de las barreras."},
+      {"say": "Probá con el botón Abrir Barrera del sistema y fijate si se escucha el relé de la controladora.", "chunk": 230, "quote": "Confirmar si se escucha el “Relé” de la controladora al presionar “Abrir Barrera”."}
+    ],
+    "tips": [
+      {"say": "Si con la térmica y la botonera anda, no es un tema eléctrico de la barrera.", "chunk": 230, "quote": "se descarta un tema eléctrico del primer tramo de la barrera."}
+    ]
+  },
+  {
+    "id": "guardia-lector-dni",
+    "module": "Guardia: equipos y conexión",
+    "title": "Guardia: el lector de DNI hace ruido pero no lee",
+    "ask": ["el lector de dni no lee", "el escáner de dni hace ruido y no carga", "no funciona el lector de documentos", "el lector zebra no anda"],
+    "intro": "Probá reinstalarlo así:",
+    "steps": [
+      {"say": "Abrí el Administrador de dispositivos.", "chunk": 231, "quote": "Primero se deberá abrir el administrador de dispositivos"},
+      {"say": "Clic derecho en el lector de DNI y Desinstalar dispositivo.", "chunk": 231, "quote": "Click derecho en el Lector de DNI, y clickear “Desinstalar dispositivo”"},
+      {"say": "Desconectá el lector y volvé a conectarlo.", "chunk": 231, "quote": "desconecte y conecte nuevamente el Lector de DNI"}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-camara",
+    "module": "Guardia: equipos y conexión",
+    "title": "Guardia: no anda la cámara para sacar la foto",
+    "ask": ["no anda la cámara de la guardia", "la webcam no funciona en la web de guardia", "no puedo sacar la foto de la visita", "la cámara está en uso por otra aplicación"],
+    "intro": "Dos cosas para revisar:",
+    "steps": [
+      {"say": "En Chrome: tres puntitos, Configuración, Privacidad y seguridad, Configuración de sitios, buscá la Web de Guardia y en Cámara elegí Permitir.", "chunk": 227, "quote": "En Cámara, seleccionar PERMITIR."},
+      {"say": "Si no, puede que otra aplicación esté usando la cámara: en la configuración de cámara de Windows ves cuál es; cerrala y reiniciá la PC.", "chunk": 232, "quote": "en la sección de abajo dirá la aplicación que está utilizando la cámara web en ese momento."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-tv-display",
+    "module": "Guardia: equipos y conexión",
+    "title": "Guardia: la TV de movimientos se apaga o no tiene señal",
+    "ask": ["la tele de la guardia se apaga sola", "la tv no tiene señal", "no se ven los movimientos en la tv", "el display de actividades no aparece"],
+    "intro": "Según lo que pase:",
+    "steps": [
+      {"say": "Si se apaga sola: en el control, Menú, Tiempo, y poné el Timer de apagado y el Apagado automático en apagado.", "chunk": 233, "quote": "Timer de apagado. Ingresar con botón OK y configurarlo en Apagar"},
+      {"say": "Si no tiene señal: revisá el cable HDMI de los dos lados y la entrada correcta en Source; después reiniciá los equipos.", "chunk": 234, "quote": "Revisar los conectores HDMI, de los 2 lados conectados."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "guardia-sin-conexion-nube",
+    "module": "Guardia: equipos y conexión",
+    "title": "Guardia: dice \"Sin conexión con la nube\" o no hay internet",
+    "ask": ["sin conexión con la nube", "estamos sin internet en la guardia", "se cayó internet funciona igual", "no hay conexión en la garita"],
+    "intro": "Tranqui, el sistema sigue funcionando en forma local:",
+    "steps": [
+      {"say": "Ese aviso quiere decir que la Web de Guardia no se puede comunicar con los servicios de internet.", "chunk": 249, "quote": "indica que Web Guardia no está pudiendo comunicarse correctamente con los servicios que requieren conexión a Internet."},
+      {"say": "La Web de Guardia, el Face ID y las barreras siguen andando con el servidor local.", "chunk": 249, "quote": "por lo que Web Guardia, Face ID y las barreras deberían continuar funcionando normalmente de manera local."},
+      {"say": "Mientras no haya internet, pueden fallar el Timbre Virtual, Estoy Llegando, las autorizaciones de la app, Paquetería y las emergencias.", "chunk": 249, "quote": "como Timbre Virtual, Estoy Llegando, autorizaciones generadas desde la app, Paquetería o avisos de Emergencia."}
+    ],
+    "tips": [
+      {"say": "Si la Web de Guardia, el Face ID o las barreras no responden, avisá a Soporte.", "chunk": 249, "quote": "Si detectan que Web Guardia, Face ID o las barreras no responden correctamente, pueden informárnoslo"}
+    ]
+  },
+  {
+    "id": "guardia-borrar-cache",
+    "module": "Guardia: equipos y conexión",
+    "title": "Guardia: la Web de Guardia no carga listas u opciones (borrar caché)",
+    "ask": ["la web de guardia no carga", "no aparecen las opciones en la web de guardia", "borrar caché", "la web de guardia anda rara en el celular"],
+    "intro": "Muchas veces se arregla borrando la caché del navegador:",
+    "steps": [
+      {"say": "En Chrome tocá los tres puntitos y elegí Borrar datos de navegación.", "chunk": 248, "quote": "Selecciona Borrar datos de navegación (o entra en Historial > Borrar datos de navegación)."},
+      {"say": "En el período elegí Desde siempre.", "chunk": 248, "quote": "elige la opción Desde siempre o Todo el tiempo para una limpieza profunda."},
+      {"say": "Marcá solo Archivos e imágenes almacenados en caché y tocá Borrar datos.", "chunk": 248, "quote": "Asegúrate de marcar únicamente la casilla Archivos e imágenes almacenados en caché"}
+    ],
+    "tips": []
+  },
+  {
+    "id": "corresidente-hijo-autogestion-deshabilitada",
+    "module": "Autogestión: corresidentes e inquilinos",
+    "title": "Agregar a mi hijo (o no me aparece Autogestión)",
+    "ask": ["quiero agregar a mi hijo", "como sumo a mis hijos a la app", "no me deja agregar corresidentes", "autogestión no aparece o está deshabilitada", "mi hijo es menor puedo agregarlo"],
+    "intro": "Te cuento cómo es con los hijos:",
+    "steps": [
+      {"say": "Se agregan desde Autogestión, en Corresidentes, con el botón +.", "chunk": 235, "quote": "Tocá el botón \"+\" y completá la información de tus hijos"},
+      {"say": "Tienen que ser mayores de 18; si es menor, consultalo con Atención al Propietario de tu barrio.", "chunk": 236, "quote": "(tene en cuenta que deben mayor de 18 años, caso contrario consultar con atención al propietario)"},
+      {"say": "Después la administración valida y le manda la invitación para crear su usuario.", "chunk": 235, "quote": "Comunícate con Atención al Propietario de tu barrio para que validen la información y le envíe la invitación para crearse el usuario."},
+      {"say": "Cuando ya tenga usuario, hace su Face ID desde la app para entrar por las vías automáticas.", "chunk": 235, "quote": "debe entrar a la app y realizar el FACE ID, para el ingreso por vías automáticas."}
+    ],
+    "tips": [
+      {"say": "Si no te deja agregar, es que tu barrio tiene la autogestión apagada: eso lo maneja Atención al Propietario.", "chunk": 236, "quote": "Esta gestión corresponde realizarla a través de Atención al Propietario."}
+    ]
+  },
+  {
+    "id": "seguros-web-residente",
+    "module": "Autogestión de documentación",
+    "title": "Cargar seguros o antecedentes desde la Web de Residente",
+    "ask": ["donde cargo el seguro de mi empleada", "subir la ART de un trabajador", "cargar antecedentes penales", "presentar documentación de seguros", "nueva presentación de seguro"],
+    "intro": "Eso se carga desde la Web de Residente:",
+    "steps": [
+      {"say": "Entrá a web.silicon-access.com/login con tu usuario.", "chunk": 237, "quote": "debes ingresar a la Web Residente a través del siguiente enlace: web.silicon-access.com/login"},
+      {"say": "Andá a Presentaciones de documentación.", "chunk": 237, "quote": "1. Dirígete al módulo Presentaciones de documentación."},
+      {"say": "Elegí Seguros ART y tocá Nueva presentación.", "chunk": 237, "quote": "2. Selecciona la opción Seguros ART y luego haz clic en Nueva presentación."},
+      {"say": "Completá los campos y subí lo que te pide.", "chunk": 237, "quote": "3. Completa todos los campos solicitados y subi la información requerida."}
+    ],
+    "tips": [
+      {"say": "Después la revisa y la aprueba la administración del barrio.", "chunk": 237, "quote": "la administración del consorcio se encargará de revisarla y aprobarla."}
+    ]
+  },
+  {
+    "id": "temas-del-barrio",
+    "module": "Administración del barrio",
+    "title": "Temas internos del barrio (los resuelve la administración)",
+    "ask": ["quién aprueba mi selfie", "no me aprueban el face id", "el gimnasio necesita reserva", "consulta sobre una regla del barrio", "tema de la administración del consorcio"],
+    "intro": "Eso no depende de la app sino de tu barrio:",
+    "steps": [
+      {"say": "Los temas internos del barrio los maneja solo la administración; escribiles a ellos.", "chunk": 238, "quote": "son gestionados exclusivamente por la Administración del barrio."},
+      {"say": "La aprobación del Face ID (Selfie ID) también la hace la administración.", "chunk": 239, "quote": "la aprobación del empadronamiento, así como cualquier otra gestión interna del consorcio, son gestionados exclusivamente por la Administración del barrio."}
+    ],
+    "tips": [
+      {"say": "Por ejemplo, si un espacio como el gimnasio necesita reserva o no, lo sabe la administración.", "chunk": 240, "quote": "Desde Silicon Access no contamos con información de si el gimnasio requiere reserva y la modalidad de la misma."}
+    ]
+  },
+  {
+    "id": "llave-inactiva",
+    "module": "Administración del barrio",
+    "title": "Mi llave o acceso se inactivó y no puedo entrar al barrio",
+    "ask": ["mi llave de acceso no funciona", "se me inactivó la llave", "no me abre la barrera con mi tarjeta", "me dieron de baja el acceso", "mi tag no anda"],
+    "intro": "Eso suele pasar cuando la llave estaba vinculada a un lote:",
+    "steps": [
+      {"say": "Si la llave se inactivó, puede ser porque estaba vinculada al lote.", "chunk": 243, "quote": "tu llave de acceso se inactivó debido a que estaba vinculada al lote."},
+      {"say": "Reactivarla lo hace solo la administración: hablá con Atención al Propietario de tu barrio.", "chunk": 243, "quote": "la reactivación de la llave es un trámite que gestiona únicamente la Administración."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "paqueteria-palabra-clave",
+    "module": "Paquetería",
+    "title": "Dejarle a la guardia una palabra clave o nota para un paquete",
+    "ask": ["palabra clave para el paquete", "avisar a la guardia que viene un paquete", "dejar una nota para un envío", "el repartidor me pide un código para entregar"],
+    "intro": "Se hace desde Paquetería:",
+    "steps": [
+      {"say": "Entrá a Paquetería: ahí ves tus paquetes y su estado.", "chunk": 244, "quote": "Allí podrás visualizar el listado completo de tus paquetes pendientes y sus estados actuales."},
+      {"say": "Tocá el + para agregar un comentario con la palabra clave o lo que quieras aclarar: la guardia lo lee.", "chunk": 244, "quote": "presioná el botón + para agregar un comentario."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "lote-no-aparece-vincular",
+    "module": "Mi perfil",
+    "title": "Mi lote nuevo no aparece en la app",
+    "ask": ["mi lote no aparece en mi perfil", "compré otro lote y no lo veo", "vincular un lote nuevo", "no me figura mi lote", "tengo un lote nuevo"],
+    "intro": "El lote lo vincula la administración:",
+    "steps": [
+      {"say": "Pedile a Atención al Propietario de tu barrio que valide y vincule el lote a tu usuario.", "chunk": 245, "quote": "debes comunicarte con Atención al propietario, para que realicen las validaciones sobre tu lote y lo vinculen para que puedas acceder con el mismo usuario."},
+      {"say": "Dales siempre el mismo mail, así ves todos tus barrios y lotes en la misma cuenta.", "chunk": 245, "quote": "Recorda que siempre debes brindarles el mismo mail"}
+    ],
+    "tips": []
+  },
+  {
+    "id": "vehiculo-eliminar",
+    "module": "Autogestión: corresidentes e inquilinos",
+    "title": "Eliminar un auto de mi lista",
+    "ask": ["quiero borrar un auto", "eliminar un vehículo", "vendí el auto como lo saco", "sacar una patente de la app"],
+    "intro": "Se borra desde Autogestión:",
+    "steps": [
+      {"say": "Entrá a Autogestión y elegí Vehículos.", "chunk": 246, "quote": "2. Selecciona la opción Vehículos."},
+      {"say": "Tocá el auto que querés sacar y después Eliminar.", "chunk": 246, "quote": "4. Presiona la opción Eliminar."}
+    ],
+    "tips": []
+  },
+  {
+    "id": "reiniciar-empadronamiento",
+    "module": "Selfie ID · autoempadronamiento",
+    "title": "Volver a hacer el Face ID (reiniciar empadronamiento)",
+    "ask": ["quiero volver a sacar la foto del face id", "reiniciar empadronamiento", "rehacer el face id", "el face id dejó de reconocerme", "cambiar la foto del reconocimiento facial"],
+    "intro": "Se puede rehacer desde la app:",
+    "steps": [
+      {"say": "Entrá a Selfie ID.", "chunk": 247, "quote": "Luego al módulo \"SELFIE ID\"."},
+      {"say": "Tocá Reiniciar empadronamiento.", "chunk": 247, "quote": "Seleccioná la opción \"Reiniciar empadronamiento\"."},
+      {"say": "Sacate la foto y, si te lo pide, cargá el DNI de frente y dorso.", "chunk": 247, "quote": "el sistema te pedirá adjuntar la foto de tu DNI (frente y dorso) si la configuración del barrio lo requiere."}
+    ],
+    "tips": [
+      {"say": "Cuando la administración la aprueba, te llega una notificación.", "chunk": 247, "quote": "recibirás una notificación por la app en cuanto sea aprobada."}
+    ]
+  }
+]

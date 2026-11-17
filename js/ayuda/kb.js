@@ -319,6 +319,7 @@
   }
 
   /** Búsqueda en las fichas humanas; si la consulta nombra el módulo, sus fichas suman. */
+  const GUARDIA_RE = /guardia|operador|garita|web de guardia|lector|servidor|nube|excedid|migrar|egreso|salida|barrera|cámara|camara|webcam|display|tele|tv|monitor|pc|computadora de/i;
   function searchCards(A, opts = {}) {
     const items = opts.module ? K.cards.filter((c) => c.module === opts.module) : K.cards;
     const qs = new Set(A.content.map(stem)), qc = new Set(A.context.map(stem));
@@ -327,6 +328,8 @@
       if (modT.length && modT.every((t) => A.expanded.includes(t))) s *= 1.3;
       // la consulta se parece a una de las formas de preguntar de la ficha: suma (no cambia la cobertura)
       s *= 1 + 0.5 * askMatch(c, qs, qc);
+      // fichas de la guardia: un poco menos de peso salvo que la consulta hable de la guardia (el chat es sobre todo de residentes)
+      if (/^Guardia/.test(c.module) && !GUARDIA_RE.test(A.raw || '')) s *= 0.8;
       return { card: c, score: s * (0.6 + 0.4 * coverage), coverage };
     }).sort((x, y) => y.score - x.score);
   }
