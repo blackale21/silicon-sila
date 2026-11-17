@@ -105,8 +105,61 @@
     started = true;
     const h = new Date().getHours();
     const saludo = h < 12 ? '¡Buen día!' : h < 20 ? '¡Buenas tardes!' : '¡Buenas noches!';
-    await say(`<p>${saludo} Soy SILA, de Silicon Access. Contame qué te está pasando con la app y lo vemos juntos.</p>`, 40);
+    await say(`<p>${saludo} Soy SILA, de Silicon Access. Contame qué te está pasando con la app, o elegí uno de estos temas:</p>`, 40);
+    menu();
     try { await KB.load(); } catch (e) { note('No pude cargar la información de ayuda en este momento.', 'bad'); }
+  }
+
+  /* ── menú: las causas que más consultas generan (ticketera de Soporte, residentes) ──
+     Cada frase está escrita como la dice el vecino y apunta a fichas de los manuales.
+     Lista vacía = los manuales no lo cubren → se dice con honestidad y se ofrece la central. */
+  const MENU = [
+    ['Mi usuario, contraseña o código', [
+      ['No me llega el código o el mail de activación', ['invitacion-y-registracion-no-llega-mail-invitacion', 'invitacion-y-registracion-crear-contrasena-desde-mail']],
+      ['Olvidé mi usuario o mi contraseña', []],
+      ['No puedo ingresar a la app / no me deja iniciar sesión', ['invitacion-y-registracion-entrar-a-la-app', 'invitacion-y-registracion-despues-de-enviar-solicitud', 'invitacion-y-registracion-ya-tengo-usuario-otro-barrio']],
+      ['Mi lote no aparece en mi perfil', []]]],
+    ['Face ID', [
+      ['No puedo registrar mi Face ID / no me deja cargar la foto', ['selfie-id-autoempadronamiento-sacar-selfie', 'selfie-id-autoempadronamiento-pide-documento']],
+      ['Mi Face ID no me reconoce en la entrada', ['selfie-id-autoempadronamiento-aprobacion-y-rechazo']],
+      ['Quiero agregar el Face ID de mi hijo, mi pareja o un familiar', []],
+      ['Necesito el código para activarlo', []]]],
+    ['Visitas, proveedores y familiares', [
+      ['Quiero autorizar a un proveedor, empleada o personal de obra', ['app-movil-autorizar-visita', 'obras-invitar-responsable']],
+      ['Agregué una visita y no le figura a la guardia', []],
+      ['La invitación me da error', []],
+      ['Quiero agregar un corresidente o inquilino / cambiar mis datos', []]]],
+    ['Expensas y administración', [
+      ['¿Cómo veo el detalle de mis expensas?', ['expensas-ver-saldo', 'expensas-historial-resumenes', 'expensas-cupones']],
+      ['Necesito el libre deuda', []],
+      ['¿Dónde subo el comprobante?', ['informar-pagos-registrar', 'expensas-informar-pago']]]],
+    ['La app o la web falla', [
+      ['La app se cierra o no la puedo descargar', ['invitacion-y-registracion-bajar-la-app', 'app-movil-no-veo-nueva-pantalla-inicio']],
+      ['No me muestra mis datos o no me llegan las notificaciones', ['timbre-no-suena', 'barrio-sin-conexion-banner', 'app-movil-no-veo-nueva-pantalla-inicio']],
+      ['Me da error al cargar documentos o seguros', ['autogestion-de-documentacion-seguro-art', 'autogestion-de-documentacion-antecedentes-penales', 'autogestion-de-documentacion-estado']]]]];
+  function menu() {
+    opts([...MENU.map(([tema, frases]) => ({ label: tema, run: () => { me(tema); submenu(tema, frases); } })),
+      { label: 'Otra consulta', run: () => { me('Otra consulta'); otraConsulta(); } }]);
+  }
+  async function submenu(tema, frases) {
+    await say(`<p>${pick(['Dale.', 'Perfecto.', 'Lo vemos.'])} ¿Cuál de estas te pasa? Si no está, contámelo con tus palabras.</p>`, 30);
+    opts(frases.map(([f, ids]) => ({ label: f, run: () => { me(f); desdeMenu(tema, f, ids); } })));
+  }
+  async function otraConsulta() {
+    st.phase = 'idle';
+    await say('<p>Contame con tus palabras qué te pasa o qué querés hacer en la app.</p>', 30);
+  }
+  async function desdeMenu(tema, frase, ids) {
+    try { await KB.load(); } catch (_) { note('No pude cargar la información de ayuda.', 'bad'); return; }
+    st = { phase: 'busy', caso: newCaso(frase), query: frase, ctx: {}, card: null };
+    await guardar(`Consulta registrada desde el menú (${tema})`, 'registrado');
+    const cards = ids.map((id) => KB.K.cards.find((c) => c.id === id)).filter(Boolean);
+    if (!cards.length) return notFound();
+    if (cards.length === 1) return answerCard(cards[0]);
+    st.phase = 'choose';
+    await say(`<p>${pick(['Para ir directo a lo tuyo:', 'Así te muestro lo justo:'])} ¿qué es lo que te pasa?</p>`);
+    opts([...cards.map((c) => ({ label: c.title, run: () => { me(c.title); answerCard(c); } })),
+      { label: 'Ninguna de estas', run: () => { me('Ninguna de estas'); otraCosa(); } }]);
   }
   function close() { root.classList.remove('open'); $('.ay-launch').focus(); }
   $('.ay-launch').addEventListener('click', open);
@@ -135,7 +188,7 @@
       if (SI.test(t)) return resolved();
       if (NO.test(t)) return notResolved();
       appendClar(t);
-      return handle(st.query + ' ' + t, { clarified: true, module: st.ctx.module });
+      return seguir(t);
     }
     if (st.phase === 'escalate') {
       if (SI.test(t)) return showForm();
@@ -143,7 +196,7 @@
     }
     if (st.phase === 'clar' || st.phase === 'choose') {
       appendClar(t);
-      return handle(st.query + ' ' + t, { clarified: true, module: st.ctx.module });
+      return seguir(t);
     }
     st = { phase: 'busy', caso: newCaso(t), query: t, ctx: {}, card: null };
     await guardar('Consulta registrada', 'registrado');
@@ -156,13 +209,26 @@
       origen: location.pathname.split('/').pop() || 'index.html' };
   }
   function appendClar(t) { st.caso.aclaraciones = (st.caso.aclaraciones ? st.caso.aclaraciones + ' | ' : '') + t; }
+  /* Lo que escribe después de la 1ª consulta: primero se entiende SOLO (puede ser otro tema);
+     sólo si solo no alcanza, se suma a lo anterior. Así no queda atado al primer tema. */
+  // aclaración corta ("en iphone", "la de la app"): se entiende junto a lo anterior; una frase completa es otra consulta
+  const corto = (t) => t.split(/[^a-záéíóúñü0-9]+/i).filter((w) => w.length > 3).length <= 2;
+  async function seguir(t) {
+    const mod = st.ctx.module, previo = st.query;
+    if (mod) {
+      const d = KB.decide(t, { clarified: true, module: mod });
+      if (d.type === 'card' || d.type === 'choose') { st.query = previo + ' ' + t; return handle(t, { clarified: true, module: mod }); }
+    }
+    st.query = t;
+    return handle(t, { previo: previo + ' ' + t, module: mod });
+  }
 
   /* ── conversación ── */
   /* Jev entiende la consulta (tipeo, palabras propias) y ELIGE la ficha; nunca redacta.
      Candado: sólo se le pregunta si la consulta toca la app o los manuales. Si falla o tarda, sigue el buscador local. */
   async function conJev(q, d) {
     const J = window.SILA_JEV;
-    if (!J || !J.activo() || st.ctx.module || d.type === 'vague' || !J.relevante(q)) return false;
+    if (!J || !J.activo() || (st.ctx.module && !st.ctx.previo) || d.type === 'vague' || !J.relevante(q)) return false;
     const dots = add('<span class="ay-typing"><i></i><i></i><i></i></span>', 'ay-bot');
     dots.style.padding = '0';
     const r = await J.elegir(q);
@@ -170,10 +236,21 @@
     if (!r.ok) { CASOS.enviar('upsert', st.caso, `Jev no disponible (${r.error}); se usó el buscador local`); return false; }
     const byId = (id) => KB.K.cards.find((c) => c.id === id);
     const log = `Jev eligió "${r.choice}" (confianza ${r.confidence})`;
-    if (r.choice === 'ninguna' && r.confidence >= 0.5) { await CASOS.enviar('upsert', st.caso, log); await notFound(); return true; }
+    if (r.choice === 'ninguna' && r.confidence >= 0.5) { if (st.ctx.previo && corto(q)) return false; await CASOS.enviar('upsert', st.caso, log); await notFound(); return true; }
     const best = byId(r.choice);
     if (best && r.confidence >= 0.55) { await CASOS.enviar('upsert', st.caso, log); await answerCard(best); return true; }
-    const dudas = (r.top || []).filter(([id, p]) => id !== 'ninguna' && p >= 0.15).map(([id]) => byId(id)).filter(Boolean);
+    const top = (r.top || []).filter(([id, p]) => id !== 'ninguna' && p >= 0.15);
+    const dudas = top.map(([id]) => byId(id)).filter(Boolean);
+    if (dudas.length === 1 && top[0][1] >= 0.3) {
+      // un solo candidato razonable: se lo pregunta en vez de adivinar otro tema
+      await CASOS.enviar('upsert', st.caso, log + ' · se le preguntó si era eso');
+      st.phase = 'choose';
+      st.ctx = {};
+      await say(`<p>${pick(['Para entenderte bien:', 'A ver si te entendí:'])} ¿es esto lo que te pasa?</p>`);
+      opts([{ label: dudas[0].title, pri: true, run: () => { me(dudas[0].title); answerCard(dudas[0]); } },
+        { label: 'No, es otra cosa', run: () => { me('No, es otra cosa'); otraCosa(); } }]);
+      return true;
+    }
     if (dudas.length >= 2) {
       await CASOS.enviar('upsert', st.caso, log + ' · se pidió elegir');
       st.phase = 'choose';
@@ -188,8 +265,13 @@
   async function handle(q, ctx) {
     st.ctx = ctx;
     st.phase = 'busy';
-    const d = KB.decide(q, ctx);
+    const d = KB.decide(q, ctx.previo ? {} : ctx);
     if (await conJev(q, d)) return;
+    // lo nuevo, solo, no alcanza: se entiende junto con lo que contó antes
+    if (ctx.previo && (d.type === 'vague' || (d.type === 'none' && corto(q)))) {
+      st.query = ctx.previo;
+      return handle(ctx.previo, { clarified: true, module: ctx.module });
+    }
     if (d.type === 'vague') {
       if (ctx.clarified) return notFound();
       st.phase = 'clar';
@@ -208,6 +290,11 @@
     if (d.type === 'card') return answerCard(d.card);
     if (d.type === 'page') return answerPage(d.hit);
     return notFound();
+  }
+  async function otraCosa() {
+    st.phase = 'clar';
+    st.ctx = {};
+    await say(`<p>${pick(['Dale.', 'Perfecto.'])} Contame un poco más: ¿qué estás intentando hacer y en qué parte de la app te pasa?</p>`);
   }
   async function offerCards(module, fromQuery) {
     st.phase = 'clar';
@@ -273,7 +360,10 @@
     st.caso.resultado = 'Resuelto: confirmado por el residente';
     st.phase = 'done';
     await say(`<p>${pick(['¡Genial! Me alegra mucho.', '¡Buenísimo!', '¡Qué bueno!'])} Cualquier otra cosa, acá estoy.</p>`);
-    await guardar('El residente confirmó que se resolvió', 'resuelto');
+    await guardar('El residente confirmó que se resolvió', 'resuelto');    otraVez();
+  }
+  function otraVez() {
+    opts([{ label: 'Tengo otra consulta', run: async () => { me('Tengo otra consulta'); st.phase = 'idle'; await say('<p>Dale, contame o elegí un tema:</p>', 20); menu(); } }]);
   }
   async function notResolved() {
     st.caso.resultado = 'No se resolvió con las indicaciones';
@@ -295,7 +385,7 @@
   }
   async function keepPending() {
     st.phase = 'done';
-    await say(`<p>Dale. Lo dejo pendiente con el número <b>${st.caso.caso_id}</b>, así si volvés no tenés que contar todo de nuevo.</p>`);
+    await say(`<p>Dale. Lo dejo pendiente con el número <b>${st.caso.caso_id}</b>, así si volvés no tenés que contar todo de nuevo.</p>`);    otraVez();
   }
 
   /* ── derivación a la central ── */

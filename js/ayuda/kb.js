@@ -55,6 +55,8 @@
     llegando: ['llegan'], llego: ['llegando'], notificacion: ['notifi', 'push'], aviso: ['notifi'],
     wifi: ['conexion', 'internet'], senal: ['conexion'], offline: ['conexion'], conexion: ['conexion', 'internet'],
     votar: ['encuesta', 'vot'], votacion: ['encuesta'],
+    ingresar: ['entrar', 'sesion'], ingreso: ['entrar'], iniciar: ['entrar', 'sesion'], logueo: ['sesion', 'entrar'], loguea: ['sesion', 'entrar'],
+    proveedor: ['trabajador'], proveedores: ['trabajador'], cuenta: ['usuario'], face: ['selfie', 'face'],
   };
 
   const fold = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
