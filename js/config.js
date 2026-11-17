@@ -29,6 +29,6 @@ window.SILA_CONFIG = {
     // Base de conocimiento SQLite generada con kb/tools/build_kb.py
     kbUrl: 'kb/sila_kb.sqlite',
     // App de la central que recibe los casos derivados (vacío = no se muestra el acceso).
-    gestionUrl: '',
+    gestionUrl: 'gestion/',
   },
 };
