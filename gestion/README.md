@@ -8,7 +8,7 @@ Lo único simulado son los envíos (WhatsApp, email formal, pedido de reseña): 
 - Lee `../js/config.js → SILA_CONFIG.ayuda.backendUrl` (Apps Script, `backend/ayuda-casos.gs`). Vacío → "Falta conectar el backend" y no muestra nada.
 - `POST` con `Content-Type: text/plain;charset=utf-8` (sin preflight). Acciones:
   `central_estado`, `central_crear_clave`, `login`, `yo`, `logout`, `clave_cambiar`, `usuarios_listar`, `usuario_guardar`, `usuario_baja`, `casos_listar` (con `desde`), `caso_actualizar`, `kv_get`, `kv_set` (todas con `token`).
-- **Usuarios**: la primera clave que se crea es la de Dirección (usuario `direccion`). Después cada persona entra con su usuario y su clave (`login` → token de 12 h en `localStorage.sila_central_token`; la clave no se guarda). "Mi cuenta" cambia la clave propia; "Salir" cierra la sesión.
+- **Usuarios**: la primera clave que se crea es la de Dirección (usuario `direccion`). Después cada persona entra con su usuario y su clave (`login` → token que vence a las 6 h sin uso en `localStorage.sila_central_token`; la clave no se guarda). "Mi cuenta" cambia la clave propia; "Salir" cierra la sesión.
   - El rol y los barrios los da el servidor (`yo`). "Ver como" queda sólo para Dirección, como vista previa.
   - Config → Usuarios (sólo Dirección): crear (nombre, usuario, rol, barrios, clave inicial), editar, resetear clave y dar de baja (se le corta la sesión).
   - Como `usuarios_listar` es sólo de Dirección, Dirección publica en `sila_central_cfg.equipo` un directorio sin claves para que los operadores asignen técnicos.

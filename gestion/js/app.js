@@ -899,7 +899,7 @@
       </section>`;
   }
   const RX_U = /^[a-z0-9._-]{3,30}$/;
-  const errU = (e) => ({ existe: 'Ese usuario ya existe.', ya_existe: 'Ese usuario ya existe.', usuario: 'El usuario no es válido.', clave_corta: ERR.corta, corta: ERR.corta, permiso: ERR.permiso, reservado: 'El usuario “direccion” está reservado.' }[e] || `No se pudo guardar (${e || 'error'}).`);
+  const errU = (e) => ({ existe: 'Ese usuario ya existe.', ya_existe: 'Ese usuario ya existe.', usuario: 'El usuario no es válido.', usuario_invalido: 'Usuario: de 3 a 30 caracteres, sólo minúsculas, números, punto, guion o guion bajo (“direccion” está reservado).', nombre: 'Falta el nombre.', no_existe: 'Ese usuario ya no existe.', rol: 'Elegí un rol.', clave_corta: ERR.corta, corta: ERR.corta, permiso: ERR.permiso, reservado: 'El usuario “direccion” está reservado.' }[e] || `No se pudo guardar (${e || 'error'}).`);
   const marcados = (root, name) => $$(`input[name=${name}]:checked`, root).map((x) => x.value);
   async function crearUsuario(f) {
     const err = (m) => { const p = $('#uerr', f); p.textContent = m; p.hidden = false; };

@@ -1,6 +1,6 @@
 /* Central SILA · datos, motor de SLA y puente con el chat de residentes.
  * Fuente de verdad: el backend de Apps Script (SILA_CONFIG.ayuda.backendUrl). Sin datos de ejemplo.
- * Usuarios reales: login con usuario y clave → token (12 h). El rol y los barrios los da el servidor.
+ * Usuarios reales: login con usuario y clave → token (6 h sin uso, se renueva en cada llamada). El rol y los barrios los da el servidor.
  *   sila_central_cfg                    categorías, umbral, barrios {id, nombre, alias, google} y directorio del equipo (lo escribe Dirección)
  *   sila_central_b_<barrio>_tickets     tickets del barrio      ┐ los leen y escriben Dirección
  *   sila_central_b_<barrio>_encuestas   encuestas del barrio    │ y quien tenga ese barrio asignado
@@ -168,6 +168,8 @@
     if (!keys.length) return false;
     const j = await conToken({ action: 'kv_get', keys });
     if (!j.ok) throw fallo(j.error || 'kv');
+    // el servidor lee sólo lo permitido y avisa el resto en `denegadas` (p. ej. Dirección le sacó un barrio)
+    if ((j.denegadas || []).length) throw fallo('permiso');
     let cambio = false;
     keys.forEach((key) => {
       const r = (j.valores || {})[key];
