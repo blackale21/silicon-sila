@@ -118,13 +118,20 @@ def main():
         d['folders'].append(folder)
         d['mods'].append(module_for(folder, m['title']))
 
+    # las claves cifradas (tabla secrets) sobreviven al rearmado de la base
+    keep = []
     if os.path.exists(DB):
+        try:
+            keep = sqlite3.connect(DB).execute('SELECT * FROM secrets').fetchall()
+        except sqlite3.Error:
+            keep = []
         os.remove(DB)
     os.makedirs(PAGES, exist_ok=True)
     for f in glob.glob(os.path.join(PAGES, '*.webp')):
         os.remove(f)
     con = sqlite3.connect(DB)
     con.executescript(open(os.path.join(KB, 'schema.sql'), encoding='utf-8').read())
+    con.executemany('INSERT INTO secrets VALUES (?,?,?,?,?,?,?)', keep)
     ord_ = 0
     report = []
     for d in sorted(docs.values(), key=lambda x: x['name']):

@@ -49,6 +49,18 @@ CREATE TABLE cards (
   body    TEXT NOT NULL                   -- JSON: { steps: [...], tips: [...] }
 );
 
+-- Claves de API CIFRADAS (AES-256-GCM, clave derivada de una frase con PBKDF2-SHA256).
+-- La frase nunca se guarda. Ver kb/tools/secretos.py.
+CREATE TABLE secrets (
+  name       TEXT PRIMARY KEY,
+  alg        TEXT NOT NULL,
+  kdf        TEXT NOT NULL,
+  salt       TEXT NOT NULL,
+  iv         TEXT NOT NULL,
+  ciphertext TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
 -- Modelo de casos para cuando haya backend propio (hoy los casos viven en la
 -- Google Sheet vía Apps Script y, en la demo, en el navegador). Vacías en el build.
 CREATE TABLE cases (
