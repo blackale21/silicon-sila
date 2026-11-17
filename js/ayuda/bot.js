@@ -105,75 +105,36 @@
     started = true;
     const h = new Date().getHours();
     const saludo = h < 12 ? '¡Buen día!' : h < 20 ? '¡Buenas tardes!' : '¡Buenas noches!';
-    await say(`<p>${saludo} Soy SILA, de Silicon Access. Contame qué te está pasando con la app, o elegí uno de estos temas:</p>`, 40);
-    menu();
+    await say(`<p>${saludo} Soy SILA, de Silicon Access. Contame qué te está pasando con la app y lo vemos juntos.</p>`, 40);
     try { await KB.load(); } catch (e) { note('No pude cargar la información de ayuda en este momento.', 'bad'); }
   }
 
-  /* ── menú: las causas que más consultas generan (ticketera de Soporte, residentes) ──
-     Cada frase está escrita como la dice el vecino y apunta a fichas de los manuales.
-     Lista vacía = los manuales no lo cubren → se dice con honestidad y se ofrece la central. */
-  const MENU = [
-    ['Mi usuario, contraseña o código', [
-      ['No me llega el código o el mail de activación', ['invitacion-y-registracion-no-llega-mail-invitacion', 'invitacion-y-registracion-crear-contrasena-desde-mail']],
-      ['Olvidé mi usuario o mi contraseña', []],
-      ['No puedo ingresar a la app / no me deja iniciar sesión', ['invitacion-y-registracion-entrar-a-la-app', 'invitacion-y-registracion-despues-de-enviar-solicitud', 'invitacion-y-registracion-ya-tengo-usuario-otro-barrio']],
-      ['Mi lote no aparece en mi perfil', []]]],
-    ['Face ID', [
-      ['No puedo registrar mi Face ID / no me deja cargar la foto', ['selfie-id-autoempadronamiento-sacar-selfie', 'selfie-id-autoempadronamiento-pide-documento']],
-      ['Mi Face ID no me reconoce en la entrada', ['selfie-id-autoempadronamiento-aprobacion-y-rechazo']],
-      ['Quiero agregar el Face ID de mi hijo, mi pareja o un familiar', []],
-      ['Necesito el código para activarlo', []]]],
-    ['Visitas, proveedores y familiares', [
-      ['Quiero autorizar a un proveedor, empleada o personal de obra', ['app-movil-autorizar-visita', 'obras-invitar-responsable']],
-      ['Agregué una visita y no le figura a la guardia', []],
-      ['La invitación me da error', []],
-      ['Quiero agregar un corresidente o inquilino / cambiar mis datos', []]]],
-    ['Expensas y administración', [
-      ['¿Cómo veo el detalle de mis expensas?', ['expensas-ver-saldo', 'expensas-historial-resumenes', 'expensas-cupones']],
-      ['Necesito el libre deuda', []],
-      ['¿Dónde subo el comprobante?', ['informar-pagos-registrar', 'expensas-informar-pago']]]],
-    ['La app o la web falla', [
-      ['La app se cierra o no la puedo descargar', ['invitacion-y-registracion-bajar-la-app', 'app-movil-no-veo-nueva-pantalla-inicio']],
-      ['No me muestra mis datos o no me llegan las notificaciones', ['timbre-no-suena', 'barrio-sin-conexion-banner', 'app-movil-no-veo-nueva-pantalla-inicio']],
-      ['Me da error al cargar documentos o seguros', ['autogestion-de-documentacion-seguro-art', 'autogestion-de-documentacion-antecedentes-penales', 'autogestion-de-documentacion-estado']]]]];
-  function menu() {
-    opts([...MENU.map(([tema, frases]) => ({ label: tema, run: () => { me(tema); submenu(tema, frases); } })),
-      { label: 'Ver todos los temas', run: () => { me('Ver todos los temas'); todos(); } },
-      { label: 'Otra consulta', run: () => { me('Otra consulta'); otraConsulta(); } }]);
-  }
-  // si venía de una consulta abierta sin respuesta todavía, sigue el mismo caso; si no, abre uno nuevo
-  async function asegurarCaso(t, como) {
-    if (st.caso && (st.phase === 'clar' || st.phase === 'choose') && !st.card) {
-      appendClar(t);
-      st.phase = 'busy'; st.query = t; st.ctx = {};
-      return guardar(`Eligió en el ${como}: ${t}`);
+  /* ── frases típicas de los vecinos (informe de la ticketera de Soporte) ──
+     NO es un menú: sirven para ENTENDER consultas escritas así y llevarlas a las fichas justas.
+     Las que los manuales no cubren no están acá: siguen el camino normal (no se inventa). */
+  const FRASES = [
+    ['no me llega el código | no me llega el mail de activación', ['invitacion-y-registracion-no-llega-mail-invitacion', 'invitacion-y-registracion-crear-contrasena-desde-mail']],
+    ['no puedo ingresar a la app | no me deja iniciar sesión | no puedo entrar a la app', ['invitacion-y-registracion-entrar-a-la-app', 'invitacion-y-registracion-despues-de-enviar-solicitud', 'invitacion-y-registracion-ya-tengo-usuario-otro-barrio']],
+    ['no puedo registrar mi face id | no me deja cargar la foto del face id', ['selfie-id-autoempadronamiento-sacar-selfie', 'selfie-id-autoempadronamiento-pide-documento']],
+    ['mi face id no me reconoce en la entrada', ['selfie-id-autoempadronamiento-aprobacion-y-rechazo']],
+    ['quiero autorizar a un proveedor | autorizar a la empleada | autorizar personal de obra', ['app-movil-autorizar-visita', 'obras-invitar-responsable']],
+    ['cómo veo el detalle de mis expensas', ['expensas-ver-saldo', 'expensas-historial-resumenes', 'expensas-cupones']],
+    ['dónde subo el comprobante', ['informar-pagos-registrar', 'expensas-informar-pago']],
+    ['la app no la puedo descargar | no puedo bajar la app', ['invitacion-y-registracion-bajar-la-app']],
+    ['me da error al cargar documentos | error al cargar el seguro', ['autogestion-de-documentacion-seguro-art', 'autogestion-de-documentacion-antecedentes-penales', 'autogestion-de-documentacion-estado']]];
+  const GENERIC_F = /^(quiero|puedo|tengo|deja|hace|hacer|como|donde|cómo|dónde|para|desde|necesito|esta|está)$/;
+  const fw = (x) => String(x).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/[^a-z0-9]+/).filter((w) => (w.length > 3 || w === 'id' || w === 'app') && !GENERIC_F.test(w)).map((w) => w.slice(0, 5));
+  function porFrase(q) {
+    const qw = new Set(fw(q));
+    if (qw.size < 2) return null;
+    let best = null;
+    for (const [frs, ids] of FRASES) for (const f of frs.split(' | ')) {
+      const pw = fw(f);
+      const hit = pw.filter((w) => qw.has(w)).length;
+      const cov = hit / pw.length, used = hit / qw.size;
+      if (hit >= 2 && cov >= 0.6 && used >= 0.6 && (!best || cov + used > best.s)) best = { s: cov + used, ids };
     }
-    st = { phase: 'busy', caso: newCaso(t), query: t, ctx: {}, card: null };
-    return guardar(`Consulta registrada desde el ${como}`, 'registrado');
-  }
-  async function todos() {
-    await say('<p>Estos son todos los temas de la app. ¿Cuál es?</p>', 20);
-    opts(KB.cardModules().map((m) => ({ label: m, run: async () => { me(m); await asegurarCaso(m, 'listado de temas'); offerCards(m); } })));
-  }
-  async function submenu(tema, frases) {
-    await say(`<p>${pick(['Dale.', 'Perfecto.', 'Lo vemos.'])} ¿Cuál de estas te pasa? Si no está, contámelo con tus palabras.</p>`, 30);
-    opts(frases.map(([f, ids]) => ({ label: f, run: () => { me(f); desdeMenu(tema, f, ids); } })));
-  }
-  async function otraConsulta() {
-    st.phase = 'idle';
-    await say('<p>Contame con tus palabras qué te pasa o qué querés hacer en la app.</p>', 30);
-  }
-  async function desdeMenu(tema, frase, ids) {
-    try { await KB.load(); } catch (_) { note('No pude cargar la información de ayuda.', 'bad'); return; }
-    await asegurarCaso(frase, `menú: ${tema}`);
-    const cards = ids.map((id) => KB.K.cards.find((c) => c.id === id)).filter(Boolean);
-    if (!cards.length) return notFound();
-    if (cards.length === 1) return answerCard(cards[0]);
-    st.phase = 'choose';
-    await say(`<p>${pick(['Para ir directo a lo tuyo:', 'Así te muestro lo justo:'])} ¿qué es lo que te pasa?</p>`);
-    opts([...cards.map((c) => ({ label: c.title, run: () => { me(c.title); answerCard(c); } })),
-      { label: 'Ninguna de estas', run: () => { me('Ninguna de estas'); otraCosa(); } }]);
+    return best ? best.ids.map((id) => KB.K.cards.find((c) => c.id === id)).filter(Boolean) : null;
   }
   function close() { root.classList.remove('open'); $('.ay-launch').focus(); }
   $('.ay-launch').addEventListener('click', open);
@@ -201,8 +162,7 @@
   async function onText(t) {
     try { await KB.load(); } catch (_) { note('No pude cargar la información de ayuda.', 'bad'); return; }
     if (st.phase !== 'confirm' && st.phase !== 'escalate' && SALUDO.test(t)) {
-      await say(`<p>${pick(['¡Hola!', '¡Hola! ¿Cómo estás?'])} Contame qué te pasa con la app, o elegí un tema:</p>`, 30);
-      return menu();
+      return say(`<p>${pick(['¡Hola!', '¡Hola! ¿Cómo estás?'])} Contame qué te pasa con la app y lo vemos juntos.</p>`, 30);
     }
     if (GRACIAS.test(t)) return say(`<p>${pick(['¡De nada!', '¡Un gusto!', '¡Para eso estoy!'])} Si necesitás algo más, escribime.</p>`, 20);
     if (st.phase === 'confirm') {
@@ -287,6 +247,16 @@
     st.ctx = ctx;
     st.phase = 'busy';
     const d = KB.decide(q, ctx.previo ? {} : ctx);
+    const fr = !ctx.module || ctx.previo ? porFrase(q) : null;
+    if (fr && fr.length) {
+      await CASOS.enviar('upsert', st.caso, 'Reconocida como consulta frecuente');
+      if (fr.length === 1) return answerCard(fr[0]);
+      st.phase = 'choose';
+      await say(`<p>${pick(['Para no mandarte para otro lado:', 'Quiero estar seguro de entenderte:'])} ¿cuál de estas es tu consulta?</p>`);
+      opts([...fr.map((c) => ({ label: c.title, run: () => { me(c.title); answerCard(c); } })),
+        { label: 'Ninguna de estas', run: () => { me('Ninguna de estas'); otraCosa(); } }]);
+      return;
+    }
     if (await conJev(q, d)) return;
     // lo nuevo, solo, no alcanza: se entiende junto con lo que contó antes
     if (ctx.previo && (d.type === 'vague' || (d.type === 'none' && corto(q)))) {
@@ -296,8 +266,9 @@
     if (d.type === 'vague') {
       if (ctx.clarified) return notFound();
       st.phase = 'clar';
-      await say(`<p>${pick(['Te ayudo.', 'Dale, lo vemos.', 'Contá conmigo.'])} ¿Con qué es? Elegí un tema o contame un poco más qué te pasa.</p>`);
-      return menu();
+      await say(`<p>${pick(['Te ayudo.', 'Dale, lo vemos.', 'Contá conmigo.'])} ¿Con qué parte de la app es? Elegí una o contame un poco más qué te pasa.</p>`);
+      opts(KB.cardModules().map((m) => ({ label: m, run: () => { me(m); offerCards(m); } })));
+      return;
     }
     if (d.type === 'narrow') return offerCards(d.module, true);
     if (d.type === 'choose') {
@@ -380,10 +351,7 @@
     st.caso.resultado = 'Resuelto: confirmado por el residente';
     st.phase = 'done';
     await say(`<p>${pick(['¡Genial! Me alegra mucho.', '¡Buenísimo!', '¡Qué bueno!'])} Cualquier otra cosa, acá estoy.</p>`);
-    await guardar('El residente confirmó que se resolvió', 'resuelto');    otraVez();
-  }
-  function otraVez() {
-    opts([{ label: 'Tengo otra consulta', run: async () => { me('Tengo otra consulta'); st.phase = 'idle'; await say('<p>Dale, contame o elegí un tema:</p>', 20); menu(); } }]);
+    await guardar('El residente confirmó que se resolvió', 'resuelto');
   }
   async function notResolved() {
     st.caso.resultado = 'No se resolvió con las indicaciones';
@@ -405,7 +373,7 @@
   }
   async function keepPending() {
     st.phase = 'done';
-    await say(`<p>Dale. Lo dejo pendiente con el número <b>${st.caso.caso_id}</b>, así si volvés no tenés que contar todo de nuevo.</p>`);    otraVez();
+    await say(`<p>Dale. Lo dejo pendiente con el número <b>${st.caso.caso_id}</b>, así si volvés no tenés que contar todo de nuevo.</p>`);
   }
 
   /* ── derivación a la central ── */
