@@ -94,6 +94,31 @@ ok(api({ action: 'clave_cambiar', token: ta, actual: 'mal', nueva: 'nueva-clave-
 ok(api({ action: 'clave_cambiar', token: ta, actual: 'ana-clave-1', nueva: 'nueva-clave-ana' }).ok, 'Ana cambia su clave');
 ok(api({ action: 'login', usuario: 'ana', clave: 'nueva-clave-ana' }).ok, 'entra con la clave nueva');
 
+// ── permisos con tildes ──
+const crear = (u, perms, barrios = ['losalamos']) => api({ action: 'usuario_guardar', token: T, usuario: u, nombre: u, rol: 'operador', barrios, permisos: perms, clave: u + '-clave-1' });
+const entrar = (u) => api({ action: 'login', usuario: u, clave: u + '-clave-1' });
+ok(api({ action: 'usuario_guardar', token: T, usuario: 'tec', nombre: 'T', rol: 'tecnico', barrios: [], clave: '12345678' }).error === 'rol', 'ya no existe el rol técnico');
+ok(crear('mal', ['volar']).error === 'permiso_invalido', 'rechaza un permiso inventado');
+ok(JSON.stringify(api({ action: 'yo', token: ta }).yo.permisos) === JSON.stringify(['gestionar_tickets', 'cerrar_tickets', 'ver_contacto', 'ver_experiencia', 'ver_reputacion']), 'operador nuevo sin tildes → permisos básicos');
+ok(crear('beto', ['gestionar_tickets']).ok, 'crea a Beto sólo con "gestionar tickets"');
+const tb = entrar('beto').token;
+const cb = api({ action: 'casos_listar', token: tb }).casos[0];
+ok(cb.celular === 'oculto' && cb.correo === 'oculto', 'sin "ver contacto": celular y correo llegan ocultos');
+ok(api({ action: 'caso_actualizar', token: tb, caso_id: 'RES-AAAAAA', campos: { estado: 'resuelto' } }).error === 'permiso', 'sin "cerrar tickets" no puede cerrar');
+ok(api({ action: 'caso_actualizar', token: tb, caso_id: 'RES-AAAAAA', campos: { estado: 'pendiente', monday_ticket: 'TK-2' } }).ok, 'con "gestionar tickets" puede cambiar estado y ticket');
+ok(crear('cami', ['cerrar_tickets', 'todos_los_barrios'], []).ok, 'crea a Cami con "todos los barrios"');
+const tc = entrar('cami').token;
+ok(api({ action: 'casos_listar', token: tc }).casos.length === 2, 'con "todos los barrios" ve los dos barrios');
+ok(api({ action: 'kv_set', token: tc, key: 'sila_central_b_elceibo_tickets', version: 0, valor: [] }).ok, 'con "todos los barrios" + cerrar puede escribir en otro barrio');
+ok(api({ action: 'caso_actualizar', token: tc, caso_id: 'RES-BBBBBB', campos: { monday_ticket: 'X' } }).error === 'permiso', 'sin "gestionar tickets" no puede tocar el ticket');
+ok(crear('dani', ['configurar']).ok && api({ action: 'kv_set', token: entrar('dani').token, key: 'sila_central_cfg', version: 1, valor: api({ action: 'kv_get', token: T, keys: ['sila_central_cfg'] }).valores.sila_central_cfg.valor }).ok, 'con "configurar" puede cambiar la configuración');
+ok(crear('eli', ['gestionar_usuarios']).ok, 'crea a Eli con "crear y editar usuarios"');
+const te = entrar('eli').token;
+ok(api({ action: 'usuarios_listar', token: te }).usuarios.some((u) => u.usuario === 'beto' && u.permisos.length === 1), 'Eli lista usuarios y ve los permisos de cada uno');
+ok(api({ action: 'usuario_baja', token: te, usuario: 'direccion' }).error === 'no_existe', 'nadie puede dar de baja a Dirección');
+ok(api({ action: 'usuario_guardar', token: tb, usuario: 'zz', nombre: 'z', rol: 'operador', barrios: [], clave: '12345678' }).error === 'permiso', 'sin "crear usuarios" no puede crear');
+ok(api({ action: 'usuario_guardar', token: T, usuario: 'beto', nombre: 'Beto', rol: 'operador', barrios: ['losalamos'], permisos: ['gestionar_tickets', 'ver_contacto'] }).ok
+  && api({ action: 'casos_listar', token: tb }).casos[0].celular !== 'oculto', 'al tildarle "ver contacto", Beto lo ve al instante (sin volver a entrar)');
 ok(api({ action: 'usuario_baja', token: T, usuario: 'ana' }).ok, 'Dirección da de baja a Ana');
 ok(api({ action: 'casos_listar', token: ta }).error === 'sesion', 'la sesión de Ana se corta al instante');
 ok(api({ action: 'login', usuario: 'ana', clave: 'nueva-clave-ana' }).error === 'inactivo', 'Ana dada de baja no puede entrar');

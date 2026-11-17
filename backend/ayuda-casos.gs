@@ -101,8 +101,12 @@ function jevResponder(p) {
 // Dirección: usuario "direccion", clave en Propiedades (CENTRAL_HASH/SALT). El resto: hoja oculta "Usuarios",
 // clave con hash iterado + sal. Sesión: token aleatorio en caché (6 h, se renueva con cada uso).
 const USR_SHEET = 'Usuarios';
-const USR_COLS = ['usuario', 'nombre', 'rol', 'barrios', 'hash', 'salt', 'activo', 'creado'];
-const ROLES = ['operador', 'tecnico'];
+const USR_COLS = ['usuario', 'nombre', 'rol', 'barrios', 'hash', 'salt', 'activo', 'creado', 'permisos'];
+const ROLES = ['operador'];
+// Permisos que Dirección tilda por operador. Los que tocan datos los aplica este servidor.
+const PERMISOS = ['gestionar_tickets', 'cerrar_tickets', 'ver_contacto', 'ver_experiencia', 'ver_reputacion', 'todos_los_barrios', 'configurar', 'gestionar_usuarios'];
+const PERMISOS_BASE = ['gestionar_tickets', 'cerrar_tickets', 'ver_contacto', 'ver_experiencia', 'ver_reputacion'];
+function tiene(yo, perm) { return yo.rol === 'direccion' || (yo.permisos || []).indexOf(perm) >= 0; }
 function hashClave(clave, salt) {
   return Utilities.base64Encode(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, salt + '|' + clave));
 }
@@ -124,6 +128,8 @@ function usrSheet() {
   const ss = libro();
   let sh = ss.getSheetByName(USR_SHEET);
   if (!sh) { sh = ss.insertSheet(USR_SHEET); sh.appendRow(USR_COLS); sh.hideSheet(); }
+  const head = sh.getRange(1, 1, 1, USR_COLS.length).getValues()[0];
+  USR_COLS.forEach((c, i) => { if (head[i] !== c) sh.getRange(1, i + 1).setValue(c); });
   return sh;
 }
 function usrTodos() {
@@ -133,12 +139,13 @@ function usrTodos() {
     const o = { fila: i + 2 };
     USR_COLS.forEach((k, j) => { o[k] = r[j]; });
     try { o.barrios = JSON.parse(String(o.barrios || '[]').replace(/^'/, '')); } catch (_) { o.barrios = []; }
+    try { o.permisos = o.permisos === '' || o.permisos == null ? PERMISOS_BASE.slice() : JSON.parse(String(o.permisos).replace(/^'/, '')); } catch (_) { o.permisos = PERMISOS_BASE.slice(); }
     o.activo = o.activo === true || o.activo === 'TRUE' || o.activo === 'sí';
     return o;
   });
 }
-const DIRECCION = { usuario: 'direccion', nombre: 'Dirección', rol: 'direccion', barrios: [] };
-function publico(u) { return { usuario: u.usuario, nombre: u.nombre, rol: u.rol, barrios: u.barrios || [] }; }
+const DIRECCION = { usuario: 'direccion', nombre: 'Dirección', rol: 'direccion', barrios: [], permisos: PERMISOS.slice() };
+function publico(u) { return { usuario: u.usuario, nombre: u.nombre, rol: u.rol, barrios: u.barrios || [], permisos: u.permisos || [] }; }
 
 function login(usuario, clave) {
   usuario = String(usuario || '').trim().toLowerCase();
@@ -194,6 +201,8 @@ function usuarioGuardar(p) {
   const existentes = Object.values(mapaBarrios());
   if (pedidos.some((b) => typeof b !== 'string' || existentes.indexOf(b) === -1)) return { ok: false, error: 'barrio_invalido' };
   const barrios = pedidos.filter((b, i) => pedidos.indexOf(b) === i).slice(0, 100);
+  const pp = Array.isArray(p.permisos) ? p.permisos : null;
+  if (pp && pp.some((x) => PERMISOS.indexOf(x) === -1)) return { ok: false, error: 'permiso_invalido' };
   const sh = usrSheet();
   const u = usrTodos().find((x) => x.usuario === usuario);
   const clave = p.clave == null ? '' : String(p.clave);
@@ -201,7 +210,8 @@ function usuarioGuardar(p) {
   if (u && clave && clave.length < 8) return { ok: false, error: 'clave_corta' };
   const salt = clave ? Utilities.getUuid() : u.salt;
   const hash = clave ? hashFuerte(clave, salt) : u.hash;
-  const fila = [usuario, nombre, p.rol, JSON.stringify(barrios), hash, salt, u ? (p.activo === false ? false : true) : true, u ? u.creado : new Date()];
+  const permisos = pp && pp.length ? pp.filter((x, i) => pp.indexOf(x) === i) : (u ? u.permisos : PERMISOS_BASE.slice());
+  const fila = [usuario, nombre, p.rol, JSON.stringify(barrios), hash, salt, u ? (p.activo === false ? false : true) : true, u ? u.creado : new Date(), JSON.stringify(permisos)];
   if (u) sh.getRange(u.fila, 1, 1, USR_COLS.length).setValues([fila]);
   else sh.appendRow(fila);
   return { ok: true };
@@ -236,11 +246,13 @@ function mapaBarrios() {
   });
   return m;
 }
+function veBarrio(yo, id) { return tiene(yo, 'todos_los_barrios') || (yo.barrios || []).indexOf(id) >= 0; }
 function puedeKey(yo, key, escribir) {
   if (yo.rol === 'direccion') return true;
-  if (key === 'sila_central_cfg') return !escribir;
+  if (key === 'sila_central_cfg') return !escribir || tiene(yo, 'configurar');
   const m = /^sila_central_b_([a-z0-9]+)_[a-z0-9_]+$/.exec(key);
-  return !!(m && (yo.barrios || []).indexOf(m[1]) >= 0);
+  if (!m || !veBarrio(yo, m[1])) return false;
+  return !escribir || tiene(yo, 'gestionar_tickets') || tiene(yo, 'cerrar_tickets');
 }
 
 /* ───────────── Planilla de casos ───────────── */
@@ -315,10 +327,11 @@ function casosListar(yo, desde) {
   const sh = sheet();
   const n = sh.getLastRow() - 1;
   let casos = n < 1 ? [] : sh.getRange(2, 1, n, COLS.length).getValues().map(filaACaso);
-  if (yo.rol !== 'direccion') {
+  if (yo.rol !== 'direccion' && !tiene(yo, 'todos_los_barrios')) {
     const m = mapaBarrios();
     casos = casos.filter((c) => (yo.barrios || []).indexOf(m[normTxt(c.barrio)]) >= 0);
   }
+  if (!tiene(yo, 'ver_contacto')) casos.forEach((c) => { c.celular = 'oculto'; c.correo = 'oculto'; });
   const d = desde ? new Date(desde) : null;
   return { ok: true, ahora: new Date().toISOString(), casos: d ? casos.filter((c) => new Date(c.actualizado) > d) : casos };
 }
@@ -329,7 +342,10 @@ function casoActualizar(yo, p) {
   if (!row) return { ok: false, error: 'no_existe' };
   const campos = p.campos || {};
   const prev = sh.getRange(row, 1, 1, COLS.length).getValues()[0];
-  if (yo.rol !== 'direccion' && (yo.barrios || []).indexOf(mapaBarrios()[normTxt(prev[COLS.indexOf('barrio')])]) === -1) return { ok: false, error: 'permiso' };
+  if (yo.rol !== 'direccion' && !veBarrio(yo, mapaBarrios()[normTxt(prev[COLS.indexOf('barrio')])])) return { ok: false, error: 'permiso' };
+  if (campos.estado === 'resuelto' && !tiene(yo, 'cerrar_tickets')) return { ok: false, error: 'permiso' };
+  if (Object.keys(campos).some((k) => k !== 'estado' && k !== 'resultado') && !tiene(yo, 'gestionar_tickets')) return { ok: false, error: 'permiso' };
+  if (campos.estado && campos.estado !== 'resuelto' && !tiene(yo, 'gestionar_tickets')) return { ok: false, error: 'permiso' };
   const now = new Date();
   ['monday_ticket', 'estado', 'resultado'].forEach((k) => {
     if (!(k in campos)) return;
@@ -416,7 +432,7 @@ function doPost(e) {
       // compatibilidad: la versión anterior de la central manda la clave de Dirección en vez de token
       const yo = sesion(p.token) || (p.clave && login('direccion', p.clave).ok ? DIRECCION : null);
       if (!yo) return out({ ok: false, error: 'sesion' });
-      const dir = yo.rol === 'direccion';
+      const dir = tiene(yo, 'gestionar_usuarios');
       switch (p.action) {
         case 'yo': return out({ ok: true, yo: yo });
         case 'clave_cambiar': return out(claveCambiar(yo, p.actual, p.nueva));
@@ -429,7 +445,7 @@ function doPost(e) {
           return out(r);
         }
         case 'kv_set': return out(puedeKey(yo, String(p.key || ''), true) ? kvSet(p) : { ok: false, error: 'permiso' });
-        case 'usuarios_listar': return out(dir ? { ok: true, usuarios: usrTodos().map((u) => ({ usuario: u.usuario, nombre: u.nombre, rol: u.rol, barrios: u.barrios, activo: u.activo, creado: u.creado instanceof Date ? u.creado.toISOString() : u.creado })) } : { ok: false, error: 'permiso' });
+        case 'usuarios_listar': return out(dir ? { ok: true, usuarios: usrTodos().map((u) => ({ usuario: u.usuario, nombre: u.nombre, rol: u.rol, barrios: u.barrios, permisos: u.permisos, activo: u.activo, creado: u.creado instanceof Date ? u.creado.toISOString() : u.creado })) } : { ok: false, error: 'permiso' });
         case 'usuario_guardar': return out(dir ? usuarioGuardar(p) : { ok: false, error: 'permiso' });
         case 'usuario_baja': return out(dir ? usuarioBaja(p.usuario) : { ok: false, error: 'permiso' });
         default: return out({ ok: false, error: 'accion' });
