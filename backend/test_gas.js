@@ -68,6 +68,8 @@ ok(api({ action: 'kv_set', token: T, key: 'sila_central_cfg', version: 0, valor:
 
 ok(api({ action: 'usuario_guardar', token: T, usuario: 'direccion', nombre: 'x', rol: 'operador', clave: '12345678' }).error === 'usuario_invalido', 'no deja crear otro "direccion"');
 ok(api({ action: 'usuario_guardar', token: T, usuario: 'ana', nombre: 'Ana', rol: 'operador', barrios: ['losalamos'], clave: 'corta' }).error === 'clave_corta', 'clave inicial corta rechazada');
+ok(api({ action: 'usuario_guardar', token: T, usuario: 'ana', nombre: 'Ana', rol: 'operador', barrios: [null], clave: 'ana-clave-1' }).error === 'barrio_invalido', 'rechaza un barrio vacío');
+ok(api({ action: 'usuario_guardar', token: T, usuario: 'ana', nombre: 'Ana', rol: 'operador', barrios: ['noexiste'], clave: 'ana-clave-1' }).error === 'barrio_invalido', 'rechaza un barrio que no existe');
 ok(api({ action: 'usuario_guardar', token: T, usuario: 'ana', nombre: 'Ana Pérez', rol: 'operador', barrios: ['losalamos'], clave: 'ana-clave-1' }).ok, 'Dirección crea a la operadora Ana (Los Álamos)');
 ok(api({ action: 'usuarios_listar', token: T }).usuarios.length === 1, 'Dirección lista usuarios');
 const hojaUsr = libro.getSheetByName('Usuarios');

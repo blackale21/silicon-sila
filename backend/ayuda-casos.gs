@@ -190,7 +190,10 @@ function usuarioGuardar(p) {
   if (ROLES.indexOf(p.rol) === -1) return { ok: false, error: 'rol' };
   const nombre = clip(String(p.nombre || '').trim(), 80);
   if (!nombre) return { ok: false, error: 'nombre' };
-  const barrios = (Array.isArray(p.barrios) ? p.barrios : []).map(String).filter((b) => /^[a-z0-9]{1,40}$/.test(b)).slice(0, 100);
+  const pedidos = Array.isArray(p.barrios) ? p.barrios : [];
+  const existentes = Object.values(mapaBarrios());
+  if (pedidos.some((b) => typeof b !== 'string' || existentes.indexOf(b) === -1)) return { ok: false, error: 'barrio_invalido' };
+  const barrios = pedidos.filter((b, i) => pedidos.indexOf(b) === i).slice(0, 100);
   const sh = usrSheet();
   const u = usrTodos().find((x) => x.usuario === usuario);
   const clave = p.clave == null ? '' : String(p.clave);
