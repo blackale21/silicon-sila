@@ -1,0 +1,30 @@
+Para que un residente pueda confirmar una
+reserva se deben cumplir dos requisitos.
+1 Tolerancia de Tiempo.
+Vas a poder confirmar tu reserva dentro
+de un margen configurable por tu consorcio
+(por ejemplo, 15 minutos antes o después
+del horario reservado). Si intentás fuera de
+ese rango, el sistema te avisará que no es
+posible confirmar la reserva.
+2 Ubicación cercana al amenity
+Tu ubicación debe estar dentro del radio
+permitido. El sistema detectará si estás
+Io suficientemente cerca para habilitar la
+confirmación. Esto ayuda a que los
+espacios se usen de forma real y
+equitativa para todos los vecinos.
+¿Cómo confirmar?
+1. Ingresá a la app y seleccioná la
+reserva pendiente de confirmación.
+2. Se abrirá un pop-up con opciones.
+Tocá "Confirmar asistencia".
+3. Si estás dentro del tiempo y ubicación
+permitida, recibirás una notificación
+confirmando el éxito de la acción.
+Importante:
+Asegurate de tener activada la
+geolocalización de tu teléfono
+(al menos mientras usás la app),
+para que el sistema pueda validar
+tu ubicación correctamente.

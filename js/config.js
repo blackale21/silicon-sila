@@ -19,4 +19,16 @@ window.SILA_CONFIG = {
 
   // Anti-spam: segundos mínimos para completar el flujo.
   minSeconds: 6,
+
+  // SILA Ayuda (asistente para residentes)
+  ayuda: {
+    // DEMO: true = los casos se guardan sólo en el navegador; no se escribe la planilla ni se manda correo.
+    demo: true,
+    // URL /exec del Apps Script de backend/ayuda-casos.gs (planilla "SILA Ayuda · Casos de residentes" + correo).
+    casosUrl: '',
+    // Base de conocimiento SQLite generada con kb/tools/build_kb.py
+    kbUrl: 'kb/sila_kb.sqlite',
+    // App de la central que recibe los casos derivados (vacío = no se muestra el acceso).
+    gestionUrl: '',
+  },
 };

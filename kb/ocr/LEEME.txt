@@ -1,0 +1,3 @@
+OCR (motor nativo de Windows) de "SA-Amenities (mejoras)-R", el único manual sin texto.
+Curado a mano: solo se BORRARON renglones que eran texto de capturas de pantalla (ruido) y se corrigió
+la confusión l/I del OCR ("eI" -> "el"). No se agregó contenido.

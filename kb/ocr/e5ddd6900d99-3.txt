@@ -1,0 +1,19 @@
+Confirmación Exitosa.
+Confirmación Fallida.
+Tu asistencia para el 12/07 a las
+10:00 hs. está confirmada.
+Es necesario que puedas habilitar el
+permiso de ubicación para usar este
+módulo.
+Error en la confirmación
+de tu asistencia
+Para confirmar, debes estar a
+menos de X metros de tu
+ubicación y dentro de los x
+minutos de tu horario de reserva.
+Por favor, inténtalo de nuevo
+Contacto y Soporte:
+Si tenés dudas o necesitás asistencia, podés comunicarte
+con nuestro equipo de soporte técnico a través del menú
+de ayuda dentro de la app o ingresando en nuestra web:
+www.silicon-access.com, sección "Ayuda al Usuario".

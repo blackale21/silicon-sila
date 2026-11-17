@@ -1,0 +1,11 @@
+NUEVAS Funcionalidades y mejoras
+Confirmación Reserva
+de Amenities
+Mejora en Módulo App mobile Residentes.
+Ahora, desde la app de Silicon Access, podés
+confirmar tu asistencia a un amenity justo antes de
+utilizarlo. Esta nueva funcionalidad te permite validar
+que vas a hacer uso real de la reserva y evita blo-
+queos innecesarios del espacio.
+NOVEDADES RESIDENTES
+
