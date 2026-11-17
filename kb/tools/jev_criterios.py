@@ -19,6 +19,8 @@ def main():
     js = ('/** GENERADO por kb/tools/jev_criterios.py: no editar a mano. Opciones fijas que Jev puede elegir. */\n'
           f'const JEV_CRITERIOS = {json.dumps(crit, ensure_ascii=False, indent=1)};\n')
     open(OUT, 'w', encoding='utf-8').write(js)
+    # misma lista en JSON: el Apps Script la lee de la web publicada (así no hay que repegarla al cambiar fichas)
+    open(os.path.join(KB, 'jev-criterios.json'), 'w', encoding='utf-8').write(json.dumps(crit, ensure_ascii=False))
     print(f'{len(crit) - 1} fichas → {os.path.relpath(OUT)}')
 
 

@@ -18,6 +18,9 @@
  */
 const CENTRAL_MAIL = '';          // ej: 'central@tuempresa.com' (varios: separados por coma)
 const SHEET = 'Casos';
+// Si el script es independiente (no está dentro de la planilla), id de la planilla de casos.
+const SHEET_ID = '';
+function libro() { return SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet(); }
 const COLS = ['caso_id', 'creado', 'actualizado', 'estado', 'barrio', 'residente', 'lote', 'celular', 'correo',
   'consulta', 'aclaraciones', 'modulo', 'fuentes_citadas', 'pasos_intentados', 'resultado', 'derivado_central',
   'correo_enviado', 'monday_ticket', 'origen'];
@@ -28,7 +31,7 @@ const MONDAY_TOKEN = '';
 const MONDAY_BOARD_ID = '';
 
 function setup() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = libro();
   const sh = ss.getSheetByName(SHEET) || ss.getSheets()[0].setName(SHEET);
   if (sh.getLastRow() === 0) sh.appendRow(COLS);
   sh.setFrozenRows(1);
@@ -58,6 +61,20 @@ function setup() {
  *  - Topes ALTOS sólo contra abuso masivo (ajustables abajo): no frenan el uso normal del chat.
  */
 const JEV_MODEL = 'jev-latest';
+// Opciones fijas que Jev puede elegir: se leen de la web publicada del proyecto (generadas desde las fichas).
+const CRITERIOS_URL = 'https://blackale21.github.io/silicon-sila/kb/jev-criterios.json';
+function criterios() {
+  if (typeof JEV_CRITERIOS !== 'undefined') return JEV_CRITERIOS; // si se pegó ayuda-jev-criterios.gs
+  const c = CacheService.getScriptCache();
+  const hit = c.get('jev_criterios');
+  if (hit) return JSON.parse(hit);
+  const r = UrlFetchApp.fetch(CRITERIOS_URL, { muteHttpExceptions: true });
+  if (r.getResponseCode() !== 200) throw new Error('criterios ' + r.getResponseCode());
+  const j = JSON.parse(r.getContentText());
+  if (!j.ninguna || Object.keys(j).length < 10) throw new Error('criterios invalidos');
+  c.put('jev_criterios', JSON.stringify(j), 21600);
+  return j;
+}
 const JEV_MAX_POR_MINUTO = 600;        // todo el sitio (un uso normal está muy por debajo)
 const JEV_MAX_POR_DIA = 50000;         // tope de gasto diario (~US$ 12 al precio publicado)
 const JEV_MAX_POR_SESION_10MIN = 120;  // por pestaña del navegador
@@ -94,7 +111,7 @@ function jevResponder(p) {
       instructions: 'Sos el asistente de ayuda de la app Silicon Access para residentes de barrios cerrados. ' +
         'Elegí el tema de ayuda que responde la consulta del residente (puede tener errores de tipeo). ' +
         'Si ninguno la responde de verdad, elegí "ninguna".',
-      criteria: JEV_CRITERIOS,
+      criteria: criterios(),
     } },
   };
   let res;
@@ -197,7 +214,7 @@ function mondayTicket(r) {
 }
 
 function sheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = libro();
   const sh = ss.getSheetByName(SHEET) || ss.getSheets()[0];
   if (sh.getLastRow() === 0) sh.appendRow(COLS);
   return sh;
