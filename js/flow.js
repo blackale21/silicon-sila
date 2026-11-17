@@ -1,4 +1,4 @@
-/* SILA — flujo comercial (fuente: SILA_flujograma_completo.pptx)
+/* SILA — flujo comercial (fuente: Flujograma nuevo Silicon v2 + «Cambios bot nuevo», nov 2026)
  * Tipos de nodo: single | multi | text | contact
  * next: string o función(state) -> id. pass: rótulo en "Tu pase".
  */
@@ -6,24 +6,40 @@
   const OTRA = { id: 'otra', label: 'Otra — contanos cuál', icon: 'otra', other: true };
 
   const N = {
+    N0: {
+      kind: 'text', cp: 'Nombre', pass: 'Contacto', field: 'nombre',
+      q: '¿Cuál es tu nombre y apellido?',
+      placeholder: 'Nombre y apellido', autocomplete: 'name',
+      next: 'N1',
+    },
     N1: {
       kind: 'single', cp: 'Destino', pass: 'Vertical',
-      q: '¿Dónde querés implementar tu sistema de control de acceso?',
-      sub: 'Elegí el tipo de predio. Cada uno tiene su propio recorrido.',
+      q: (s) => `Un gusto${firstName(s.N0) ? ', ' + firstName(s.N0) : ''}. ¿Dónde querés implementar tu sistema de control de acceso?`,
       big: true,
       options: [
-        { id: 'urb', label: 'Urbanización', hint: 'Barrio cerrado · country', icon: 'v_urb' },
-        { id: 'parque', label: 'Parque industrial', hint: 'Predio con varias empresas', icon: 'v_parque' },
-        { id: 'planta', label: 'Industria o planta', hint: 'Una planta individual', icon: 'v_planta' },
-        { id: 'conce', label: 'Concesionaria', hint: 'Autos · salón y playón', icon: 'v_conce' },
+        { id: 'urb', label: 'Barrios cerrados / Consorcios', icon: 'v_urb' },
+        { id: 'parque', label: 'Parques industriales', icon: 'v_parque' },
+        { id: 'planta', label: 'Industrias', icon: 'v_planta' },
+        { id: 'conce', label: 'Concesionarios de autos', icon: 'v_conce' },
+        { id: 'edif', label: 'Edificios corporativos', icon: 'v_edif' },
       ],
-      next: (s) => ({ urb: 'N2A', parque: 'N2B', planta: 'N2D', conce: 'N2C' })[s.N1],
+      next: 'N1E',
+    },
+    N1E: {
+      kind: 'single', cp: 'Etapa', pass: 'Etapa',
+      q: '¿En qué etapa está tu proyecto?',
+      options: [
+        { id: 'comparando', label: 'Comparando opciones', icon: 'compare' },
+        { id: 'pronto', label: 'Quiero avanzar pronto', icon: 'fast' },
+        { id: 'cambiar', label: 'Cambiar sistema actual', icon: 'swap' },
+      ],
+      next: (s) => ({ urb: 'N2A', parque: 'N2B', planta: 'N2D', conce: 'N2C', edif: 'N2F' })[s.N1],
     },
 
     /* ───────── N2A · Urbanización ───────── */
     N2A: {
       kind: 'single', cp: 'Escala', pass: 'Lotes',
-      q: '¿Cuántas unidades funcionales (lotes) tiene la urbanización?',
+      q: '¿Cuántas unidades funcionales (lotes) tiene el barrio / consorcio?',
       options: [
         { id: 'lt100', label: 'Menos de 100', icon: 'm_house_2' },
         { id: '100_300', label: 'Entre 100 y 300', icon: 'm_house_5' },
@@ -37,8 +53,7 @@
       q: '¿Cuántas entradas o accesos tiene el barrio?',
       options: [
         { id: 'unico', label: 'Un acceso único', icon: 'gate_1' },
-        { id: 'pyS', label: 'Un acceso principal y uno secundario', icon: 'gate_2' },
-        { id: 'tres', label: 'Tres o más accesos', icon: 'gate_3' },
+        { id: 'dos', label: 'Dos o más accesos', icon: 'gate_2' },
         { id: 'sep', label: 'Accesos separados para residentes y proveedores', icon: 'gate_split' },
       ],
       next: 'N2A-2',
@@ -67,16 +82,15 @@
       options: [
         { id: 'acceso', label: 'Soluciones de control de acceso', icon: 's_barrier' },
         { id: 'app', label: 'App para residentes', icon: 's_app' },
-        { id: 'comunidad', label: 'Gestión de la comunidad', icon: 's_comunidad' },
         OTRA,
       ],
       next: 'N2A-5',
     },
     'N2A-5': {
       kind: 'text', cp: 'Cuenta', pass: 'Barrio', account: true,
-      q: 'Para terminar, ¿cómo se llama el barrio o la urbanización?',
+      q: 'Para terminar, ¿cómo se llama el barrio o el consorcio?',
       placeholder: 'Ej.: Barrio Los Álamos',
-      next: 'N3',
+      next: 'N6',
     },
 
     /* ───────── N2B · Parque industrial ───────── */
@@ -106,8 +120,8 @@
       q: '¿Cuántos accesos tiene el predio?',
       options: [
         { id: 'unico', label: 'Un acceso único', icon: 'gate_1' },
+        { id: 'dos', label: 'Dos o más accesos', icon: 'gate_2' },
         { id: 'sep', label: 'Accesos separados para camiones y livianos', icon: 'gate_truckcar' },
-        { id: 'tres', label: 'Tres o más accesos', icon: 'gate_3' },
       ],
       next: 'N2B-3',
     },
@@ -130,16 +144,6 @@
         { id: 'admin', label: 'No, todo pasa por la administración', icon: 'central' },
         { id: 'nada', label: 'No hay gestión formal', icon: 'informal' },
       ],
-      next: 'N2B-5',
-    },
-    'N2B-5': {
-      kind: 'single', cp: 'Flujo', pass: 'Demoras',
-      q: '¿Se generan demoras o colas en el ingreso al parque?',
-      options: [
-        { id: 'frec', label: 'Sí, es un problema frecuente', icon: 'queue' },
-        { id: 'pico', label: 'A veces, en horas pico', icon: 'clock' },
-        { id: 'no', label: 'No, el ingreso fluye bien', icon: 'flow' },
-      ],
       next: 'N2B-6',
     },
     'N2B-6': {
@@ -147,11 +151,12 @@
       q: '¿Qué soluciones te interesan para el parque?',
       sub: 'Podés marcar varias.',
       options: [
-        { id: 'lpr', label: 'LPR con validación de egreso', icon: 's_lpr' },
+        { id: 'lpr', label: 'Reconocimiento de patentes vehiculares (LPR)', icon: 's_lpr' },
         { id: 'web', label: 'Acceso web propio para cada empresa', icon: 's_web' },
         { id: 'visitas', label: 'Registro de visitas, proveedores y contratistas', icon: 's_visitas' },
-        { id: 'selfie', label: 'Selfie ID para personal recurrente', icon: 's_selfie' },
+        { id: 'selfie', label: 'Reconocimiento facial para el personal recurrente (Selfie ID)', icon: 's_selfie' },
         { id: 'obras', label: 'Gestión de obras y contratistas', icon: 's_obras' },
+        { id: 'balanza', label: 'Balanza de pesaje', icon: 'truck_scale' },
         { id: 'tailgating', label: 'Anti-Tailgating', icon: 's_tailgating' },
         { id: 'reportes', label: 'Reportes y auditoría del predio', icon: 's_reportes' },
         OTRA,
@@ -162,19 +167,19 @@
       kind: 'text', cp: 'Cuenta', pass: 'Parque', account: true,
       q: 'Para terminar, ¿cómo se llama el parque industrial?',
       placeholder: 'Ej.: Parque Industrial Pilar',
-      next: (s) => (s['N2B-1'] === 'empresa' ? 'N2B-8' : 'N3'),
+      next: (s) => (s['N2B-1'] === 'empresa' ? 'N2B-8' : 'N6'),
     },
     'N2B-8': {
       kind: 'text', cp: 'Empresa', pass: 'Empresa', account: true,
       q: '¿Y cómo se llama la empresa desde la que nos consultás?',
       placeholder: 'Razón social o nombre comercial',
-      next: 'N3',
+      next: 'N6',
     },
 
-    /* ───────── N2D · Industria o planta ───────── */
+    /* ───────── N2D · Industrias ───────── */
     N2D: {
       kind: 'single', cp: 'Escala', pass: 'Ingresos/día',
-      q: '¿Cuántas personas ingresan por día a la planta?',
+      q: '¿Cuántas personas ingresan por día al predio?',
       options: [
         { id: 'lt100', label: 'Menos de 100', icon: 'm_person_2' },
         { id: '100_500', label: 'Entre 100 y 500', icon: 'm_person_5' },
@@ -195,8 +200,7 @@
     },
     'N2D-2': {
       kind: 'single', cp: 'Sectores', pass: 'Sectores',
-      q: '¿Hay sectores restringidos dentro de la planta?',
-      sub: 'Depósitos, vestuarios, salas técnicas, áreas de riesgo.',
+      q: '¿Hay sectores restringidos dentro del predio (depósitos, vestuarios, salas técnicas, áreas de riesgo)?',
       options: [
         { id: 'formal', label: 'Sí, con control formal', icon: 'lock' },
         { id: 'sinctl', label: 'Sí, pero sin control real', icon: 'lock_open' },
@@ -206,8 +210,7 @@
     },
     'N2D-3': {
       kind: 'single', cp: 'Documentos', pass: 'Docs contratistas',
-      q: '¿Cómo validan hoy la documentación de contratistas?',
-      sub: 'Seguro de RC, ART, nómina.',
+      q: '¿Cómo validan hoy la documentación de contratistas (seguro de RC, ART, nómina)?',
       options: [
         { id: 'papel', label: 'En la puerta, en papel', icon: 'doc_paper' },
         { id: 'mail', label: 'Por mail o WhatsApp, antes del ingreso', icon: 'doc_msg' },
@@ -239,15 +242,15 @@
     },
     'N2D-6': {
       kind: 'multi', cp: 'Soluciones', pass: 'Soluciones',
-      q: '¿Qué soluciones te interesan para la planta?',
+      q: '¿Qué soluciones te interesan para el predio?',
       sub: 'Podés marcar varias.',
       options: [
-        { id: 'lpr', label: 'LPR con validación de egreso', icon: 's_lpr' },
-        { id: 'selfie', label: 'Selfie ID para personal recurrente', icon: 's_selfie' },
+        { id: 'lpr', label: 'Reconocimiento de patentes vehiculares (LPR)', icon: 's_lpr' },
+        { id: 'selfie', label: 'Reconocimiento facial para el personal recurrente (Selfie ID)', icon: 's_selfie' },
         { id: 'puertas', label: 'Puertas de acceso por sector', icon: 's_door' },
         { id: 'obras', label: 'Gestión de obras y contratistas', icon: 's_obras' },
-        { id: 'balanza', label: 'Balanza de pesaje integrada', icon: 'truck_scale' },
-        { id: 'tailgating', label: 'Anti-Tailgating', icon: 's_tailgating' },
+        { id: 'balanza', label: 'Balanza de pesaje', icon: 'truck_scale' },
+        { id: 'tailgating', label: 'Anti-Tailgating (autos colados)', icon: 's_tailgating' },
         { id: 'emergencia', label: 'Botón de emergencias', icon: 's_sos' },
         { id: 'reportes', label: 'Reportes exportables', icon: 's_export' },
         OTRA,
@@ -255,13 +258,13 @@
       next: 'N2D-7',
     },
     'N2D-7': {
-      kind: 'text', cp: 'Cuenta', pass: 'Planta', account: true,
-      q: 'Para terminar, ¿cómo se llama la planta o la empresa?',
-      placeholder: 'Ej.: Planta Campana',
-      next: 'N3',
+      kind: 'text', cp: 'Cuenta', pass: 'Predio', account: true,
+      q: 'Para terminar, ¿cómo se llama el predio o la empresa?',
+      placeholder: 'Ej.: Predio Campana',
+      next: 'N6',
     },
 
-    /* ───────── N2C · Concesionaria ───────── */
+    /* ───────── N2C · Concesionarios de autos ───────── */
     N2C: {
       kind: 'single', cp: 'Escala', pass: 'Circulación',
       q: '¿Cuántos vehículos o personas circulan por día?',
@@ -338,8 +341,7 @@
     },
     'N2C-7': {
       kind: 'single', cp: 'Sectores', pass: 'Sectores',
-      q: '¿Hay sectores con acceso restringido?',
-      sub: 'Taller, depósito, 0 km.',
+      q: '¿Hay sectores con acceso restringido (taller, depósito, 0km)?',
       options: [
         { id: 'formal', label: 'Sí, con control formal', icon: 'lock' },
         { id: 'sinctl', label: 'Sí, pero sin control real', icon: 'lock_open' },
@@ -354,9 +356,9 @@
       options: [
         { id: 'clientes', label: 'Registro de clientes y visitas', icon: 's_visitas' },
         { id: 'crm', label: 'Integración con CRM', icon: 's_sync' },
-        { id: 'lpr', label: 'LPR para vehículos de stock', icon: 's_lpr' },
-        { id: 'selfie', label: 'Selfie ID para personal', icon: 's_selfie' },
-        { id: 'fast', label: 'Fast Checkout (entrega de 0 km)', icon: 's_key' },
+        { id: 'lpr', label: 'Lector de patentes vehiculares (LPR)', icon: 's_lpr' },
+        { id: 'selfie', label: 'Reconocimiento facial para el personal recurrente (Selfie ID)', icon: 's_selfie' },
+        { id: 'fast', label: 'Fast Checkout (entrega de 0km)', icon: 's_key' },
         { id: 'puertas', label: 'Puertas internas (taller y depósito)', icon: 's_door' },
         { id: 'docs', label: 'Presentación de documentación', icon: 's_docs' },
         { id: 'foto', label: 'Auditoría fotográfica de ingresos', icon: 's_photo' },
@@ -368,48 +370,90 @@
       kind: 'text', cp: 'Cuenta', pass: 'Concesionaria', account: true,
       q: 'Para terminar, ¿cómo se llama la concesionaria y qué marca representa?',
       placeholder: 'Ej.: Autos del Sur — Toyota',
-      next: 'N3',
-    },
-
-    /* ───────── Tramo común ───────── */
-    N3: {
-      kind: 'single', cp: 'Necesidad', pass: 'Necesidad',
-      q: '¿Qué necesitás resolver principalmente?',
-      options: (s) => [
-        { id: 'veh', label: 'Acceso vehicular', icon: 'car' },
-        { id: 'pea', label: 'Acceso peatonal', icon: 'walker' },
-        { id: 'ambos', label: 'Ambos', icon: 'both_same' },
-        {
-          id: 'gestion', icon: 'gestion',
-          label: ({
-            urb: 'Gestión de comunidad',
-            parque: 'Gestión integral del parque',
-            planta: 'Gestión integral de la planta',
-            conce: 'Gestión comercial',
-          })[s.N1] || 'Gestión integral',
-        },
-      ],
-      next: 'N4',
-    },
-    N4: {
-      kind: 'single', cp: 'Etapa', pass: 'Etapa',
-      q: '¿Estás en etapa de evaluación o ya tenés una decisión más avanzada?',
-      options: [
-        { id: 'comparando', label: 'Comparando opciones', icon: 'compare' },
-        { id: 'pronto', label: 'Quiero avanzar pronto', icon: 'fast' },
-        { id: 'cambiar', label: 'Cambiar sistema actual', icon: 'swap' },
-      ],
-      next: 'N5',
-    },
-    N5: {
-      kind: 'text', cp: 'Nombre', pass: 'Contacto', field: 'nombre',
-      q: '¿Cómo te llamás?', sub: 'Nombre y apellido.',
-      placeholder: 'Nombre y apellido', autocomplete: 'name',
       next: 'N6',
     },
+
+    /* ───────── N2F · Edificios corporativos ───────── */
+    N2F: {
+      kind: 'single', cp: 'Escala', pass: 'Personas/día',
+      q: '¿Cuántas personas circulan por día en el edificio?',
+      options: [
+        { id: 'lt100', label: 'Menos de 100', icon: 'm_person_2' },
+        { id: '100_500', label: 'Entre 100 y 500', icon: 'm_person_5' },
+        { id: '500_1000', label: 'Entre 500 y 1.000', icon: 'm_person_9' },
+        { id: 'gt1000', label: 'Más de 1.000', icon: 'm_person_16' },
+      ],
+      next: 'N2F-1',
+    },
+    'N2F-1': {
+      kind: 'single', cp: 'Origen', pass: 'Consulta desde',
+      q: '¿Desde dónde nos consultás?',
+      options: [
+        { id: 'admin', label: 'La administración del edificio', icon: 'admin' },
+        { id: 'recepcion', label: 'La recepción o front desk', icon: 'reception' },
+        { id: 'empresa', label: 'Una empresa que ocupa oficinas', icon: 'company_in' },
+      ],
+      next: 'N2F-2',
+    },
+    'N2F-2': {
+      kind: 'single', cp: 'Accesos', pass: 'Accesos',
+      q: '¿Cuántas entradas o accesos tiene el edificio?',
+      options: [
+        { id: 'unico', label: 'Un acceso único', icon: 'gate_1' },
+        { id: 'dos', label: 'Dos o más accesos', icon: 'gate_2' },
+        { id: 'sep', label: 'Accesos separados para personal y proveedores', icon: 'gate_split' },
+      ],
+      next: 'N2F-3',
+    },
+    'N2F-3': {
+      kind: 'single', cp: 'Hoy', pass: 'Control actual',
+      q: '¿Tienen hoy algún sistema de control de acceso?',
+      options: [
+        { id: 'si', label: 'Sí, contamos con un sistema', icon: 'sys_ok' },
+        { id: 'manual', label: 'No, el registro es manual en recepción', icon: 'clipboard' },
+        { id: 'nada', label: 'No, no hay control de acceso', icon: 'gate_open' },
+      ],
+      next: 'N2F-4',
+    },
+    'N2F-4': {
+      kind: 'single', cp: 'Pisos', pass: 'Acceso por piso',
+      q: '¿El edificio tiene acceso diferenciado por piso o sector?',
+      options: [
+        { id: 'formal', label: 'Sí, con control formal', icon: 'lock' },
+        { id: 'sinctl', label: 'Sí, pero sin control real', icon: 'lock_open' },
+        { id: 'general', label: 'No, el acceso es general', icon: 'door_free' },
+      ],
+      next: 'N2F-5',
+    },
+    'N2F-5': {
+      kind: 'multi', cp: 'Soluciones', pass: 'Soluciones',
+      q: '¿Qué soluciones te interesan para el edificio?',
+      sub: 'Podés marcar varias.',
+      options: [
+        { id: 'totem', label: 'Tótems de acceso para visitas', icon: 's_totem' },
+        { id: 'selfie', label: 'Reconocimiento facial para el personal recurrente (Selfie ID)', icon: 's_selfie' },
+        { id: 'autogestion', label: 'Autogestión de ingresos y visitas', icon: 's_visitas' },
+        { id: 'pisos', label: 'Asignación de accesos por piso o sector', icon: 's_floors' },
+        { id: 'lpr', label: 'Reconocimiento de patentes vehiculares (LPR) para cocheras', icon: 's_lpr' },
+        { id: 'paqueteria', label: 'Gestión de paquetería', icon: 's_package' },
+        { id: 'amenities', label: 'Amenities (reserva de salas)', icon: 's_room' },
+        { id: 'emergencia', label: 'Botón de emergencia', icon: 's_sos' },
+        { id: 'reportes', label: 'Reportes y trazabilidad', icon: 's_reportes' },
+        OTRA,
+      ],
+      next: 'N2F-6',
+    },
+    'N2F-6': {
+      kind: 'text', cp: 'Cuenta', pass: 'Edificio', account: true,
+      q: 'Para terminar, ¿cómo se llama el edificio o la empresa?',
+      placeholder: 'Ej.: Torre Madero',
+      next: 'N6',
+    },
+
+    /* ───────── Tramo común: datos de contacto ───────── */
     N6: {
       kind: 'text', cp: 'Localidad', pass: 'Localidad', field: 'localidad',
-      q: (s) => `Un gusto, ${firstName(s.N5)}. ¿En qué localidad están?`,
+      q: '¿En qué localidad están?',
       placeholder: 'Ej.: Pilar, Buenos Aires', autocomplete: 'address-level2',
       next: 'N7',
     },
@@ -422,8 +466,8 @@
     },
     N8: {
       kind: 'text', cp: 'Contacto', pass: 'Email / Tel', field: 'contacto', validate: 'emailOrPhone',
-      q: '¿A dónde te escribe el asesor?',
-      sub: 'Email o teléfono (con código de área).',
+      q: '¿Cuál es tu email o teléfono?',
+      sub: 'Si es teléfono, con código de área.',
       placeholder: 'nombre@empresa.com  ·  11 5555 5555',
       autocomplete: 'email', inputmode: 'email',
       next: 'N9',
@@ -435,5 +479,5 @@
     return String(full || '').trim().split(/\s+/)[0] || '';
   }
 
-  window.SILA_FLOW = { nodes: N, start: 'N1' };
+  window.SILA_FLOW = { nodes: N, start: 'N0' };
 })();

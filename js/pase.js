@@ -7,7 +7,7 @@
   const NODES = window.SILA_FLOW.nodes;
   const KEYS = Object.keys(NODES);
   const ABC = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const VERT = { urb: 'Urbanización', parque: 'Parque industrial', planta: 'Industria o planta', conce: 'Concesionaria' };
+  const VERT = { urb: 'Barrios cerrados / Consorcios', parque: 'Parques industriales', planta: 'Industrias', conce: 'Concesionarios de autos', edif: 'Edificios corporativos' };
   const MARK_PTS = [[1, 0], [2, 0], [2, 1], [3, 1], [3, 2], [2, 3], [1, 3], [1, 2], [0, 2], [0, 1]];
   const opts = (n, ans) => (typeof n.options === 'function' ? n.options(ans) : n.options || []);
   const qText = (n, ans) => (typeof n.q === 'function' ? n.q(ans) : n.q);
@@ -83,7 +83,7 @@
     };
     const rows = st.history.filter((h) => h !== 'N1' && !NODES[h].account && !NODES[h].field)
       .map((h) => ({ k: NODES[h].pass, v: label(h) }));
-    const contact = ['N5', 'N6', 'N7', 'N8'].filter((k) => a[k]).map((k) => ({ k: NODES[k].pass, v: a[k] }));
+    const contact = ['N0', 'N6', 'N7', 'N8'].filter((k) => a[k]).map((k) => ({ k: NODES[k].pass, v: a[k] }));
     return {
       id: st.leadId || '',
       fecha: dmy(st.fechaRaw || ymd(st.fecha)),

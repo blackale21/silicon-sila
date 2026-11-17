@@ -80,6 +80,7 @@
   };
 
   /* ───────── render de una pregunta ───────── */
+  const MOVIL = matchMedia('(max-width: 860px)');
   function render(id, opt = {}) {
     state.current = id;
     const n = NODES[id];
@@ -146,6 +147,7 @@
     const put = () => {
       el.q.innerHTML = html;
       el.q.scrollTop = 0;
+      if (MOVIL.matches) window.scrollTo(0, 0); // en el celular se mueve la página entera
       after && after();
     };
     if (old && !reduced) {
@@ -286,7 +288,7 @@
   }
 
   /* ───────── tu pase ───────── */
-  const VERT = { urb: 'Urbanización', parque: 'Parque industrial', planta: 'Industria o planta', conce: 'Concesionaria' };
+  const VERT = { urb: 'Barrios cerrados / Consorcios', parque: 'Parques industriales', planta: 'Industrias', conce: 'Concesionarios de autos', edif: 'Edificios corporativos' };
   const MARK = '<svg class="pm" viewBox="0 0 3 3" aria-hidden="true"><path d="M1 0H2V1H3V2L2 3H1V2H0V1Z" fill="#fff"/></svg>';
 
   function accountName() {
@@ -305,7 +307,7 @@
           : esc(v);
         return `<div class="row"><dt>${esc(NODES[h].pass)}</dt><dd>${dd}</dd></div>`;
       });
-    const contact = ['N5', 'N6', 'N7', 'N8'].filter((k) => a[k]).map((k) => `<div class="row"><dt>${esc(NODES[k].pass)}</dt><dd>${esc(a[k])}</dd></div>`);
+    const contact = ['N0', 'N6', 'N7', 'N8'].filter((k) => a[k]).map((k) => `<div class="row"><dt>${esc(NODES[k].pass)}</dt><dd>${esc(a[k])}</dd></div>`);
     const all = rows.concat(contact);
     const code = state.leadId || 'SA-' + '······';
     return `<div class="pass${issued ? ' issued' : ''}">
@@ -387,23 +389,21 @@
     if (!state.leadId) state.leadId = 'SA-' + (Date.now().toString(36).slice(-4) + Math.random().toString(36).slice(2, 4)).toUpperCase();
     if (!state.fecha) state.fecha = new Date().toISOString();
     const a = state.answers;
-    const first = String(a.N5 || '').trim().split(/\s+/)[0];
-    const wa = !CFG.whatsapp ? ''
-      : CFG.demo
-        ? `<button type="button" class="btn wa" id="wa">Hablar ahora por WhatsApp</button>`
-        : `<a class="btn wa" id="wa" target="_blank" rel="noopener" href="https://wa.me/${encodeURIComponent(CFG.whatsapp)}?text=${encodeURIComponent(waText())}">Hablar ahora por WhatsApp</a>`;
+    const first = String(a.N0 || '').trim().split(/\s+/)[0];
+    const quien = esc(accountName() || 'tu predio');
+    const trato = {
+      pronto: `Como querés avanzar pronto, priorizamos tu consulta: un asesor de Silicon Access te contacta en las próximas <strong>24 hs hábiles</strong> con una propuesta para ${quien}.`,
+      cambiar: `Un asesor de Silicon Access te contacta en las próximas <strong>24 hs hábiles</strong> para ver cómo pasar de tu sistema actual a Silicon en ${quien}.`,
+      comparando: `Un asesor de Silicon Access te contacta en las próximas <strong>24 hs hábiles</strong> con la información para que compares tranquilo las opciones para ${quien}.`,
+    }[a.N1E] || `Un asesor de Silicon Access te contacta en las próximas <strong>24 hs hábiles</strong> con una propuesta para ${quien}.`;
     const html = `<div class="q-inner enter end">
-      <div class="log"><span class="t">${clock()}</span><span class="ok">✓ PASE EMITIDO</span><span class="val">· ${esc(state.leadId)}</span></div>
-      <div class="kicker">Checkpoint final · Pase</div>
-      <h1 class="qt">${`Listo${first ? ', ' + first : ''}. Tu pase está emitido.`.split(' ').map((w, i) => `<span class="w" style="--i:${i}">${esc(w)}</span>`).join(' ')}</h1>
-      <p class="lead">Registramos tu consulta. Un asesor de Silicon Access te contacta en las próximas <strong>24 hs hábiles</strong> con una propuesta para ${esc(accountName() || 'tu predio')}.</p>
-      <p class="lead qr-tip">Tocá el QR de tu pase para <strong>descargarlo en PDF</strong>, o escanealo con otro celular.</p>
+      <div class="log"><span class="t">${clock()}</span><span class="ok">✓ CONSULTA REGISTRADA</span><span class="val">· ${esc(state.leadId)}</span></div>
+      <h1 class="qt">${`¡Muchas gracias por contactarnos${first ? ', ' + first : ''}!`.split(' ').map((w, i) => `<span class="w" style="--i:${i}">${esc(w)}</span>`).join(' ')}</h1>
+      <p class="lead">${trato}</p>
       <div class="pass-inline" id="passInline"></div>
       <div class="sendstate" id="sendstate">Enviando…</div>
       <div class="actions">
-        ${wa}
-        <button type="button" class="btn${wa ? ' ghost' : ''}" id="done">${EMBED || FROM_SITE ? 'Volver al sitio' : 'Ir a silicon-access.com'}</button>
-        <button type="button" class="link" id="again">Empezar de nuevo</button>
+        <button type="button" class="btn" id="done">${EMBED || FROM_SITE ? 'Volver al sitio' : 'Ir a silicon-access.com'}</button>
       </div>
     </div>`;
     document.body.classList.add('ended');
@@ -411,8 +411,6 @@
       $('#passInline').innerHTML = passHTML(true);
       sizeQR();
       $('#done').addEventListener('click', () => (EMBED ? closeEmbed() : backToSite()));
-      $('#again').addEventListener('click', restart);
-      if (CFG.demo && $('#wa')) $('#wa').addEventListener('click', openWaSim);
       submitLead();
     });
     updateRoute();
@@ -430,23 +428,24 @@
   /* ───────── lead ───────── */
   function score() {
     const a = state.answers; let s = 0;
-    s += { pronto: 3, cambiar: 2, comparando: 1 }[a.N4] || 0;
+    s += { pronto: 3, cambiar: 2, comparando: 1 }[a.N1E] || 0;
     const big = ['gt600', '300_600', 'gt60', '30_60', 'gt1000', '500_1000', 'gt200'];
     const mid = ['100_300', '10_30', '100_500', '50_200'];
-    const sz = a.N2A || a.N2B || a.N2D || a.N2C;
+    const sz = a.N2A || a.N2B || a.N2D || a.N2C || a.N2F;
     s += big.includes(sz) ? 2 : mid.includes(sz) ? 1 : 0;
-    const menus = a['N2A-4'] || a['N2B-6'] || a['N2D-6'] || a['N2C-8'] || [];
+    const menus = a['N2A-4'] || a['N2B-6'] || a['N2D-6'] || a['N2C-8'] || a['N2F-5'] || [];
     if (menus.length >= 3) s += 1;
-    const pains = [a['N2B-5'] === 'frec', a['N2D-5'] === 'frena', a['N2D-5'] === 'entra', a['N2C-3'] === 'nada', a['N2A-2'] === 'nada', a['N2B-3'] === 'sin'];
+    const pains = [a['N2D-5'] === 'frena', a['N2D-5'] === 'entra', a['N2C-3'] === 'nada', a['N2A-2'] === 'nada', a['N2B-3'] === 'sin', a['N2F-3'] === 'nada'];
     if (pains.some(Boolean)) s += 1;
     return { score: s, temperatura: s >= 5 ? 'caliente' : s >= 3 ? 'tibio' : 'frío' };
   }
 
+  const MENU_DE = { urb: 'N2A-4', parque: 'N2B-6', planta: 'N2D-6', conce: 'N2C-8', edif: 'N2F-5' };
   function payload() {
     const a = state.answers;
     const contacto = String(a.N8 || '').trim();
     const isMail = /@/.test(contacto);
-    const [nombre, ...ap] = String(a.N5 || '').trim().split(/\s+/);
+    const [nombre, ...ap] = String(a.N0 || '').trim().split(/\s+/);
     const respuestas = state.history.map((h) => {
       const v = labelOf(h, a[h]);
       return { nodo: h, pregunta: qText(NODES[h]), respuesta: Array.isArray(v) ? v.join(' | ') : v };
@@ -460,7 +459,7 @@
       nombre: nombre || '', apellido: ap.join(' '),
       localidad: a.N6 || '', rol: a.N7 || '',
       email: isMail ? contacto : '', telefono: isMail ? '' : contacto,
-      necesidad: labelOf('N3', a.N3) || '', etapa: labelOf('N4', a.N4) || '',
+      necesidad: [].concat(labelOf(MENU_DE[a.N1], a[MENU_DE[a.N1]]) || []).join(', '), etapa: labelOf('N1E', a.N1E) || '',
       temperatura: sc.temperatura, score: sc.score,
       resumen: respuestas.map((r) => `${r.pregunta} → ${r.respuesta}`).join('\n'),
       respuestas,
@@ -512,18 +511,8 @@
   function simulateSend(p, st) {
     track('sila_lead', { vertical: p.vertical, temperatura: p.temperatura, demo: true });
     window.SILA_STORE && window.SILA_STORE.add(p);
-    const steps = [
-      'Validando datos de contacto',
-      `HubSpot · contacto + negocio creados (${p.temperatura})`,
-      'Mail de aviso al equipo comercial',
-      'Asignado a la cola de seguimiento 24 hs',
-    ];
-    st.className = 'sendstate sim';
-    st.innerHTML = '<div class="sim-h">SIMULACIÓN · no se envió ningún dato</div>' +
-      steps.map((s, i) => `<div class="sim-l" style="--i:${i}"><span class="sp"></span>${esc(s)}<span class="ok">✓</span></div>`).join('') +
-      `<div class="sim-row"><button type="button" class="btn ghost sim-btn" id="simView">Ver lo que recibe el comercial</button>` +
-      `<a class="btn ghost sim-btn" id="simCrm" href="crm.html#${encodeURIComponent(p.id)}" target="_blank" rel="noopener">Abrir bandeja comercial ↗</a></div>`;
-    $('#simView').addEventListener('click', () => openLeadViewer(p));
+    st.className = 'sendstate ok';
+    st.textContent = `✓ Consulta registrada · ${p.id}`;
   }
 
   /* ───────── WhatsApp simulado (demo) ───────── */

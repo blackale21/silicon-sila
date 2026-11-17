@@ -623,3 +623,14 @@ h1.qt + .opts, h1.qt + .field { margin-top: 26px; }
 .pass.issued .pass-bottom { align-items: flex-end; }
 .qr-tip { font-size: 14px !important; }
 .pass.issued .pass-bottom { flex-wrap: wrap; gap: 14px; }
+
+/* Celular: se mueve la página entera (no una caja interna). Evita que el scroll se trabe en iPhone,
+   en los navegadores de WhatsApp/Instagram y dentro del iframe de la web, y que la pantalla quede cortada. */
+@media (max-width: 860px) {
+  html, body { height: auto; min-height: 100%; }
+  body { overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  #app { height: auto; min-height: 100dvh; }
+  .top { position: sticky; top: 0; z-index: 6; }
+  .stage { display: block; flex: none; }
+  .q { overflow: visible; min-height: 0; }
+}
