@@ -42,6 +42,16 @@ Botón flotante en la maqueta (`index.html`, se abre directo con `?ayuda=1`). Gl
 
   En esos casos las fichas usan el texto y no marcan un botón dudoso.
 
+
+### Jev en vivo (2026-11-17)
+- Backend publicado: Apps Script **"SILA Ayuda - backend"** en el Drive del usuario, como aplicación web pública. Su URL está en `config.ayuda.backendUrl`.
+- **Clave:** está sólo en Propiedades del script (`TYPESAFE_KEY`).
+- **Preguntas a Jev:** son fijas. Las opciones salen de `kb/jev-criterios.json`, publicado en GitHub y generado al rearmar la base.
+- **Candados:** en el chat (`js/ayuda/jev.js`) y en el script (validación de entrada, caché de 6 h, topes altos anti-abuso).
+- **Si Jev falla,** responde el buscador local.
+- **Casos:** siguen simulados (`ayuda.demo = true`) hasta que se cargue `CENTRAL_MAIL` en el script.
+- **Al cambiar las fichas:** rearmar la base y hacer push. El script relee las opciones solo, en hasta 6 h.
+
 ## Probar local
 Servidor estático en la carpeta (ej. `python -m http.server 8340`) y abrir:
 - `http://localhost:8340/` → maqueta de la web; SOLICITÁ UNA DEMO → SILA

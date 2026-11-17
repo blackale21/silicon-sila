@@ -26,7 +26,7 @@ window.SILA_CONFIG = {
     demo: true,
     // URL /exec del Apps Script de backend/ayuda-casos.gs (planilla "SILA Ayuda · Casos de residentes" + correo + puente a Jev).
     // Con URL, Jev entiende las consultas. Los casos siguen simulados mientras demo = true.
-    backendUrl: '',
+    backendUrl: 'https://script.google.com/macros/s/AKfycbxvMvz1_ClQR0mdqNbfnd4_UNArzoH-5wPtKhAhXcq6PhGe7osC1Mpp14UGmrTW0IWr2A/exec',
     // Base de conocimiento SQLite generada con kb/tools/build_kb.py
     kbUrl: 'kb/sila_kb.sqlite',
     // App de la central que recibe los casos derivados (vacío = no se muestra el acceso).
