@@ -300,7 +300,7 @@
   }
 
   /* ── respuesta en tono humano + capturas con círculo rojo ── */
-  const srcOf = (s) => (s.chunkObj ? `${s.chunkObj.doc.title} (pág. ${s.chunkObj.page})` : '');
+  const srcOf = (s) => (s.chunkObj ? s.chunkObj.doc.title + (s.chunkObj.page ? ` (pág. ${s.chunkObj.page})` : '') : '');
   function shotHTML(s, n) {
     const ell = s.marks.map((m) => {
       const rx = m.w / 2 * 1.3 + 0.035, ry = m.h / 2 * 1.9 + 0.02;
