@@ -3,3 +3,6 @@ kb/src/
 kb/fetch.log
 kb/ocr/*.png
 __pycache__/
+kb/ocr/png/
+kb/ocr/boxes.log
+kb/tmp/

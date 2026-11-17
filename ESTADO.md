@@ -17,26 +17,30 @@ Canal de ingreso de leads para silicon-access.com. Concepto e ideas: [docs/IDEAS
 
 ## SILA Ayuda: asistente para residentes (2026-11-17)
 Botón flotante en la maqueta (`index.html`, se abre directo con `?ayuda=1`). Globo en PC y pantalla completa en celular.
-- **Responde sólo con los manuales.** 52 manuales únicos bajados de las 2 carpetas de Drive → `kb/sila_kb.sqlite` (182 fragmentos, uno por página) + capturas en `kb/pages/`. Ver `kb/README.md`.
-- **Búsqueda en el navegador.** sql.js + BM25 en español, sin internet ni IA generativa (`js/ayuda/kb.js`). Muestra el texto literal con manual, página y público (residentes o administración), y un botón para ver la página.
-- **Cuándo pregunta y cuándo no responde.**
-  - Consulta vaga: pide aclaración (módulo o detalle).
-  - Coincide con varios módulos: pregunta cuál.
-  - Sin respaldo: "No encontré una solución en la documentación disponible".
-  - Dos versiones del mismo manual que no coinciden: lo señala y pregunta cuál aplica.
-- **Casos.**
-  - Se registran al primer mensaje.
-  - "Resuelto" sólo cuando el residente lo confirma; si no, queda pendiente y le ofrece la central.
-  - Formulario con barrio, residente, lote, celular y correo, que se envía con los pasos ya intentados y las fuentes.
+- **Tono humano, sin citas.** Responde con 77 **fichas** (`kb/cards/*.json`) redactadas en voseo a partir de los manuales, con pasos cortos.
+- **Nada inventado.** Cada paso lleva el fragmento y la cita literal que lo respalda. `kb/tools/check_cards.py` rechaza cualquier paso cuya cita no esté en el manual, y el build no arma la base si hay errores.
+- **Círculo rojo.** Se ubica el botón con el OCR de Windows sobre las capturas reales (100 de 109 ubicados). Se muestra el recorte en alta resolución (`kb/shots/`) y se agranda al tocar.
+- **Fuentes.** El residente no ve citas. La fuente queda en el caso y en el correo a la central como respaldo interno.
+- **Base.** `kb/sila_kb.sqlite` tiene manuales, fragmentos y fichas; es SQL estándar y migrable (`kb/README.md`).
+- **Flujo.**
+  - Consulta vaga: ofrece temas y después las fichas de ese tema.
+  - Dos fichas igual de probables: pregunta cuál.
+  - Sin respaldo: "no encontré una solución en la documentación disponible".
+  - Resuelto sólo si el residente lo confirma; si no, queda pendiente y se ofrece la central, con el formulario de barrio, nombre, lote, celular y correo, más lo ya intentado.
 - **Registro.**
   - Producción: `backend/ayuda-casos.gs` escribe una fila en la planilla **"SILA Ayuda · Casos de residentes"** (Drive del usuario) y manda un correo a `CENTRAL_MAIL`.
-  - Demo (`config.ayuda.demo = true`): todo queda sólo en el navegador y se rotula SIMULADO.
+  - Demo: todo queda en el navegador y se rotula SIMULADO.
 - **Pendiente.**
-  - Ticket en **Monday** por cada caso derivado: está el stub `mondayTicket()` en el `.gs`, falta token y board id.
+  - Ticket en **Monday**: está el stub `mondayTicket()` en el `.gs`.
   - Correo de la central.
   - Publicar el Apps Script.
-  - App de gestión de la central: `config.ayuda.gestionUrl`.
-- **Límite.** La detección de contradicciones es automática sólo entre versiones de un mismo manual. Contradicciones de fondo entre manuales distintos no se detectan solas.
+  - `config.ayuda.gestionUrl`, cuando se integre la app de gestión (rama `gestion-app`).
+- **Discrepancias vistas en los manuales.** Los agentes encontraron diferencias entre el texto y las capturas:
+  - nombres de botones, por ejemplo "Mis Expensas" vs "Expensas";
+  - los tipos de emergencia;
+  - los 5 vs 6 pasos de la inscripción.
+
+  En esos casos las fichas usan el texto y no marcan un botón dudoso.
 
 ## Probar local
 Servidor estático en la carpeta (ej. `python -m http.server 8340`) y abrir:

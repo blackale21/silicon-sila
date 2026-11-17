@@ -95,6 +95,29 @@
 .ay-fact button:hover, .ay-fact a:hover { border-color: var(--ay-blue-hi); }
 .ay-ocr { font: 500 10px var(--ay-mono); color: var(--ay-warn); margin-top: 6px; }
 
+/* pasos en tono humano */
+.ay-steps { margin: 2px 0; padding-left: 20px; }
+.ay-steps li { margin: 5px 0; padding-left: 2px; }
+.ay-steps li::marker { color: var(--ay-blue-hi); font-weight: 600; }
+
+/* capturas de la app con círculo rojo */
+.ay-shots { display: flex; gap: 10px; overflow-x: auto; margin: 8px -4px 2px; padding: 2px 4px 6px; scroll-snap-type: x mandatory; }
+.ay-shot { --r: 0.6; flex: none; margin: 0; width: min(100%, calc(320px * var(--r))); aspect-ratio: var(--r); scroll-snap-align: start; cursor: zoom-in; position: relative; }
+.ay-shot .crop { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 12px; background: #fff; box-shadow: 0 0 0 1px var(--ay-line-hi); }
+.ay-shot img { display: block; width: 100%; height: 100%; object-fit: fill; }
+.ay-shot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ay-shot ellipse { fill: none; stroke: #e5141f; stroke-width: 3.5; vector-effect: non-scaling-stroke; transform-box: fill-box; transform-origin: center; animation: ayCircle 0.55s 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.3) both; }
+@keyframes ayCircle { from { opacity: 0; transform: scale(1.6); } }
+.ay-shot figcaption { position: absolute; left: 8px; top: 8px; font: 600 10px var(--ay-mono); letter-spacing: 0.1em; background: rgba(7, 11, 20, 0.82); color: #fff; padding: 4px 7px; border-radius: 6px; }
+.ay-shot:focus-visible { outline: 2px solid var(--ay-blue-hi); outline-offset: 3px; border-radius: 12px; }
+.ay-shot.page { height: auto; width: 100%; }
+.ay-shot.page .crop { height: auto; }
+.ay-shot.page img { position: static; width: 100%; }
+.ay-view .ay-shot.big { width: min(100%, calc(min(78dvh, 720px) * var(--r))); margin: 0 auto; cursor: default; }
+.ay-view .ay-shot.big.page { height: auto; aspect-ratio: auto; }
+.ay-view .ay-shot.big ellipse { animation: none; stroke-width: 4.5; }
+.ay-view .body:has(.ay-shot) { display: grid; place-items: center; background: #0b1222; }
+
 /* opciones (chips) */
 .ay-opts { align-self: flex-start; display: flex; flex-wrap: wrap; gap: 8px; max-width: 100%; animation: ayMsg 0.35s 0.05s var(--ay-ease) both; }
 .ay-opt { border: 1px solid var(--ay-line-hi); background: var(--ay-card); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 13px; text-align: left; transition: border-color 0.2s, background 0.2s, transform 0.2s; }

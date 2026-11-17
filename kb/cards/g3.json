@@ -1,0 +1,386 @@
+[
+  {
+    "id": "expensas-ver-saldo",
+    "module": "Expensas",
+    "title": "Ver el saldo de mis expensas",
+    "ask": ["cuánto debo de expensas", "dónde veo mi saldo", "cómo sé si estoy al día con las expensas", "dónde está mi cuenta corriente", "quiero ver el saldo del lote", "dónde miro las expensas en la app"],
+    "intro": "Dale, te muestro dónde está.",
+    "steps": [
+      {"say": "Abrí la app en tu celular.", "chunk": 78, "quote": "Abrí la aplicación en tu dispositivo móvil."},
+      {"say": "En la pantalla principal buscá el ícono de Expensas y tocalo.", "chunk": 78, "quote": "En la pantalla principal (Home), localizá el ícono de \"Mis Expensas\" y hacé clic en él.", "mark": ["Expensas"]},
+      {"say": "Arriba de todo vas a ver el saldo de tu cuenta corriente.", "chunk": 78, "quote": "verás en la parte superior de la pantalla el saldo de tu cuenta corriente"}
+    ],
+    "tips": [
+      {"say": "Ese saldo refleja los movimientos recientes, así que te muestra cómo está tu cuenta hoy.", "chunk": 78, "quote": "Este saldo reflejará los movimientos recientes y te permitirá conocer el estado actual de tu cuenta."},
+      {"say": "La info sale del sistema que usa tu administración, así que es tu cuenta corriente real del consorcio.", "chunk": 77, "quote": "esta aplicación está integrada con el prestador de servicio de la Administración"}
+    ]
+  },
+  {
+    "id": "expensas-historial-resumenes",
+    "module": "Expensas",
+    "title": "Ver mis resúmenes de expensas anteriores",
+    "ask": ["dónde veo las expensas de meses anteriores", "quiero ver el resumen de expensas", "cómo veo el detalle de lo que me cobraron", "historial de expensas", "dónde está la liquidación del mes pasado", "qué cargos tengo en la expensa"],
+    "intro": "Claro, está todo guardado ahí mismo.",
+    "steps": [
+      {"say": "Entrá a Expensas desde la pantalla principal.", "chunk": 78, "quote": "localizá el ícono de \"Mis Expensas\" y hacé clic en él", "mark": ["Expensas"]},
+      {"say": "Debajo del saldo tocá Mis Expensas.", "chunk": 78, "quote": "Debajo del saldo, encontrarás las siguientes opciones de navegación", "mark": ["Mis Expensas"]},
+      {"say": "Vas a ver tus resúmenes ordenados por fecha, y en cada uno el detalle de pagos y cargos.", "chunk": 78, "quote": "Cada ítem estará organizado por fecha y podrás ver el detalle de cada pago y cargo."}
+    ],
+    "tips": [
+      {"say": "Si querés guardarte algún resumen, cada ítem tiene su botón de descarga.", "chunk": 79, "quote": "hacer clic en el botón de descarga que aparece junto a cada ítem"}
+    ]
+  },
+  {
+    "id": "expensas-cupones",
+    "module": "Expensas",
+    "title": "Ver mis cupones de pago",
+    "ask": ["dónde está el cupón para pagar las expensas", "cómo saco el cupón de pago", "no encuentro el cupón del mes", "dónde veo los cupones", "necesito el cupón para pagar", "cupón de expensas en la app"],
+    "intro": "Te cuento dónde los encontrás.",
+    "steps": [
+      {"say": "Entrá a Expensas desde la pantalla principal.", "chunk": 78, "quote": "localizá el ícono de \"Mis Expensas\" y hacé clic en él", "mark": ["Expensas"]},
+      {"say": "Debajo del saldo tocá Mis Cupones.", "chunk": 78, "quote": "Mis Cupones: Facilita la visualización de los cupones de pago generados para el abono de tus expensas.", "mark": ["Mis Cupones"]},
+      {"say": "Ahí tenés los cupones de cada período de pago.", "chunk": 78, "quote": "Aquí encontrarás los cupones asociados a cada período de pago."}
+    ],
+    "tips": [
+      {"say": "Podés descargar cada cupón con el botón de descarga que está al lado.", "chunk": 79, "quote": "En cada uno de los listados (Mis Expensas, Mis Cupones, Mis Pagos), tendrás la opción de descargar la información."}
+    ]
+  },
+  {
+    "id": "expensas-mis-pagos",
+    "module": "Expensas",
+    "title": "Ver los pagos de expensas que hice",
+    "ask": ["dónde veo lo que ya pagué", "cómo sé si se registró mi pago", "historial de pagos de expensas", "quiero ver cuánto pagué el mes pasado", "dónde están mis pagos", "ver fechas y montos pagados"],
+    "intro": "Sí, los tenés todos en un lugar.",
+    "steps": [
+      {"say": "Entrá a Expensas desde la pantalla principal.", "chunk": 78, "quote": "localizá el ícono de \"Mis Expensas\" y hacé clic en él", "mark": ["Expensas"]},
+      {"say": "Debajo del saldo tocá Mis Pagos.", "chunk": 78, "quote": "Mis Pagos: Accede a la lista de pagos realizados.", "mark": ["Mis Pagos"]},
+      {"say": "En cada pago vas a ver el detalle, con la fecha y el monto que abonaste.", "chunk": 78, "quote": "Podrás ver los detalles de cada transacción, incluyendo las fechas y los montos abonados."}
+    ]
+  },
+  {
+    "id": "expensas-descargar",
+    "module": "Expensas",
+    "title": "Descargar un resumen, cupón o pago",
+    "ask": ["cómo descargo la expensa en pdf", "puedo bajar el cupón", "quiero descargar el comprobante de pago", "cómo guardo el resumen en el celular", "bajar expensas en pdf", "descargar mis pagos"],
+    "intro": "Sí, se puede bajar todo.",
+    "steps": [
+      {"say": "Entrá al listado que necesites: Mis Expensas, Mis Cupones o Mis Pagos.", "chunk": 79, "quote": "En cada uno de los listados (Mis Expensas, Mis Cupones, Mis Pagos), tendrás la opción de descargar la información.", "mark": ["Mis expensas", "Mis cupones"]},
+      {"say": "Tocá el botón de descarga que aparece al lado de cada ítem.", "chunk": 79, "quote": "solo necesitás hacer clic en el botón de descarga que aparece junto a cada ítem"},
+      {"say": "Se te baja un archivo con el detalle, en PDF o similar.", "chunk": 79, "quote": "obtener un archivo con el detalle de cada resumen, cupón o pago en formato PDF o similar"}
+    ],
+    "tips": [
+      {"say": "Si algo no te funciona, podés escribirle a soporte desde el menú de ayuda de la app o en www.silicon-access.com, en Ayuda al Usuario.", "chunk": 79, "quote": "podés comunicarte con nuestro equipo de soporte técnico a través del menú de ayuda dentro de la app"}
+    ]
+  },
+  {
+    "id": "expensas-informar-pago",
+    "module": "Expensas",
+    "title": "Avisar que pagué el cupón desde Expensas",
+    "ask": ["ya pagué, cómo le aviso a la administración", "dónde subo el comprobante de las expensas", "cómo informo un pago", "pagué el cupón y quiero mandar el comprobante", "dónde cargo la transferencia", "informar pago de expensas"],
+    "intro": "Buenísimo que ya pagaste, te explico cómo avisar.",
+    "steps": [
+      {"say": "Entrá a Expensas desde la pantalla principal.", "chunk": 78, "quote": "localizá el ícono de \"Mis Expensas\" y hacé clic en él", "mark": ["Expensas"]},
+      {"say": "Una vez que pagaste tu cupón, tocá Informar Pago.", "chunk": 78, "quote": "Informar Pago: Una vez realizado el pago de tu cupón.", "mark": ["Informar Pago"]},
+      {"say": "Subí el comprobante a la plataforma.", "chunk": 78, "quote": "Hace click en informar pago para subir el comprobante a la plataforma"}
+    ],
+    "tips": [
+      {"say": "Ese comprobante queda como respaldo tanto para vos como para la administración.", "chunk": 78, "quote": "como documento respaldatorio para vos y la administración de tu consorcio"}
+    ]
+  },
+  {
+    "id": "informar-pagos-registrar",
+    "module": "Informar pagos",
+    "title": "Registrar un pago con su comprobante",
+    "ask": ["cómo informo un pago", "dónde cargo el comprobante de pago", "quiero avisar que pagué", "cómo registro una transferencia", "dónde subo el ticket del pago", "informar pago desde el celular", "cargar pago en la app"],
+    "intro": "Es rápido, te guío.",
+    "steps": [
+      {"say": "Entrá a la sección Pagos de la app.", "chunk": 166, "quote": "Para registrar un pago, ingresá a la Sección Pagos de tu App", "mark": ["Pagos"]},
+      {"say": "Tocá el botón azul para agregar un comprobante.", "chunk": 166, "quote": "hace click en el botón azul y completá los datos de cada comprobante vinculado al pago"},
+      {"say": "Elegí el método de pago: efectivo, depósito o tarjeta de crédito.", "chunk": 166, "quote": "Método de pago (Efectivo, Depósito, Tarjeta de Crédito)", "mark": ["Método de pago"]},
+      {"say": "Poné la fecha en que realmente hiciste el pago.", "chunk": 166, "quote": "Fecha de pago (Cuando efectivamente realizaste el mismo)", "mark": ["Fecha de pago"]},
+      {"say": "Cargá el importe del comprobante.", "chunk": 166, "quote": "Importe del comprobante", "mark": ["Importe"]},
+      {"say": "Te conviene subir una imagen del comprobante como respaldo.", "chunk": 166, "quote": "Recomendamos subir una imagen respaldatoria para mayor seguridad y control de ambas partes.", "mark": ["Subir documentos"]},
+      {"say": "Cuando tengas todos los comprobantes cargados, guardá para informar el pago a la administración.", "chunk": 166, "quote": "una vez agregados todos los comprobantes hacés click en guardarpara informar tu pago a la administración"}
+    ]
+  },
+  {
+    "id": "informar-pagos-varios-comprobantes",
+    "module": "Informar pagos",
+    "title": "Cargar varios comprobantes para un mismo pago",
+    "ask": ["pagué en dos partes, cómo lo cargo", "tengo dos comprobantes del mismo pago", "puedo subir más de un comprobante", "hice dos transferencias para la misma expensa", "cómo agrego otro comprobante al pago", "varios tickets un solo pago"],
+    "intro": "Sí, se puede, no hay problema.",
+    "steps": [
+      {"say": "En la sección Pagos, empezá a informar el pago con el botón azul.", "chunk": 166, "quote": "hace click en el botón azul y completá los datos de cada comprobante vinculado al pago", "mark": ["Pagos"]},
+      {"say": "Agregá cada comprobante con sus datos; podés sumar varios al mismo pago.", "chunk": 166, "quote": "Podrás agregar múltiples comprobantes vinculados a un mismo pago", "mark": ["Agregar comprobante"]},
+      {"say": "Cuando estén todos, guardá para informarlo a la administración.", "chunk": 166, "quote": "una vez agregados todos los comprobantes hacés click en guardarpara informar tu pago a la administración"}
+    ]
+  },
+  {
+    "id": "informar-pagos-editar",
+    "module": "Informar pagos",
+    "title": "Corregir o sumar un comprobante a un pago ya informado",
+    "ask": ["me equivoqué en un comprobante, lo puedo cambiar", "cómo edito un pago que informé", "quiero agregar otro comprobante a un pago ya cargado", "puedo modificar el pago informado", "cargué mal el importe", "corregir comprobante"],
+    "intro": "Tranqui, eso tiene arreglo.",
+    "steps": [
+      {"say": "Podés editar los comprobantes mientras la administración todavía no los haya confirmado.", "chunk": 166, "quote": "También podrás editar los comprobantes que aun no hayan sido confirmados por la Administración."},
+      {"say": "Sumá el nuevo comprobante al pago.", "chunk": 166, "quote": "Simplemente tenés que sumar el nuevo comprobante"},
+      {"say": "Arriba te va a aparecer un mensaje de éxito y vas a ver todos los comprobantes de ese pago.", "chunk": 166, "quote": "la aplicación te informará con un mensaje de éxito en la parte superior donde verás todos los comprobantes asociados al pago"}
+    ],
+    "tips": [
+      {"say": "Si la administración ya lo confirmó, ya no se puede editar desde la app.", "chunk": 166, "quote": "editar los comprobantes que aun no hayan sido confirmados por la Administración"}
+    ]
+  },
+  {
+    "id": "informar-pagos-ver-estado",
+    "module": "Informar pagos",
+    "title": "Ver el estado de los pagos que informé",
+    "ask": ["cómo sé si aprobaron mi pago", "dónde veo los pagos que informé", "la administración confirmó mi pago", "qué estado tiene el pago que cargué", "ver mis comprobantes informados", "dónde está el número de mi pago"],
+    "intro": "Te cuento qué vas a ver en cada pago.",
+    "steps": [
+      {"say": "Entrá a la sección Pagos de la app.", "chunk": 166, "quote": "ingresá a la Sección Pagos de tu App", "mark": ["Pagos"]},
+      {"say": "Cada pago tiene su número, sus comprobantes, la fecha de alta y la fecha y método de pago.", "chunk": 166, "quote": "Cada transacción tendrá su número identificatorio, como así también los comprobantes asociados, su fecha de alta, fecha y método de pago"},
+      {"say": "También vas a ver el estado que le dio la administración, la fecha de auditoría y el importe.", "chunk": 166, "quote": "la administración del estado junto a su fecha de auditoría e importe", "mark": ["Confirmado"]}
+    ]
+  },
+  {
+    "id": "infracciones-ver-mis-infracciones",
+    "module": "Infracciones",
+    "title": "Ver las infracciones de mi lote",
+    "ask": ["dónde veo si tengo una multa", "me pusieron una infracción, dónde la veo", "cómo sé qué infracciones tengo", "ver infracciones del lote", "cuánto tiempo tengo para responder la infracción", "dónde está la infracción que me llegó"],
+    "intro": "Te explico dónde las encontrás.",
+    "steps": [
+      {"say": "Entrá a Infracciones en la app.", "chunk": 91, "quote": "directamente desde el celular", "mark": ["Infracciones"]},
+      {"say": "Cada infracción de tu lote aparece con su categoría, su estado y las fechas límite.", "chunk": 90, "quote": "Cada infracción registrada en el lote aparece en la app con su categoría, su estado actual y las fechas límite correspondientes."},
+      {"say": "Ahí ves con claridad cuándo vence cada instancia, así no se te pasa el plazo.", "chunk": 91, "quote": "El sistema informa con claridad cuándo vence cada instancia para que el residente pueda actuar sin perder el momento."}
+    ],
+    "tips": [
+      {"say": "También podés filtrar por estado.", "chunk": 92, "quote": "La opción de adjuntar imágenes y filtrar por estado"}
+    ]
+  },
+  {
+    "id": "infracciones-descargo-apelacion",
+    "module": "Infracciones",
+    "title": "Presentar un descargo o apelar una infracción",
+    "ask": ["cómo hago el descargo de una infracción", "quiero apelar una multa", "no estoy de acuerdo con la infracción, qué hago", "cómo mando mi descargo con fotos", "puedo apelar desde la app", "cómo respondo una infracción"],
+    "intro": "Sí, lo podés hacer desde el celular.",
+    "steps": [
+      {"say": "Entrá a Infracciones y buscá la infracción.", "chunk": 91, "quote": "Mientras la infracción se encuentre dentro de su período vigente", "mark": ["Infracciones"]},
+      {"say": "Mientras esté dentro del plazo, podés presentar tu descargo o iniciar una apelación.", "chunk": 91, "quote": "el residente puede presentar su descargo o iniciar una apelación directamente desde el celular"},
+      {"say": "Adjuntá las imágenes o documentos que respalden lo que decís.", "chunk": 91, "quote": "adjuntando imágenes o documentación respaldatoria"}
+    ],
+    "tips": [
+      {"say": "Cada estado tiene su propio plazo, así que fijate bien la fecha de vencimiento.", "chunk": 91, "quote": "Cada estado tiene su propio plazo."},
+      {"say": "Todo lo que intercambies con la administración queda guardado en el historial de la infracción.", "chunk": 92, "quote": "fechas, estados, intercambios con la administración y archivos adjuntos"}
+    ]
+  },
+  {
+    "id": "infracciones-plazos",
+    "module": "Infracciones",
+    "title": "Quién define los plazos de una infracción",
+    "ask": ["quién pone los plazos de la infracción", "por qué tengo tan poco tiempo para el descargo", "cuántos días tengo para apelar", "los plazos son iguales para todas las infracciones", "cuándo vence el plazo de la multa", "se puede cambiar el plazo"],
+    "intro": "Buena pregunta, te cuento cómo funciona.",
+    "steps": [
+      {"say": "Los plazos los configura la administración según el tipo de infracción.", "chunk": 91, "quote": "Los plazos son configurados por la administración según el tipo de infracción"},
+      {"say": "Así cada caso respeta los tiempos que definió tu consorcio.", "chunk": 91, "quote": "garantiza que cada proceso respete los tiempos definidos por el consorcio"},
+      {"say": "Cada estado tiene su propio plazo y la app te muestra cuándo vence cada uno.", "chunk": 91, "quote": "El sistema informa con claridad cuándo vence cada instancia"}
+    ]
+  },
+  {
+    "id": "infracciones-historial-notificaciones",
+    "module": "Infracciones",
+    "title": "Seguir una infracción y enterarme de novedades",
+    "ask": ["cómo me entero si la administración respondió mi descargo", "dónde veo el historial de la infracción", "me avisan si cambia el estado de la multa", "llegan notificaciones de infracciones", "cómo sigo una infracción", "dónde quedan los archivos que mandé"],
+    "intro": "Queda todo registrado, te explico.",
+    "steps": [
+      {"say": "En cada infracción tenés el historial completo: fechas, estados, intercambios con la administración y adjuntos.", "chunk": 92, "quote": "El historial completo de cada infracción queda registrado en la app", "mark": ["Infracciones"]},
+      {"say": "Lo podés consultar cuando quieras.", "chunk": 92, "quote": "Todo en un solo lugar, accesible en cualquier momento."},
+      {"say": "Además te llega una notificación push con cada novedad o cambio de estado.", "chunk": 92, "quote": "El residente recibe notificaciones push ante cualquier novedad o cambio de estado sobre sus infracciones."}
+    ]
+  },
+  {
+    "id": "encuestas-donde-las-veo",
+    "module": "Encuestas",
+    "title": "Dónde veo las encuestas del barrio",
+    "ask": ["dónde están las encuestas", "cómo voto en la encuesta del barrio", "dónde veo la votación", "me llegó una encuesta, dónde la encuentro", "ya respondí la encuesta?", "hasta cuándo puedo votar"],
+    "intro": "Te muestro dónde aparecen.",
+    "steps": [
+      {"say": "Entrá a la bandeja de Encuestas en la app.", "chunk": 72, "quote": "Las encuestas se visualizarán en la bandeja de “Encuestas” dentro de la app", "mark": ["Encuestas"]},
+      {"say": "En cada encuesta ves la fecha de inicio y de fin.", "chunk": 72, "quote": "inicio y fin."},
+      {"say": "También el estado general: en curso o finalizada.", "chunk": 72, "quote": "(en curso, finalizada)", "mark": ["En curso", "Finalizada"]},
+      {"say": "Y tu estado personal: si ya la respondiste o no.", "chunk": 72, "quote": "(respondida / no respondida)"}
+    ]
+  },
+  {
+    "id": "encuestas-aviso-nueva",
+    "module": "Encuestas",
+    "title": "Cómo me entero de que hay una encuesta nueva",
+    "ask": ["cómo sé si hay una encuesta nueva", "me avisan cuando hay votación", "no me enteré de la encuesta", "llega un mail con la encuesta", "me notifica la app de las encuestas", "cómo me avisan de una votación"],
+    "intro": "Te avisan por dos lados.",
+    "steps": [
+      {"say": "Te llega una notificación en la app y un correo electrónico avisando que hay una encuesta nueva.", "chunk": 72, "quote": "informando la disponibilidad de una nueva encuesta"},
+      {"say": "Después la encontrás en la bandeja de Encuestas.", "chunk": 72, "quote": "Las encuestas se visualizarán en la bandeja de “Encuestas” dentro de la app", "mark": ["Encuestas"]}
+    ]
+  },
+  {
+    "id": "encuestas-no-puedo-votar",
+    "module": "Encuestas",
+    "title": "Por qué no puedo votar una encuesta",
+    "ask": ["no puedo votar la encuesta", "puedo votar desde la compu", "por qué no me deja responder la encuesta", "se puede votar desde la web", "quién puede votar en las encuestas", "mi pareja no puede votar"],
+    "intro": "Fijate esto primero.",
+    "steps": [
+      {"say": "Para votar tenés que tener descargada la app en el celular.", "chunk": 72, "quote": "Solo podrán votar residentes que tengan la aplicación móvil descargada."},
+      {"say": "Revisá también si la encuesta sigue en curso o ya está finalizada.", "chunk": 72, "quote": "(en curso, finalizada)", "mark": ["En curso", "Finalizada"]}
+    ],
+    "tips": [
+      {"say": "Las encuestas pueden estar dirigidas a todo el barrio o solo a grupos específicos del consorcio.", "chunk": 71, "quote": "encuestas dirigidas a los residentes del barrio o a grupos específicos dentro del consorcio"},
+      {"say": "Si seguís sin poder, escribile a soporte desde el menú de ayuda de la app o en www.silicon-access.com, sección Ayuda al Usuario.", "chunk": 73, "quote": "podés comunicarte con nuestro equipo de soporte técnico a través del menú de ayuda dentro de la app"}
+    ]
+  },
+  {
+    "id": "encuestas-resultados",
+    "module": "Encuestas",
+    "title": "Ver los resultados de una encuesta",
+    "ask": ["dónde veo los resultados de la encuesta", "cómo salió la votación", "por qué no veo los resultados", "cuándo publican los resultados", "puedo ver cómo va la votación", "resultados parciales de la encuesta"],
+    "intro": "Depende de cómo lo haya configurado la administración, te explico.",
+    "steps": [
+      {"say": "La administración decide si publica los resultados al finalizar, si muestra parciales durante la votación o si los comparte cuando le parezca.", "chunk": 72, "quote": "Publicar los resultados automáticamente al finalizar."},
+      {"say": "Si están habilitados, vas a ver un ícono de estadísticas con el resumen de cada pregunta.", "chunk": 72, "quote": "Si los resultados están habilitados, el residente verá un ícono de estadísticas con el resumen general de cada pregunta."}
+    ],
+    "tips": [
+      {"say": "Si no ves el ícono, puede ser que la administración todavía no los haya compartido.", "chunk": 72, "quote": "Compartir resultados manualmente cuando lo considere oportuno."}
+    ]
+  },
+  {
+    "id": "consultas-y-reclamos-nueva",
+    "module": "Consultas y reclamos",
+    "title": "Hacer una consulta o un reclamo a la administración",
+    "ask": ["cómo hago un reclamo", "quiero mandarle una consulta a la administración", "dónde denuncio algo", "cómo aviso un problema de mantenimiento", "cómo me comunico con la administración", "quiero hacer una denuncia por ruidos", "abrir un reclamo"],
+    "intro": "Dale, se hace en un minuto.",
+    "steps": [
+      {"say": "Entrá a Consultas y Reclamos y tocá el botón +.", "chunk": 2, "quote": "Al tocar el botón + puede crear una nueva consulta.", "mark": ["Consultas y Reclamos"]},
+      {"say": "Poné un título corto con el motivo.", "chunk": 3, "quote": "Título: Descripción breve del motivo de la consulta.", "mark": ["Título"]},
+      {"say": "Elegí el tipo: consulta, aviso, reclamo o denuncia.", "chunk": 3, "quote": "Selección del tipo de comunicación: consulta, aviso, reclamo o denuncia.", "mark": ["Tipo de orden"]},
+      {"say": "Elegí el área que corresponde, como mantenimiento, secretaría o intendencia.", "chunk": 3, "quote": "mantenimiento, secretaría, intendencia, etc.", "mark": ["Categoría"]},
+      {"say": "Contá en el mensaje qué pasó o qué necesitás.", "chunk": 3, "quote": "Mensaje: Detalle de la situación o lo que necesita comunicar.", "mark": ["Contanos qué te sucedió"]},
+      {"say": "Si querés, sumá fotos, videos o documentos.", "chunk": 3, "quote": "El residente puede sumar fotos, videos o documentos que ayuden a explicar la situación.", "mark": ["Subir documentos"]},
+      {"say": "Cuando esté todo, tocá Enviar.", "chunk": 3, "quote": "Una vez completado, debe tocar Enviar.", "mark": ["Enviar"]}
+    ],
+    "tips": [
+      {"say": "Tu mensaje le llega directo a la administración y todo queda registrado con fecha y hora.", "chunk": 1, "quote": "Todo queda registrado con fecha, hora y seguimiento en tiempo real."}
+    ]
+  },
+  {
+    "id": "consultas-y-reclamos-adjuntar",
+    "module": "Consultas y reclamos",
+    "title": "Mandar fotos o videos en un reclamo",
+    "ask": ["puedo mandar una foto con el reclamo", "cómo adjunto un video", "quiero mostrarles el problema con fotos", "se pueden subir archivos en la consulta", "cómo agrego una imagen al reclamo", "adjuntar documento"],
+    "intro": "Sí, y ayuda un montón para que entiendan.",
+    "steps": [
+      {"say": "Al armar la consulta, en la parte de adjuntos subí fotos, videos o documentos.", "chunk": 3, "quote": "Adjuntar archivos: El residente puede sumar fotos, videos o documentos", "mark": ["Subir documentos"]},
+      {"say": "Después tocá Enviar.", "chunk": 3, "quote": "Una vez completado, debe tocar Enviar.", "mark": ["Enviar"]}
+    ],
+    "tips": [
+      {"say": "Los adjuntos sirven para darle contexto a tu consulta.", "chunk": 2, "quote": "Puede adjuntar fotos, videos o archivos para dar contexto a su consulta."}
+    ]
+  },
+  {
+    "id": "consultas-y-reclamos-estado",
+    "module": "Consultas y reclamos",
+    "title": "Ver en qué estado está mi reclamo",
+    "ask": ["cómo va mi reclamo", "dónde veo mis reclamos", "qué pasó con la consulta que mandé", "ya resolvieron mi reclamo?", "qué significa en seguimiento", "dónde están mis consultas anteriores"],
+    "intro": "Lo ves en cualquier momento, te cuento.",
+    "steps": [
+      {"say": "Entrá a Consultas y Reclamos: ahí están todos tus chats, activos y finalizados.", "chunk": 2, "quote": "En esta sección el residente encuentra todos sus chats activos y finalizados con la administración.", "mark": ["Consultas y Reclamos"]},
+      {"say": "Cada uno muestra su estado: nuevo, en seguimiento o finalizado.", "chunk": 2, "quote": "El residente puede ver en todo momento el estado de su reclamo: nuevo, en seguimiento o finalizado.", "mark": ["Nuevo", "Finalizado"]}
+    ],
+    "tips": [
+      {"say": "Cuando se resuelva, te llega la confirmación en la app.", "chunk": 2, "quote": "Cuando se resuelva, recibe la confirmación directamente en la app."}
+    ]
+  },
+  {
+    "id": "consultas-y-reclamos-respuesta",
+    "module": "Consultas y reclamos",
+    "title": "Cómo me entero de la respuesta y cómo sigo la charla",
+    "ask": ["cómo sé si me respondieron", "me avisan cuando contesta la administración", "cómo le respondo a la administración", "dónde sigo la conversación del reclamo", "me contestaron el reclamo, cómo respondo", "llegan notificaciones de consultas"],
+    "intro": "Funciona como un chat, te explico.",
+    "steps": [
+      {"say": "Tu mensaje le llega directo a la administración.", "chunk": 4, "quote": "El mensaje llega directamente a la administración."},
+      {"say": "Cada vez que te responden, te llega una notificación.", "chunk": 4, "quote": "El residente recibe una notificación cada vez que hay una respuesta."},
+      {"say": "Entrá a esa consulta y seguí la conversación en el mismo hilo.", "chunk": 4, "quote": "ambas partes pueden continuar la conversación dentro del mismo hilo"}
+    ]
+  },
+  {
+    "id": "consultas-y-reclamos-finalizada",
+    "module": "Consultas y reclamos",
+    "title": "Por qué no puedo escribir en una consulta finalizada",
+    "ask": ["no me deja escribir en el reclamo", "me cerraron la consulta y necesito agregar algo", "qué significa finalizado", "cómo reabro un reclamo", "el chat del reclamo está cerrado", "quiero volver a reclamar lo mismo"],
+    "intro": "Pasa cuando la consulta ya se dio por resuelta.",
+    "steps": [
+      {"say": "Cuando el tema queda resuelto, la administración marca la conversación como finalizada.", "chunk": 5, "quote": "la administración marca la conversación como finalizada", "mark": ["Finalizado"]},
+      {"say": "Desde ahí el chat queda cerrado y solo lo podés ver como historial.", "chunk": 5, "quote": "el chat queda cerrado y solo puede consultarse como historial"},
+      {"say": "Si necesitás seguir, abrí una consulta nueva con el botón +.", "chunk": 5, "quote": "Si el residente necesita volver a comunicarse, puede abrir una nueva consulta."}
+    ]
+  },
+  {
+    "id": "autogestion-de-documentacion-seguro-art",
+    "module": "Autogestión de documentación",
+    "title": "Presentar el seguro ART de mis trabajadores",
+    "ask": ["cómo cargo el ART de los obreros", "dónde subo el seguro de los trabajadores", "cómo presento la póliza de ART", "tengo que mandar el seguro del jardinero", "cargar nómina de trabajadores", "dónde presento el seguro para que entren los trabajadores"],
+    "intro": "Se hace desde la web de residente, te guío.",
+    "steps": [
+      {"say": "Entrá a la web de residente, a la sección Presentaciones de documentación.", "chunk": 49, "quote": "Extendimos en la aplicación Web de Residente la funcionalidad de autogestión de Seguros y Antecedentes penales"},
+      {"say": "Elegí la solapa de seguro.", "chunk": 50, "quote": "se verán dos solapas disponibles para poder cargar información del grupo de trabajo", "mark": ["Seguro"]},
+      {"say": "Cargá la nómina de trabajadores.", "chunk": 50, "quote": "Permite al residente o responsable de grupos de trabajo la carga masiva de nómina", "mark": ["Agregar persona"]},
+      {"say": "Indicá la compañía de seguros y la vigencia, y los datos del tomador del seguro.", "chunk": 50, "quote": "definir la compañía de seguros y su vigencia, al igual que los datos del tomador del seguro"},
+      {"say": "Subí la documentación de respaldo; puede ser pdf, png u otros formatos.", "chunk": 50, "quote": "la documentación respaldatoria en distintos formatos (pdf, png y otros)", "mark": ["Añadir adjunto"]},
+      {"say": "Guardá y te va a confirmar que la solicitud se envió.", "chunk": 51, "quote": "Al guardar se confirmará que la solicitud ha sido enviada.", "mark": ["Enviar presentación"]}
+    ],
+    "tips": [
+      {"say": "Queda pendiente hasta que la administración la apruebe y valide.", "chunk": 51, "quote": "quedará en estado pendiente hasta que sea aprobada y validada por la administración"}
+    ]
+  },
+  {
+    "id": "autogestion-de-documentacion-antecedentes-penales",
+    "module": "Autogestión de documentación",
+    "title": "Presentar antecedentes penales de un trabajador",
+    "ask": ["cómo subo los antecedentes penales", "dónde presento el certificado de antecedentes", "puedo cargar antecedentes de varios trabajadores juntos", "antecedentes del personal doméstico", "dónde veo los antecedentes que presenté", "cargar certificado de buena conducta"],
+    "intro": "Te explico, es por persona.",
+    "steps": [
+      {"say": "En Presentaciones de documentación, entrá a la solapa de antecedentes penales.", "chunk": 51, "quote": "Al ingresar en la solapa de antecedentes penales visualizará el listado de sus presentaciones junto al estado de éstas.", "mark": ["Antecedente penal"]},
+      {"say": "Subí la documentación del trámite con sus fechas de vigencia.", "chunk": 51, "quote": "Podrá subir la documentación del trámite junto a las fechas de vigencia del mismo para su validación administrativa."},
+      {"say": "Enviá la presentación para que la administración la valide.", "chunk": 51, "quote": "para su validación administrativa", "mark": ["Enviar presentación"]}
+    ],
+    "tips": [
+      {"say": "Acá los trámites son individuales: una persona por presentación.", "chunk": 51, "quote": "Para esta opción los trámites son individuales y solo podrá registrar de a una persona por presentación."}
+    ]
+  },
+  {
+    "id": "autogestion-de-documentacion-estado",
+    "module": "Autogestión de documentación",
+    "title": "Qué pasa después de enviar la documentación",
+    "ask": ["me aprobaron el seguro?", "qué significa pendiente en la presentación", "cuándo validan la documentación", "me rechazaron la presentación, qué hago", "dónde veo el estado de lo que presenté", "la administración me dejó un comentario en la presentación"],
+    "intro": "Te cuento cómo sigue.",
+    "steps": [
+      {"say": "Al enviarla, se te confirma que la solicitud se mandó.", "chunk": 51, "quote": "Al guardar se confirmará que la solicitud ha sido enviada."},
+      {"say": "Queda pendiente hasta que la administración la apruebe y valide.", "chunk": 51, "quote": "quedará en estado pendiente hasta que sea aprobada y validada por la administración"},
+      {"say": "La administración puede aprobarla, rechazarla o dejarte comentarios para que corrijas datos.", "chunk": 51, "quote": "podrá aprobar, rechazar o realizar comentarios para rectificar los datos"}
+    ],
+    "tips": [
+      {"say": "En cada solapa ves el listado de lo que ya cargaste, con sus fechas y datos.", "chunk": 50, "quote": "el listado de las solicitudes ya cargadas, junto a todas las fechas e información relevante"}
+    ]
+  },
+  {
+    "id": "autogestion-de-documentacion-guardia",
+    "module": "Autogestión de documentación",
+    "title": "¿Tengo que llevar los papeles a la guardia?",
+    "ask": ["tengo que llevar el seguro a la guardia", "mando la documentación por mail", "dónde entrego los papeles de los trabajadores", "hay que presentar el ART en la entrada", "cómo evito la fila en la guardia con los obreros", "a quién le mando los antecedentes"],
+    "intro": "Ya no hace falta, te cuento.",
+    "steps": [
+      {"say": "Ya no tenés que mandar la documentación por correo ni llevarla a la guardia.", "chunk": 50, "quote": "Ya no es necesario enviar documentación por correo o presentarla en el control de guardia."},
+      {"say": "La cargás vos desde la web de residente, en Presentaciones de documentación.", "chunk": 50, "quote": "Al ingresar en la sección Presentaciones de documentación"}
+    ],
+    "tips": [
+      {"say": "La idea es evitar filas en la guardia y que tus trabajadores entren más rápido.", "chunk": 50, "quote": "mejorando los tiempos en ingresos de trabajadores"}
+    ]
+  }
+]

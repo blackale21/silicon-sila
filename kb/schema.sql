@@ -37,6 +37,18 @@ CREATE TABLE chunks (
 );
 CREATE INDEX chunks_doc ON chunks(doc_id, ord);
 
+-- Fichas de respuesta en tono humano, redactadas a partir de los manuales.
+-- Cada paso guarda el fragmento y la cita LITERAL que lo respalda (validado por check_cards.py),
+-- más los círculos rojos (coordenadas 0..1 sobre la captura de la página) y el recorte a mostrar.
+CREATE TABLE cards (
+  id      TEXT PRIMARY KEY,
+  module  TEXT NOT NULL,
+  title   TEXT NOT NULL,
+  ask     TEXT NOT NULL,                  -- JSON: formas en que lo pregunta un residente
+  intro   TEXT NOT NULL,
+  body    TEXT NOT NULL                   -- JSON: { steps: [...], tips: [...] }
+);
+
 -- Modelo de casos para cuando haya backend propio (hoy los casos viven en la
 -- Google Sheet vía Apps Script y, en la demo, en el navegador). Vacías en el build.
 CREATE TABLE cases (

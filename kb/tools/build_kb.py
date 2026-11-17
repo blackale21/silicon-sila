@@ -182,8 +182,21 @@ def main():
             ord_ += 1
             con.execute('INSERT INTO chunks (doc_id,page,section,ord,text,image) VALUES (?,?,?,?,?,?)', (did, page, sec, ord_, txt, img))
         report.append(f'{status:9} {audience(name):14} {mod:30} {clean_title(name)}')
+    # fichas humanas: primero se validan las citas literales, después se ubican los círculos
+    con.commit()
+    import subprocess, sys as _sys
+    tools = os.path.dirname(__file__)
+    if glob.glob(os.path.join(KB, 'cards', '*.json')):
+        chk = subprocess.run([_sys.executable, os.path.join(tools, 'check_cards.py')], capture_output=True, text=True, encoding='utf-8')
+        print(chk.stdout.strip())
+        if chk.returncode:
+            raise SystemExit('fichas con errores: no se arma la base')
+        _sys.path.insert(0, tools)
+        import cards_build
+        nc, rep = cards_build.build(con)
+        print(f'fichas {nc}' + ''.join('\n  · ' + r for r in rep))
     now = datetime.datetime.now().isoformat(timespec='seconds')
-    con.executemany('INSERT INTO kb_meta VALUES (?,?)', [('schema_version', '1'), ('built_at', now),
+    con.executemany('INSERT INTO kb_meta VALUES (?,?)', [('schema_version', '2'), ('built_at', now),
                     ('source', 'Google Drive (2 carpetas compartidas por link)'), ('documents', str(len(docs)))])
     con.commit()
     con.execute('VACUUM')

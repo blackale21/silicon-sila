@@ -15,7 +15,7 @@
   // equivalencias de vocabulario (sólo para ENCONTRAR; la respuesta es siempre el texto del manual)
   const SYN = {
     encomienda: ['paquet', 'correspondencia'], paquete: ['paquet'], correo: ['correspondencia'], delivery: ['paquet'],
-    portero: ['timbre'], timbrar: ['timbre'], llamada: ['llamad', 'timbre'], invitado: ['invita', 'visita'], visita: ['visita', 'invita'],
+    portero: ['timbre'], timbrar: ['timbre'], llamada: ['llamad', 'timbre'], invitado: ['invita', 'visita', 'autorizacion'], invito: ['autorizacion'], invitar: ['autorizacion'], visita: ['visita', 'invita'],
     sos: ['emergencia', 'panico'], panico: ['emergencia'], robo: ['emergencia', 'intrusion'], incendio: ['emergencia'],
     multa: ['infracciones'], multas: ['infracciones'], sancion: ['infracciones'], pileta: ['amenit'], sum: ['amenit'], quincho: ['amenit'], cancha: ['amenit', 'cancha'], tenis: ['amenit'], reserva: ['reserv', 'amenit'],
     luz: ['luces', 'encendido'], luces: ['encendido'], prender: ['encendido'], prendo: ['encendido'], encender: ['encendido'], cara: ['selfie', 'face'], facial: ['selfie', 'face'], rostro: ['selfie', 'face'],
@@ -67,7 +67,25 @@
         return { ...c, doc: d, tf, len, steps, set: new Set(body) };
       });
       K.chunks.forEach((c) => c.tf.forEach((_, t) => K.df.set(t, (K.df.get(t) || 0) + 1)));
-      K.vocab = [...K.df.keys()];
+      // fichas en tono humano (redactadas desde los manuales, cada paso con su cita validada)
+      const hasCards = rows("SELECT name FROM sqlite_master WHERE type='table' AND name='cards'").length;
+      K.cdf = new Map();
+      K.cards = (hasCards ? rows('SELECT * FROM cards') : []).map((c) => {
+        const body = JSON.parse(c.body);
+        const card = { ...c, ask: JSON.parse(c.ask), steps: body.steps || [], tips: body.tips || [] };
+        const tf = new Map();
+        const put = (s, w) => tokens(s).forEach((t) => tf.set(t, (tf.get(t) || 0) + w));
+        card.ask.forEach((a) => put(a, 3));
+        put(card.title, 3); put(card.module, 2);
+        card.steps.concat(card.tips).forEach((s) => put(s.say, 1));
+        card.tf = tf;
+        card.len = [...tf.values()].reduce((a, b) => a + b, 0);
+        card.steps.concat(card.tips).forEach((s) => { s.chunkObj = K.chunks.find((x) => x.id === s.chunk); });
+        return card;
+      });
+      K.cards.forEach((c) => c.tf.forEach((_, t) => K.cdf.set(t, (K.cdf.get(t) || 0) + 1)));
+      K.cavg = K.cards.length ? K.cards.reduce((a, c) => a + c.len, 0) / K.cards.length : 1;
+      K.vocab = [...new Set([...K.df.keys(), ...K.cdf.keys()])];
       const pc = new Map();
       K.prefix = (t) => {
         if (!pc.has(t)) pc.set(t, K.vocab.filter((v) => v !== t && v.length >= 4 && (v.startsWith(t) || t.startsWith(v))));
@@ -84,51 +102,59 @@
 
   const AUD = { residente: 1.25, general: 1, admin_guardia: 0.55, administracion: 0.55 };
 
-  /** Analiza una consulta: términos útiles y si alcanza para buscar. */
+  /** Analiza una consulta. Cada palabra útil forma un GRUPO con sus variantes de raíz (peso 1)
+   *  y sus sinónimos (peso 0.6); el grupo puntúa como un solo término (no se infla por variantes raras). */
   function analyze(q) {
     const w = words(q).filter((x) => x.length > 1 && !STOP.has(x));
     const content = w.filter((x) => !VAGUE.has(x));
     const terms = new Set(content.map(stem));
-    const expanded = new Set(terms);
-    content.forEach((x) => syn(x).forEach((s) => expanded.add(s)));
-    // variantes de la misma raíz presentes en los manuales (visit → visita, visitante…)
-    if (K.vocab) [...expanded].forEach((t) => { if (t.length >= 4) (K.prefix(t) || []).forEach((v) => expanded.add(v)); });
-    return { raw: q, content, terms: [...terms], expanded: [...expanded] };
+    const groups = new Map();
+    const pre = (t) => (K.prefix && t.length >= 4 ? K.prefix(t) : []);
+    content.forEach((x) => {
+      const st = stem(x);
+      if (groups.has(st)) return;
+      const vs = new Map([[st, 1]]);
+      pre(st).forEach((v) => vs.set(v, 1));
+      syn(x).forEach((y) => { if (!vs.has(y)) vs.set(y, 0.6); pre(y).forEach((v) => { if (!vs.has(v)) vs.set(v, 0.6); }); });
+      groups.set(st, { x, st, vs });
+    });
+    const expanded = new Set();
+    groups.forEach((g) => g.vs.forEach((_, v) => expanded.add(v)));
+    return { raw: q, content, terms: [...terms], expanded: [...expanded], groups: [...groups.values()] };
   }
 
-  /** BM25 sobre todos los fragmentos. opts.module filtra por módulo. */
+  /** BM25 por grupos sobre una colección (items con tf/len). Devuelve score y cobertura ponderada por rareza. */
+  function bm25(items, A, avg) {
+    const N = items.length, k1 = 1.2, b = 0.75;
+    const gdf = A.groups.map((g) => items.reduce((n, it) => n + ([...g.vs.keys()].some((v) => it.tf.has(v)) ? 1 : 0), 0));
+    const out = [];
+    for (const it of items) {
+      let s = 0, tot = 0, got = 0;
+      const hit = new Set();
+      A.groups.forEach((g, i) => {
+        let f = 0;
+        g.vs.forEach((w, v) => { const k = it.tf.get(v); if (k) { f += w * k; hit.add(v); } });
+        const idf = Math.log(1 + (N - gdf[i] + 0.5) / (gdf[i] + 0.5));
+        const wc = idf * (ACTION.has(g.x) ? 0.25 : 1); // una palabra rara que NO está (ej. "contraseña") pesa mucho
+        tot += wc;
+        if (!f) return;
+        got += wc;
+        s += idf * (f * (k1 + 1)) / (f + k1 * (1 - b + b * it.len / avg));
+      });
+      if (s) out.push({ it, s, coverage: tot ? got / tot : 0, hit });
+    }
+    return out;
+  }
+
+  /** Búsqueda en las páginas de los manuales. opts.module filtra por módulo. */
   function search(q, opts = {}) {
     const A = typeof q === 'string' ? analyze(q) : q;
-    const N = K.chunks.length, k1 = 1.2, b = 0.75;
-    const out = [];
-    for (const c of K.chunks) {
-      if (opts.module && c.doc.module !== opts.module) continue;
-      let s = 0, hit = new Set();
-      for (const t of A.expanded) {
-        const f = c.tf.get(t);
-        if (!f) continue;
-        const df = K.df.get(t) || 0;
-        const idf = Math.log(1 + (N - df + 0.5) / (df + 0.5));
-        const w = A.terms.includes(t) ? 1 : 0.6; // sinónimos y variantes suman menos
-        s += w * idf * (f * (k1 + 1)) / (f + k1 * (1 - b + b * c.len / K.avg));
-        hit.add(t);
-      }
-      if (!s) continue;
-      // cobertura: cuántos de los términos ORIGINALES (o algún sinónimo suyo) aparecen
-      // cobertura ponderada por rareza: una palabra específica que NO está (ej. "contraseña") pesa mucho
-      let tot = 0, got = 0;
-      new Map(A.content.map((x) => [stem(x), x])).forEach((x, st) => {
-        const w = Math.log(1 + (N + 0.5) / ((K.df.get(st) || 0) + 0.5)) * (ACTION.has(x) ? 0.25 : 1);
-        tot += w;
-        if (related(x, hit)) got += w;
-      });
-      const coverage = tot ? got / tot : 0;
+    const items = opts.module ? K.chunks.filter((c) => c.doc.module === opts.module) : K.chunks;
+    return bm25(items, A, K.avg).map(({ it: c, s, coverage, hit }) => {
       s *= AUD[c.doc.audience] || 1;
       if (c.steps >= 2) s *= 1.15; // páginas con pasos numerados o viñetas
-      s *= 0.6 + 0.4 * coverage;
-      out.push({ chunk: c, score: s, coverage, hit });
-    }
-    return out.sort((x, y) => y.score - x.score);
+      return { chunk: c, score: s * (0.6 + 0.4 * coverage), coverage, hit };
+    }).sort((x, y) => y.score - x.score);
   }
 
   /** Líneas del fragmento más relevantes (ventana contigua), sin modificar el texto. */
@@ -158,7 +184,7 @@
    *  answer  → fragmentos con respaldo (frags) + posible discrepancia entre versiones (conflict)
    *  none    → no hay respaldo suficiente en los manuales
    */
-  function decide(text, ctx = {}) {
+  function decideChunks(text, ctx = {}) {
     const A = analyze(text);
     if (!A.content.length) return { type: 'vague', A };
     const hits = search(A, { module: ctx.module });
@@ -193,5 +219,47 @@
     return { type: 'answer', A, frags, adminOnly, conflict };
   }
 
-  window.SILA_KB = { load, analyze, search, decide, excerpt, similarity, baseTitle, tokens, fold, stem, get K() { return K; }, ROOT };
+  /** Búsqueda en las fichas humanas; si la consulta nombra el módulo, sus fichas suman. */
+  function searchCards(A, opts = {}) {
+    const items = opts.module ? K.cards.filter((c) => c.module === opts.module) : K.cards;
+    return bm25(items, A, K.cavg).map(({ it: c, s, coverage }) => {
+      const modT = tokens(c.module);
+      if (modT.length && modT.every((t) => A.expanded.includes(t))) s *= 1.3;
+      return { card: c, score: s * (0.6 + 0.4 * coverage), coverage };
+    }).sort((x, y) => y.score - x.score);
+  }
+
+  const CARD_COV = 0.8, CARD_SCORE = 2.5;
+  /**
+   * Decide qué hacer, sin inventar nada:
+   *  vague  → no dice sobre qué (ofrecer temas)
+   *  narrow → sabemos el tema pero no qué necesita (ofrecer las fichas de ese tema)
+   *  choose → dos o tres fichas igual de probables (preguntar cuál)
+   *  card   → ficha en tono humano (pasos validados contra los manuales)
+   *  page   → no hay ficha pero sí una página del manual muy clara (se muestra la imagen)
+   *  none   → no hay respaldo en la documentación
+   */
+  function decide(text, ctx = {}) {
+    const A = analyze(text);
+    if (!A.content.length) return { type: 'vague', A };
+    const hits = searchCards(A, { module: ctx.module }).filter((h) => h.coverage >= CARD_COV && h.score >= CARD_SCORE);
+    if (hits.length) {
+      const best = hits[0];
+      if (!ctx.clarified && A.terms.length === 1 && words(text).length <= 3) {
+        const mod = best.card.module;
+        return { type: 'narrow', A, module: mod, cards: K.cards.filter((c) => c.module === mod).slice(0, 5) };
+      }
+      const close = hits.filter((h) => h !== best && h.score >= 0.93 * best.score).slice(0, 2);
+      if (!ctx.clarified && close.length) return { type: 'choose', A, cards: [best, ...close].map((h) => h.card) };
+      return { type: 'card', A, card: best.card, score: best.score };
+    }
+    // sin ficha: sólo si una página para residentes coincide con mucha claridad
+    const ch = search(A, { module: ctx.module }).filter((h) => !isAdmin(h) && h.coverage >= 0.85 && h.score >= 8);
+    if (ch.length) return { type: 'page', A, hit: ch[0] };
+    return { type: 'none', A };
+  }
+  const cardsOf = (module) => K.cards.filter((c) => c.module === module);
+  const cardModules = () => [...new Set(K.cards.map((c) => c.module))].sort((a, b) => a.localeCompare(b, 'es'));
+
+  window.SILA_KB = { load, analyze, search, searchCards, decide, decideChunks, cardsOf, cardModules, excerpt, similarity, baseTitle, tokens, fold, stem, get K() { return K; }, ROOT };
 })();
