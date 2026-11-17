@@ -202,6 +202,9 @@ def main():
         import cards_build
         nc, rep = cards_build.build(con)
         print(f'fichas {nc}' + ''.join('\n  · ' + r for r in rep))
+        con.commit()
+        import jev_criterios  # opciones fijas del puente a Jev (backend/ayuda-jev-criterios.gs)
+        jev_criterios.main()
     now = datetime.datetime.now().isoformat(timespec='seconds')
     con.executemany('INSERT INTO kb_meta VALUES (?,?)', [('schema_version', '2'), ('built_at', now),
                     ('source', 'Google Drive (2 carpetas compartidas por link)'), ('documents', str(len(docs)))])

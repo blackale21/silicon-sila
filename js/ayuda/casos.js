@@ -8,7 +8,8 @@
   const KEY = 'sila_demo_casos_v1';
   const ch = 'BroadcastChannel' in window ? new BroadcastChannel('sila-demo') : null;
   const cfg = () => (window.SILA_CONFIG && window.SILA_CONFIG.ayuda) || { demo: true };
-  const isDemo = () => cfg().demo !== false || !cfg().casosUrl;
+  const casosUrl = () => cfg().casosUrl || cfg().backendUrl || '';
+  const isDemo = () => cfg().demo !== false || !casosUrl();
 
   const read = () => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (_) { return []; } };
   const write = (l) => { try { localStorage.setItem(KEY, JSON.stringify(l.slice(0, 300))); return true; } catch (_) { return false; } };
@@ -43,7 +44,7 @@
       return ok ? { ok: true, simulated: true, mail: false } : { ok: false, simulated: true, error: 'el navegador bloqueó el almacenamiento' };
     }
     try {
-      const r = await fetch(cfg().casosUrl, {
+      const r = await fetch(casosUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // sin preflight CORS
         body: JSON.stringify({ action, caso: fila }),

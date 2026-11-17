@@ -158,10 +158,38 @@
   function appendClar(t) { st.caso.aclaraciones = (st.caso.aclaraciones ? st.caso.aclaraciones + ' | ' : '') + t; }
 
   /* ── conversación ── */
+  /* Jev entiende la consulta (tipeo, palabras propias) y ELIGE la ficha; nunca redacta.
+     Candado: sólo se le pregunta si la consulta toca la app o los manuales. Si falla o tarda, sigue el buscador local. */
+  async function conJev(q, d) {
+    const J = window.SILA_JEV;
+    if (!J || !J.activo() || st.ctx.module || d.type === 'vague' || !J.relevante(q)) return false;
+    const dots = add('<span class="ay-typing"><i></i><i></i><i></i></span>', 'ay-bot');
+    dots.style.padding = '0';
+    const r = await J.elegir(q);
+    dots.remove();
+    if (!r.ok) { CASOS.enviar('upsert', st.caso, `Jev no disponible (${r.error}); se usó el buscador local`); return false; }
+    const byId = (id) => KB.K.cards.find((c) => c.id === id);
+    const log = `Jev eligió "${r.choice}" (confianza ${r.confidence})`;
+    if (r.choice === 'ninguna' && r.confidence >= 0.5) { await CASOS.enviar('upsert', st.caso, log); await notFound(); return true; }
+    const best = byId(r.choice);
+    if (best && r.confidence >= 0.55) { await CASOS.enviar('upsert', st.caso, log); await answerCard(best); return true; }
+    const dudas = (r.top || []).filter(([id, p]) => id !== 'ninguna' && p >= 0.15).map(([id]) => byId(id)).filter(Boolean);
+    if (dudas.length >= 2) {
+      await CASOS.enviar('upsert', st.caso, log + ' · se pidió elegir');
+      st.phase = 'choose';
+      await say(`<p>${pick(['Para no mandarte para otro lado:', 'Quiero estar seguro de entenderte:'])} ¿cuál de estas es tu consulta?</p>`);
+      opts([...dudas.map((c) => ({ label: c.title, run: () => { me(c.title); answerCard(c); } })),
+        { label: 'Ninguna de estas', run: () => { me('Ninguna de estas'); notFound(); } }]);
+      return true;
+    }
+    return false;
+  }
+
   async function handle(q, ctx) {
     st.ctx = ctx;
     st.phase = 'busy';
     const d = KB.decide(q, ctx);
+    if (await conJev(q, d)) return;
     if (d.type === 'vague') {
       if (ctx.clarified) return notFound();
       st.phase = 'clar';

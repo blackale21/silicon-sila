@@ -6,3 +6,4 @@ __pycache__/
 kb/ocr/png/
 kb/ocr/boxes.log
 kb/tmp/
+kb/.llave_local

@@ -1,6 +1,6 @@
 """Prueba comparativa: buscador local del bot vs Jev (TypeSafe AI) para elegir la ficha correcta.
 
-    python kb/tools/jev_bench.py            (pide la frase para descifrar la clave guardada)
+    python kb/tools/jev_bench.py            (usa la clave cifrada de la base; sin frase)
 
 - La clave de API se lee CIFRADA de la base (python kb/tools/secretos.py guardar typesafe).
 - A Jev se le manda sólo la consulta y la lista de títulos de las fichas (+ "ninguna").
@@ -12,7 +12,7 @@ import json, os, sqlite3, subprocess, sys, time, urllib.error, urllib.request
 HERE = os.path.dirname(os.path.abspath(__file__))
 KB = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
-from secretos import leer  # noqa: E402
+from secretos import leer  # noqa: E402  (sin frase: usa kb/.llave_local)
 
 API = 'https://api.typesafe.ai/v1/systemone'
 MODEL = 'jev-latest'

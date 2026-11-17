@@ -1,0 +1,86 @@
+[
+  {
+    "id": "invitacion-y-registracion-bajar-la-app",
+    "module": "Invitación y registración",
+    "title": "Bajar la app Silicon Access al celular",
+    "ask": [
+      "dónde descargo la app",
+      "cómo bajo la app al celular",
+      "cómo instalo la aplicación de Silicon Access",
+      "no encuentro la app en el store",
+      "dónde se descarga la app del barrio",
+      "puedo usarlo desde el navegador sin bajar la app"
+    ],
+    "intro": "Dale, es rápido.",
+    "steps": [
+      {
+        "say": "La app la usás cuando ya tenés tu usuario generado, que es el último paso de la inscripción.",
+        "chunk": 13,
+        "quote": "Por último será necesario generar y validar el usuario."
+      },
+      {
+        "say": "Buscá la app de residente Silicon Access en el store de tu teléfono y descargala.",
+        "chunk": 13,
+        "quote": "App de residente Silicon Access descargada desde el store de su teléfono",
+        "mark": ["Descargá la App Silicon Access"]
+      },
+      {
+        "say": "Abrí la app, tocá Ya tengo una cuenta y entrá con tu DNI como usuario y la contraseña que creaste.",
+        "chunk": 98,
+        "quote": "seleccionando “Ya tengo una cuenta” e ingresando su usuario (DNI) y la contraseña creada",
+        "mark": ["Ya tengo una cuenta"]
+      }
+    ],
+    "tips": [
+      {
+        "say": "Si preferís no instalar nada, también podés entrar desde el navegador.",
+        "chunk": 13,
+        "quote": "podrá ingresar a la aplicación desde el navegador"
+      }
+    ]
+  },
+  {
+    "id": "invitacion-y-registracion-no-llega-mail-invitacion",
+    "module": "Invitación y registración",
+    "title": "No me llegó el mail de invitación",
+    "ask": [
+      "no me llega el mail de invitación",
+      "nunca me llegó el correo para registrarme",
+      "estoy esperando el mail de Silicon Access y no llega",
+      "a qué correo mandan la invitación",
+      "no recibí el link para crear la contraseña",
+      "me dijeron que me invitaron pero no tengo ningún mail"
+    ],
+    "intro": "Te cuento cómo funciona, así sabés dónde fijarte.",
+    "steps": [
+      {
+        "say": "El mail de invitación sale solo cuando la administración de tu barrio te manda la invitación desde su sistema.",
+        "chunk": 97,
+        "quote": "Cuando desde la Web de Administración se envía la invitación a un residente"
+      },
+      {
+        "say": "Llega a la dirección de correo que la administración tiene registrada para vos, así que fijate en esa casilla.",
+        "chunk": 97,
+        "quote": "un correo electrónico de invitación a la dirección registrada para ese residente"
+      },
+      {
+        "say": "Si ya te habían invitado antes o tenías un código de verificación, entrá por la opción Primera vez con tu DNI y tu correo.",
+        "chunk": 98,
+        "quote": "ingresar por la opción “Primera vez” e indicar su DNI y correo electrónico",
+        "mark": ["Primera vez que entro"]
+      }
+    ],
+    "tips": [
+      {
+        "say": "Si ya tenés usuario de otro barrio, no te llega una invitación sino un correo de vinculación a tu cuenta.",
+        "chunk": 99,
+        "quote": "Si la persona ya posee un usuario activo en Silicon Access, recibirá un correo de vinculación a su cuenta existente."
+      },
+      {
+        "say": "Si igual no te llega, podés pedir ayuda al soporte en www.silicon-access.com, sección Ayuda al Usuario.",
+        "chunk": 99,
+        "quote": "ingresando en nuestra web: www.silicon-access.com, sección “Ayuda al Usuario”"
+      }
+    ]
+  }
+]

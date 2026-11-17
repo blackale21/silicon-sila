@@ -1,13 +1,17 @@
 /**
- * SILA Ayuda — casos de residentes → Google Sheet + correo a la central (gratis).
+ * SILA Ayuda — backend gratis en Google: casos → Sheet + correo a la central, y puente seguro a Jev.
  *
  * INSTALACIÓN (una vez):
- *  1) Abrir la planilla "SILA Ayuda · Casos de residentes" → Extensiones → Apps Script → pegar este archivo.
- *  2) Completar CENTRAL_MAIL (a quién le llega el correo de cada derivación).
- *  3) Ejecutar la función setup() una vez (pide permisos de Sheets y Gmail: aceptar).
- *  4) Implementar → Nueva implementación → Aplicación web
+ *  1) Abrir la planilla "SILA Ayuda · Casos de residentes" → Extensiones → Apps Script.
+ *     Pegar ESTE archivo en Código.gs y crear un 2º archivo con backend/ayuda-jev-criterios.gs.
+ *  2) Configuración del proyecto (engranaje) → Propiedades del script → Agregar:
+ *       TYPESAFE_KEY = <tu clave de Jev>      (la clave queda sólo acá, nunca en el código ni en la web)
+ *  3) Completar CENTRAL_MAIL (a quién le llega el correo de cada derivación).
+ *  4) Ejecutar la función setup() una vez (pide permisos: aceptar).
+ *  5) Implementar → Nueva implementación → Aplicación web
  *       Ejecutar como: Yo · Quién tiene acceso: Cualquier usuario  → copiar la URL /exec
- *  5) Pegar esa URL en js/config.js → ayuda.casosUrl  y poner ayuda.demo = false.
+ *  6) Pegar esa URL en js/config.js → ayuda.backendUrl.
+ *     Jev se usa apenas hay URL. Los casos siguen SIMULADOS mientras ayuda.demo = true.
  *
  * El bot sólo le dice al residente "registrado" / "enviado a la central" si este script
  * responde { ok: true } (y mail: true para el correo). Si algo falla, el bot lo dice.
@@ -42,7 +46,81 @@ function setup() {
   MailApp.getRemainingDailyQuota();
 }
 
+/* ───────────────────────── Jev (TypeSafe AI) ─────────────────────────
+ * El chat de la web NO puede llamar a Jev directo (su API sólo acepta su propia consola), así que
+ * este script hace de puente. Seguridad:
+ *  - La clave vive SÓLO en "Propiedades del script" (TYPESAFE_KEY): no está en el código, ni en git, ni en la web.
+ *  - Pregunta y opciones FIJAS (JEV_CRITERIOS, generado desde las fichas): del navegador sólo entra el texto
+ *    del vecino. Nadie puede usar el puente para otra cosa que elegir una ficha de ayuda.
+ *  - Validación de entrada (largo, caracteres de control, links/código) y respuesta mínima (nunca la clave
+ *    ni el error crudo de Jev).
+ *  - Caché de 6 h por consulta idéntica (más rápido y no gasta de nuevo).
+ *  - Topes ALTOS sólo contra abuso masivo (ajustables abajo): no frenan el uso normal del chat.
+ */
+const JEV_MODEL = 'jev-latest';
+const JEV_MAX_POR_MINUTO = 600;        // todo el sitio (un uso normal está muy por debajo)
+const JEV_MAX_POR_DIA = 50000;         // tope de gasto diario (~US$ 12 al precio publicado)
+const JEV_MAX_POR_SESION_10MIN = 120;  // por pestaña del navegador
+
+function jevResponder(p) {
+  const key = PropertiesService.getScriptProperties().getProperty('TYPESAFE_KEY');
+  if (!key) return { ok: false, error: 'jev_no_configurado' };
+  let q = String(p.q || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
+  if (q.length < 3 || q.length > 400) return { ok: false, error: 'consulta_invalida' };
+  if (/(https?:\/\/|www\.|<\/?[a-z]|\{[\s\S]*\}|;\s*(drop|select|insert)\b)/i.test(q)) return { ok: false, error: 'consulta_invalida' };
+  if (!/[a-záéíóúñü]{3,}/i.test(q)) return { ok: false, error: 'consulta_invalida' };
+
+  const cache = CacheService.getScriptCache();
+  const norm = q.toLowerCase();
+  const ck = 'jev_' + Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, norm)).slice(0, 40);
+  const hit = cache.get(ck);
+  if (hit) return JSON.parse(hit);
+
+  const now = new Date();
+  const sid = String(p.sid || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 32) || 'anon';
+  const topes = [
+    ['jm_' + Math.floor(now.getTime() / 60000), JEV_MAX_POR_MINUTO, 120],
+    ['jd_' + Utilities.formatDate(now, 'GMT-3', 'yyyyMMdd'), JEV_MAX_POR_DIA, 21600],
+    ['js_' + sid + '_' + Math.floor(now.getTime() / 600000), JEV_MAX_POR_SESION_10MIN, 700],
+  ];
+  for (const [k, max] of topes) if (Number(cache.get(k) || 0) >= max) return { ok: false, error: 'tope' };
+  topes.forEach(([k, , ttl]) => cache.put(k, String(Number(cache.get(k) || 0) + 1), ttl));
+
+  const body = {
+    model: JEV_MODEL,
+    state: { consulta_del_residente: q },
+    questions: { ficha: {
+      type: 'choice',
+      instructions: 'Sos el asistente de ayuda de la app Silicon Access para residentes de barrios cerrados. ' +
+        'Elegí el tema de ayuda que responde la consulta del residente (puede tener errores de tipeo). ' +
+        'Si ninguno la responde de verdad, elegí "ninguna".',
+      criteria: JEV_CRITERIOS,
+    } },
+  };
+  let res;
+  try {
+    res = UrlFetchApp.fetch('https://api.typesafe.ai/v1/systemone', {
+      method: 'post', contentType: 'application/json', headers: { Authorization: 'Bearer ' + key },
+      payload: JSON.stringify(body), muteHttpExceptions: true,
+    });
+  } catch (err) {
+    return { ok: false, error: 'jev_sin_conexion' };
+  }
+  if (res.getResponseCode() !== 200) return { ok: false, error: 'jev_' + res.getResponseCode() };
+  const a = JSON.parse(res.getContentText()).answers.ficha;
+  const top = Object.entries(a.probabilities || {}).sort((x, y) => y[1] - x[1]).slice(0, 3)
+    .map(([id, pr]) => [id, Math.round(pr * 1000) / 1000]);
+  const out = { ok: true, choice: a.choice, confidence: Math.round((a.confidence || (top[0] || [0, 0])[1]) * 1000) / 1000, top };
+  cache.put(ck, JSON.stringify(out), 21600);
+  return out;
+}
+
 function doPost(e) {
+  let p0 = {};
+  try { p0 = JSON.parse(e.postData.contents || '{}'); } catch (_) { return out({ ok: false, error: 'json' }); }
+  if (p0.action === 'jev') {
+    try { return out(jevResponder(p0)); } catch (err) { return out({ ok: false, error: 'jev_error' }); }
+  }
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {

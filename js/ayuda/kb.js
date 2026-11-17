@@ -9,20 +9,52 @@
     'hola buenas buen dia tardes noches gracias porfa favor por favor necesito quiero queria quisiera tengo tenemos tiene puedo puede podes pueden hacer hago hice ' +
     'saber sabe ver veo dice dicen esta estoy estamos sale aparece pasa paso me le lo eh ok cuanto cuanta cuantos cuantas cual cuales').split(/\s+/));
   // palabras que describen "que hay un problema" pero no QUÉ: no alcanzan para buscar
-  const VAGUE = new Set('problema problemas ayuda ayudame error errores falla fallas anda andar funciona funcionan funcionar sirve consulta consultas duda dudas tema temas cosa algo app aplicacion celular telefono sistema nuevo nueva mal'.split(' '));
+  const VAGUE = new Set('problema problemas ayuda ayudame error errores falla fallas anda andar funciona funcionan funcionar sirve consulta consultas duda dudas tema temas cosa algo sistema nuevo nueva mal'.split(' '));
+  // palabras de CONTEXTO (dispositivo, sistema, marca, "app"): dicen DÓNDE, no QUÉ. Si aparecen en una ficha suman
+  // un poco, pero nunca bajan la cobertura (antes "iphone", que no está en ningún manual, hundía la consulta).
+  const CONTEXT = new Set(('app apps aplicacion aplicaciones aplicativo celular celu cel telefono telefonos movil smartphone ' +
+    'iphone ios apple ipad android samsung galaxy motorola moto xiaomi redmi huawei lg nokia tablet tableta ' +
+    'compu computadora pc notebook laptop web pagina navegador chrome safari internet silicon access').split(' '));
   // verbos de acción genéricos: ayudan a ordenar pero casi no cuentan para la cobertura
-  const ACTION = new Set('cargo cargar subo subir envio enviar mando mandar crear creo generar genero hacer hago usar uso uso utilizar poner pongo agregar agrego'.split(' '));
+  const ACTION = new Set('cargo cargar subo subir envio enviar mando mandar crear creo generar genero hacer hago usar uso uso utilizar poner pongo agregar agrego pide piden pidio pedir solicita entrar entre entro ingresar ingrese acceder pasar'.split(' '));
+  // frases hechas que cambian el sentido de sus palabras sueltas ("me doy de alta" es registrarme, no dar de alta a otro)
+  const PHRASES = [
+    [/\b(me|nos) (doy|di|damos|dimos|puedo dar|quiero dar|tengo que dar) de alta\b/g, 'registrarme'],
+    [/\bdarme de alta\b/g, 'registrarme'],
+    [/\bfin(es)? de semana\b/g, 'dias'],
+    [/\b(dejar|dejo|dejen|deja) (pasar|entrar)\b/g, 'autorizar'],
+    [/\b(doy|dar|darle|dale|dejar|dejarle) (permiso|acceso|ingreso)\b/g, 'autorizar'],
+    [/\b(entrar|entro|ingresar|ingreso|acceder|accedo|loguearme|loguear|logearme|logear) (a|en|desde) (la )?(app|aplicacion)\b/g, 'iniciar sesion app'],
+  ];
   // equivalencias de vocabulario (sólo para ENCONTRAR; la respuesta es siempre el texto del manual)
   const SYN = {
     encomienda: ['paquet', 'correspondencia'], paquete: ['paquet'], correo: ['correspondencia'], delivery: ['paquet'],
-    portero: ['timbre'], timbrar: ['timbre'], llamada: ['llamad', 'timbre'], invitado: ['invita', 'visita', 'autorizacion'], invito: ['autorizacion'], invitar: ['autorizacion'], visita: ['visita', 'invita'],
+    pedido: ['paquet'], compra: ['paquet'], mercadolibre: ['paquet'], amazon: ['paquet'], cadete: ['paquet'], cartero: ['correspondencia', 'paquet'],
+    portero: ['timbre'], timbrar: ['timbre'], llamada: ['llamad', 'timbre'], llamador: ['timbre'], invitado: ['invita', 'visita', 'autorizacion'], invito: ['autorizacion'], invitar: ['autorizacion'], visita: ['visita', 'invita'],
+    sonar: ['suena'], sono: ['suena'], suenan: ['suena'], suene: ['suena'], sonando: ['suena'],
     sos: ['emergencia', 'panico'], panico: ['emergencia'], robo: ['emergencia', 'intrusion'], incendio: ['emergencia'],
-    multa: ['infracciones'], multas: ['infracciones'], sancion: ['infracciones'], pileta: ['amenit'], sum: ['amenit'], quincho: ['amenit'], cancha: ['amenit', 'cancha'], tenis: ['amenit'], reserva: ['reserv', 'amenit'],
-    luz: ['luces', 'encendido'], luces: ['encendido'], prender: ['encendido'], prendo: ['encendido'], encender: ['encendido'], cara: ['selfie', 'face'], facial: ['selfie', 'face'], rostro: ['selfie', 'face'],
-    registrarme: ['regist', 'inscri'], inscribirme: ['inscri', 'regist'], alta: ['regist', 'inscri'], empadronar: ['empadr'],
-    reclamo: ['reclam', 'consul'], expensa: ['expens'], pagar: ['pago', 'pagos', 'inform'], comprobante: ['comprob', 'pago'],
-    obra: ['obras'], albanil: ['obras', 'responsable'], contratista: ['obras', 'responsable'], seguro: ['seguro', 'art'],
-    llegando: ['llegan'], notificacion: ['notifi', 'push'], aviso: ['notifi'],
+    ambulancia: ['emergencia'], asalto: ['emergencia', 'intrusion'], ladron: ['emergencia', 'intrusion'], ladrones: ['emergencia', 'intrusion'], intruso: ['intrusion', 'emergencia'],
+    auxilio: ['emergencia'], urgencia: ['emergencia'], fuego: ['incendio', 'emergencia'],
+    multa: ['infracciones'], multas: ['infracciones'], sancion: ['infracciones'], multaron: ['infracciones'], apelar: ['apel', 'descargo'],
+    pileta: ['amenit'], piscina: ['pileta', 'amenit'], sum: ['amenit'], salon: ['amenit'], quincho: ['amenit'], parrilla: ['amenit'], asador: ['parrilla', 'amenit'],
+    cancha: ['amenit', 'cancha'], tenis: ['amenit'], padel: ['cancha', 'amenit'], futbol: ['cancha', 'amenit'], gimnasio: ['amenit'], gym: ['amenit'],
+    reserva: ['reserv', 'amenit'], turno: ['reserv', 'turnos'], amenity: ['amenit'],
+    luz: ['luces', 'encendido'], luces: ['encendido'], prender: ['encendido'], prendo: ['encendido'], encender: ['encendido'], iluminacion: ['luces', 'encendido'], reflector: ['luces', 'encendido'], reflectores: ['luces', 'encendido'],
+    cara: ['selfie', 'face'], facial: ['selfie', 'face'], rostro: ['selfie', 'face'], faceid: ['face', 'selfie'],
+    registrarme: ['regist', 'inscri'], regist: ['regist', 'inscri'], inscribirme: ['inscri', 'regist'], alta: ['regist', 'inscri'], empadronar: ['empadr'],
+    anot: ['inscri', 'regist'], anotarme: ['inscri', 'regist'], login: ['logue', 'sesion'], loguear: ['logue', 'sesion'], loguearme: ['logue', 'sesion'],
+    mail: ['correo'], email: ['correo', 'mail'], gmail: ['correo', 'mail'], hotmail: ['correo', 'mail'], clave: ['contrasena'], password: ['contrasena'],
+    reclamo: ['reclam', 'consul'], queja: ['reclamo'], quejarme: ['reclamo'], quejar: ['reclamo'], denuncia: ['reclamo', 'denuncio'], denunciar: ['reclamo', 'denuncio'], ticket: ['reclamo'],
+    expensa: ['expens'], cuota: ['expensa'], deuda: ['saldo', 'debo'], debo: ['saldo'], adeudo: ['saldo', 'debo'], boleta: ['cupon'], boleto: ['cupon'], factura: ['cupon', 'resumen'], liquidacion: ['resumen'],
+    pagar: ['pago', 'pagos', 'inform'], pague: ['pago'], abonar: ['pago'], abone: ['pago'], transferi: ['transferencia', 'pago'], deposito: ['pago', 'comprobante'], comprobante: ['comprob', 'pago'], recibo: ['comprobante'],
+    obra: ['obras'], albanil: ['obras', 'responsable'], contratista: ['obras', 'responsable'], constructor: ['obras', 'responsable'], arquitecto: ['obras', 'responsable'], construccion: ['obras'], plano: ['documentacion', 'obras'], planos: ['documentacion', 'obras'], seguro: ['seguro', 'art'],
+    empleada: ['trabajador'], empleado: ['trabajador'], domestica: ['trabajador'], jardinero: ['trabajador'], plomero: ['trabajador'],
+    electricista: ['trabajador'], pintor: ['trabajador'], ninera: ['trabajador'], mucama: ['trabajador'], amigo: ['visita', 'invitar'], amiga: ['visita', 'invitar'], amigos: ['visita', 'invitar'],
+    pasar: ['ingreso', 'autorizacion'], semana: ['dias'], finde: ['dias'], gente: ['visita', 'personas'],
+    toma: ['sacate', 'foto'], tomar: ['sacate', 'foto'], saca: ['sacate', 'foto'],
+    llegando: ['llegan'], llego: ['llegando'], notificacion: ['notifi', 'push'], aviso: ['notifi'],
+    wifi: ['conexion', 'internet'], senal: ['conexion'], offline: ['conexion'], conexion: ['conexion', 'internet'],
+    votar: ['encuesta', 'vot'], votacion: ['encuesta'],
   };
 
   const fold = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
@@ -35,9 +67,55 @@
   };
   const words = (s) => fold(s).replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(Boolean);
   const tokens = (s) => words(s).filter((w) => w.length > 1 && !STOP.has(w)).map(stem);
+  const CONTEXT_ST = new Set([...CONTEXT].map(stem));
 
   const syn = (x) => (SYN[x] || SYN[stem(x)] || []).map((y) => stem(y));
   const related = (x, hit) => hit.has(stem(x)) || syn(x).some((y) => hit.has(y)) || [...hit].some((h) => h.length >= 4 && (h.startsWith(stem(x)) || stem(x).startsWith(h)));
+
+  /* ── tolerancia a errores de tipeo ──
+   * Clave fonética del español rioplatense: ll=y, b=v, c(e/i)=s=z, qu=k, h muda, n antes de b/p = m.
+   * Después, distancia de edición (con transposición) sobre esas claves; n↔m e i↔y cuestan medio. */
+  const phon = (w) => w.replace(/ch/g, '#').replace(/ll/g, 'y').replace(/qu/g, 'k').replace(/c(?=[ei])/g, 's').replace(/c/g, 'k')
+    .replace(/z/g, 's').replace(/v/g, 'b').replace(/h/g, '').replace(/#/g, 'ch').replace(/n(?=[bp])/g, 'm').replace(/gu(?=[ei])/g, 'g').replace(/y$/, 'i');
+  const CHEAP = new Set(['nm', 'mn', 'iy', 'yi']);
+  function editDist(a, b, max) {
+    if (Math.abs(a.length - b.length) > max) return Infinity;
+    const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+    for (let j = 1; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) {
+      let rowMin = Infinity;
+      for (let j = 1; j <= b.length; j++) {
+        const sub = a[i - 1] === b[j - 1] ? 0 : CHEAP.has(a[i - 1] + b[j - 1]) ? 0.5 : 1;
+        d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + sub);
+        if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+        rowMin = Math.min(rowMin, d[i][j]);
+      }
+      if (rowMin > max) return Infinity;
+    }
+    return d[a.length][b.length];
+  }
+  // ¿la palabra ya existe en el vocabulario (por raíz, prefijo o sinónimo)?
+  const known = (x) => {
+    const st = stem(x);
+    return K.cdf.has(st) || K.df.has(st) || !!(SYN[x] || SYN[st]) || (st.length >= 4 && K.prefix(st).length > 0);
+  };
+  /** Corrige una palabra desconocida a la más parecida del vocabulario. Hasta 4 letras sólo equivalencias
+   *  fonéticas exactas (yega→llega); 5-7 letras, 1 cambio; 8 o más, 2. Misma inicial (fonética). Si no hay, queda igual. */
+  function fixWord(x) {
+    if (!K.dict || /\d/.test(x) || x.length < 4 || known(x)) return x;
+    if (K.fixCache.has(x)) return K.fixCache.get(x);
+    const k = phon(x), max = x.length <= 4 ? 0 : x.length <= 7 ? 1 : 2;
+    let best = null, bd = Infinity;
+    for (const e of K.dict) {
+      if (e.k[0] !== k[0]) continue;
+      const dd = editDist(k, e.k, max);
+      if (dd > max) continue;
+      if (dd < bd || (dd === bd && e.n > best.n)) { best = e; bd = dd; }
+    }
+    const out = best ? best.w : x;
+    K.fixCache.set(x, out);
+    return out;
+  }
 
   let ready = null;
   const K = { docs: {}, chunks: [], df: new Map(), avg: 0, modules: [] };
@@ -86,6 +164,14 @@
       K.cards.forEach((c) => c.tf.forEach((_, t) => K.cdf.set(t, (K.cdf.get(t) || 0) + 1)));
       K.cavg = K.cards.length ? K.cards.reduce((a, c) => a + c.len, 0) / K.cards.length : 1;
       K.vocab = [...new Set([...K.df.keys(), ...K.cdf.keys()])];
+      // vocabulario de palabras enteras (manuales + fichas + sinónimos) para corregir errores de tipeo
+      const wc = new Map();
+      const addW = (s) => words(s).forEach((x) => { if (x.length >= 4 && !STOP.has(x) && !VAGUE.has(x) && !CONTEXT.has(x) && !/\d/.test(x)) wc.set(x, (wc.get(x) || 0) + 1); });
+      K.chunks.forEach((c) => addW(c.text));
+      K.cards.forEach((c) => { c.ask.forEach(addW); addW(c.title); c.steps.concat(c.tips).forEach((s) => addW(s.say)); });
+      Object.keys(SYN).forEach(addW);
+      K.dict = [...wc].map(([w, n]) => ({ w, n, k: phon(w) }));
+      K.fixCache = new Map();
       const pc = new Map();
       K.prefix = (t) => {
         if (!pc.has(t)) pc.set(t, K.vocab.filter((v) => v !== t && v.length >= 4 && (v.startsWith(t) || t.startsWith(v))));
@@ -105,22 +191,32 @@
   /** Analiza una consulta. Cada palabra útil forma un GRUPO con sus variantes de raíz (peso 1)
    *  y sus sinónimos (peso 0.6); el grupo puntúa como un solo término (no se infla por variantes raras). */
   function analyze(q) {
-    const w = words(q).filter((x) => x.length > 1 && !STOP.has(x));
-    const content = w.filter((x) => !VAGUE.has(x));
+    let fq = fold(q);
+    PHRASES.forEach(([re, to]) => { fq = fq.replace(re, to); });
+    const w = words(fq).filter((x) => x.length > 1 && !STOP.has(x));
+    const fixes = [];
+    const content = w.filter((x) => !VAGUE.has(x) && !CONTEXT.has(x)).map((x) => {
+      const y = fixWord(x);
+      if (y !== x) fixes.push([x, y]);
+      return y;
+    }).filter((x) => !STOP.has(x) && !VAGUE.has(x));
+    const context = w.filter((x) => CONTEXT.has(x));
     const terms = new Set(content.map(stem));
     const groups = new Map();
     const pre = (t) => (K.prefix && t.length >= 4 ? K.prefix(t) : []);
-    content.forEach((x) => {
+    const addGroup = (x, ctx) => {
       const st = stem(x);
       if (groups.has(st)) return;
       const vs = new Map([[st, 1]]);
       pre(st).forEach((v) => vs.set(v, 1));
       syn(x).forEach((y) => { if (!vs.has(y)) vs.set(y, 0.6); pre(y).forEach((v) => { if (!vs.has(v)) vs.set(v, 0.6); }); });
-      groups.set(st, { x, st, vs });
-    });
+      groups.set(st, { x, st, vs, ctx });
+    };
+    content.forEach((x) => addGroup(x, false));
+    context.forEach((x) => addGroup(x, true));
     const expanded = new Set();
     groups.forEach((g) => g.vs.forEach((_, v) => expanded.add(v)));
-    return { raw: q, content, terms: [...terms], expanded: [...expanded], groups: [...groups.values()] };
+    return { raw: q, content, context, fixes, terms: [...terms], expanded: [...expanded], groups: [...groups.values()] };
   }
 
   /** BM25 por grupos sobre una colección (items con tf/len). Devuelve score y cobertura ponderada por rareza. */
@@ -135,11 +231,12 @@
         let f = 0;
         g.vs.forEach((w, v) => { const k = it.tf.get(v); if (k) { f += w * k; hit.add(v); } });
         const idf = Math.log(1 + (N - gdf[i] + 0.5) / (gdf[i] + 0.5));
-        const wc = idf * (ACTION.has(g.x) ? 0.25 : 1); // una palabra rara que NO está (ej. "contraseña") pesa mucho
+        // una palabra rara que NO está (ej. "contraseña") pesa mucho; las de contexto ("iphone", "app") no cuentan
+        const wc = g.ctx ? 0 : idf * (ACTION.has(g.x) ? 0.25 : 1);
         tot += wc;
         if (!f) return;
         got += wc;
-        s += idf * (f * (k1 + 1)) / (f + k1 * (1 - b + b * it.len / avg));
+        s += (g.ctx ? 0.5 : 1) * idf * (f * (k1 + 1)) / (f + k1 * (1 - b + b * it.len / avg));
       });
       if (s) out.push({ it, s, coverage: tot ? got / tot : 0, hit });
     }
@@ -222,11 +319,32 @@
   /** Búsqueda en las fichas humanas; si la consulta nombra el módulo, sus fichas suman. */
   function searchCards(A, opts = {}) {
     const items = opts.module ? K.cards.filter((c) => c.module === opts.module) : K.cards;
+    const qs = new Set(A.content.map(stem)), qc = new Set(A.context.map(stem));
     return bm25(items, A, K.cavg).map(({ it: c, s, coverage }) => {
       const modT = tokens(c.module);
       if (modT.length && modT.every((t) => A.expanded.includes(t))) s *= 1.3;
+      // la consulta se parece a una de las formas de preguntar de la ficha: suma (no cambia la cobertura)
+      s *= 1 + 0.5 * askMatch(c, qs, qc);
       return { card: c, score: s * (0.6 + 0.4 * coverage), coverage };
     }).sort((x, y) => y.score - x.score);
+  }
+
+  /** Parecido (Jaccard por raíces) entre la consulta y la mejor de las formas de preguntar de la ficha.
+   *  Las palabras de contexto sólo cuentan si están en las dos. */
+  function askMatch(card, qs, qc) {
+    if (!qs.size) return 0;
+    if (!card.askSets) card.askSets = card.ask.map((a) => new Set(words(a).filter((x) => x.length > 1 && !STOP.has(x) && !VAGUE.has(x)).map(stem)));
+    let best = 0;
+    for (const as of card.askSets) {
+      let inter = 0, uni = qs.size;
+      as.forEach((t) => {
+        if (qs.has(t)) inter++;
+        else if (qc.has(t)) { inter++; uni++; }
+        else if (!CONTEXT_ST.has(t)) uni++;
+      });
+      best = Math.max(best, inter / (uni || 1));
+    }
+    return best;
   }
 
   const CARD_COV = 0.8, CARD_SCORE = 2.5;
