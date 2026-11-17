@@ -37,8 +37,8 @@
   {
     "id": "amenities-invitar",
     "module": "Amenities",
-    "title": "Invitar a otras personas a una reserva",
-    "ask": ["cómo invito a un amigo a la cancha", "quiero sumar gente a mi reserva", "como agrego invitados al amenity", "puedo invitar a alguien que no es del barrio", "dónde invito por whatsapp", "no sé cómo invitar a mis amigos al turno"],
+    "title": "Invitar a otras personas a una reserva de amenity (cancha, parrilla, salón)",
+    "ask": ["cómo invito a un amigo a la cancha", "quiero sumar gente a mi reserva", "como agrego invitados al amenity", "puedo invitar a alguien que no es del barrio", "dónde invito por whatsapp a mi reserva", "no sé cómo invitar a mis amigos al turno"],
     "intro": "Sí, se puede, y hay dos formas de hacerlo.",
     "steps": [
       {"say": "Una vez que elegís día y horario, la app te pregunta si querés invitar a alguien más.", "chunk": 22, "quote": "Una vez elegido el día y horario, la app te va a preguntar si querés invitar a alguien más."},

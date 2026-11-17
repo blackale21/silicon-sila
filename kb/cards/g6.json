@@ -930,14 +930,19 @@
   {
     "id": "autorizaciones-tres-opciones",
     "module": "Autorizaciones",
-    "title": "Autorizar una visita, un trabajador o una empresa (las 3 opciones)",
+    "title": "Autorizar o invitar a una visita, un trabajador o una empresa (las 3 opciones)",
     "ask": [
       "autorizacion",
       "como autorizo a alguien",
       "quiero autorizar una visita",
       "como hago una invitación por whatsapp",
       "autorizar un delivery o un remis",
-      "no tengo los datos de la visita"
+      "no tengo los datos de la visita",
+      "no puedo armar una invitación",
+      "como creo una invitación para una visita",
+      "hacer una invitación",
+      "no me deja crear la invitación",
+      "mandar una invitación a un amigo"
     ],
     "intro": "En Autorizaciones tenés tres caminos, según lo que necesites:",
     "steps": [
