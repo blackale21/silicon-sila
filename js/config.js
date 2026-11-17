@@ -22,8 +22,9 @@ window.SILA_CONFIG = {
 
   // SILA Ayuda (asistente para residentes)
   ayuda: {
-    // DEMO: true = los casos se guardan sólo en el navegador; no se escribe la planilla ni se manda correo.
-    demo: true,
+    // false = los casos se registran de verdad en la planilla de Google y le llegan a la app de la central (gestion/).
+    // true  = demo: los casos quedan sólo en el navegador.
+    demo: false,
     // URL /exec del Apps Script de backend/ayuda-casos.gs (planilla "SILA Ayuda · Casos de residentes" + correo + puente a Jev).
     // Con URL, Jev entiende las consultas. Los casos siguen simulados mientras demo = true.
     backendUrl: 'https://script.google.com/macros/s/AKfycbxvMvz1_ClQR0mdqNbfnd4_UNArzoH-5wPtKhAhXcq6PhGe7osC1Mpp14UGmrTW0IWr2A/exec',

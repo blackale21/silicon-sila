@@ -47,12 +47,12 @@
       const r = await fetch(casosUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // sin preflight CORS
-        body: JSON.stringify({ action, caso: fila }),
+        body: JSON.stringify({ action, caso: fila, evento: evento || '' }),
       });
       const j = await r.json();
       if (j && j.ok) {
         guardarLocal(fila, evento); // copia local para retomar la conversación
-        return { ok: true, simulated: false, mail: !!j.mail };
+        return { ok: true, simulated: false, mail: !!j.mail, central: !!j.central };
       }
       return { ok: false, simulated: false, error: (j && j.error) || 'respuesta inválida' };
     } catch (e) {

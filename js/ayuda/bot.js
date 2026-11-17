@@ -355,8 +355,10 @@
           ...(gest ? [{ label: 'Abrir la app de la central ↗', run: () => window.open(new URL(gest, ROOT).href, '_blank') }] : [])]);
       } else if (res.mail) {
         await say(`<p>Listo, ${nombre}: le mandé a la central un correo con tus datos y lo que ya probamos. Tu caso <b>${st.caso.caso_id}</b> sigue pendiente hasta que se resuelva.</p>`);
+      } else if (res.central) {
+        await say(`<p>Listo, ${nombre}: tu caso <b>${st.caso.caso_id}</b> ya le llegó a la central, con tus datos y todo lo que probamos, así no tenés que repetirlo. Sigue pendiente hasta que se resuelva.</p>`);
       } else {
-        await say(`<p>${nombre}, tu caso quedó registrado, pero <b>no pude confirmar que el correo a la central haya salido</b>. Sigue pendiente.</p>`);
+        await say(`<p>${nombre}, tu caso quedó registrado, pero <b>no pude confirmar que haya llegado a la central</b>. Sigue pendiente.</p>`);
       }
     });
   }

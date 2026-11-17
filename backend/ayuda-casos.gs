@@ -1,70 +1,42 @@
 /**
- * SILA Ayuda — backend gratis en Google: casos → Sheet + correo a la central, y puente seguro a Jev.
- *
- * INSTALACIÓN (una vez):
- *  1) Abrir la planilla "SILA Ayuda · Casos de residentes" → Extensiones → Apps Script.
- *     Pegar ESTE archivo en Código.gs y crear un 2º archivo con backend/ayuda-jev-criterios.gs.
- *  2) Configuración del proyecto (engranaje) → Propiedades del script → Agregar:
- *       TYPESAFE_KEY = <tu clave de Jev>      (la clave queda sólo acá, nunca en el código ni en la web)
- *  3) Completar CENTRAL_MAIL (a quién le llega el correo de cada derivación).
- *  4) Ejecutar la función setup() una vez (pide permisos: aceptar).
- *  5) Implementar → Nueva implementación → Aplicación web
- *       Ejecutar como: Yo · Quién tiene acceso: Cualquier usuario  → copiar la URL /exec
- *  6) Pegar esa URL en js/config.js → ayuda.backendUrl.
- *     Jev se usa apenas hay URL. Los casos siguen SIMULADOS mientras ayuda.demo = true.
- *
- * El bot sólo le dice al residente "registrado" / "enviado a la central" si este script
- * responde { ok: true } (y mail: true para el correo). Si algo falla, el bot lo dice.
+ * SILA Ayuda: backend en Google (Apps Script).
+ * - Chat de residentes: registra cada caso en la planilla y, al derivar, avisa por correo si hay CENTRAL_MAIL.
+ * - Jev (TypeSafe): puente seguro, con pregunta y opciones FIJAS. Clave sólo en Propiedades del script (TYPESAFE_KEY).
+ * - App de la central (gestion/): lee casos y guarda su estado compartido. Todo protegido con la clave de la central.
+ * Publicado como aplicación web ("Ejecutar como: yo", "Cualquier usuario"). En el repo SHEET_ID va vacío;
+ * en el script publicado tiene el id de la planilla "SILA Ayuda · Casos de residentes".
  */
-const CENTRAL_MAIL = '';          // ej: 'central@tuempresa.com' (varios: separados por coma)
+const CENTRAL_MAIL = '';          // a quién avisar por correo cada derivación (vacío = sólo queda en la planilla y en la app)
 const SHEET = 'Casos';
-// Si el script es independiente (no está dentro de la planilla), id de la planilla de casos.
+const ESTADO_SHEET = 'Estado';
 const SHEET_ID = '';
 function libro() { return SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet(); }
 const COLS = ['caso_id', 'creado', 'actualizado', 'estado', 'barrio', 'residente', 'lote', 'celular', 'correo',
   'consulta', 'aclaraciones', 'modulo', 'fuentes_citadas', 'pasos_intentados', 'resultado', 'derivado_central',
-  'correo_enviado', 'monday_ticket', 'origen'];
+  'correo_enviado', 'monday_ticket', 'origen', 'eventos'];
 const ESTADOS = ['abierto', 'pendiente', 'resuelto'];
-
-// PENDIENTE (fase 2): ticket en Monday para los casos pendientes. Vacío = desactivado.
-const MONDAY_TOKEN = '';
+const MONDAY_TOKEN = '';          // PENDIENTE (fase 2)
 const MONDAY_BOARD_ID = '';
 
 function setup() {
-  const ss = libro();
-  const sh = ss.getSheetByName(SHEET) || ss.getSheets()[0].setName(SHEET);
-  if (sh.getLastRow() === 0) sh.appendRow(COLS);
+  const sh = sheet();
   sh.setFrozenRows(1);
   sh.getRange(1, 1, 1, COLS.length).setFontWeight('bold').setBackground('#006bf2').setFontColor('#ffffff');
-  sh.setColumnWidths(1, COLS.length, 140);
-  [10, 11, 13, 14].forEach((c) => sh.setColumnWidth(c, 320));
   const rule = SpreadsheetApp.newDataValidation().requireValueInList(ESTADOS, true).build();
   sh.getRange(2, 4, sh.getMaxRows() - 1, 1).setDataValidation(rule);
-  const rules = [
-    ['pendiente', '#fff4e0'], ['resuelto', '#e6f6ec'],
-  ].map(([v, bg]) => SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo(v).setBackground(bg)
-    .setRanges([sh.getRange(2, 4, sh.getMaxRows() - 1, 1)]).build());
-  sh.setConditionalFormatRules(rules);
-  // prueba de permisos de correo (no envía nada)
+  estadoSheet();
   MailApp.getRemainingDailyQuota();
+  UrlFetchApp.fetch(CRITERIOS_URL, { muteHttpExceptions: true });
 }
 
-/* ───────────────────────── Jev (TypeSafe AI) ─────────────────────────
- * El chat de la web NO puede llamar a Jev directo (su API sólo acepta su propia consola), así que
- * este script hace de puente. Seguridad:
- *  - La clave vive SÓLO en "Propiedades del script" (TYPESAFE_KEY): no está en el código, ni en git, ni en la web.
- *  - Pregunta y opciones FIJAS (JEV_CRITERIOS, generado desde las fichas): del navegador sólo entra el texto
- *    del vecino. Nadie puede usar el puente para otra cosa que elegir una ficha de ayuda.
- *  - Validación de entrada (largo, caracteres de control, links/código) y respuesta mínima (nunca la clave
- *    ni el error crudo de Jev).
- *  - Caché de 6 h por consulta idéntica (más rápido y no gasta de nuevo).
- *  - Topes ALTOS sólo contra abuso masivo (ajustables abajo): no frenan el uso normal del chat.
- */
+/* ───────────── Jev ───────────── */
 const JEV_MODEL = 'jev-latest';
-// Opciones fijas que Jev puede elegir: se leen de la web publicada del proyecto (generadas desde las fichas).
 const CRITERIOS_URL = 'https://blackale21.github.io/silicon-sila/kb/jev-criterios.json';
+const JEV_MAX_POR_MINUTO = 600;
+const JEV_MAX_POR_DIA = 50000;
+const JEV_MAX_POR_SESION_10MIN = 120;
+
 function criterios() {
-  if (typeof JEV_CRITERIOS !== 'undefined') return JEV_CRITERIOS; // si se pegó ayuda-jev-criterios.gs
   const c = CacheService.getScriptCache();
   const hit = c.get('jev_criterios');
   if (hit) return JSON.parse(hit);
@@ -75,24 +47,18 @@ function criterios() {
   c.put('jev_criterios', JSON.stringify(j), 21600);
   return j;
 }
-const JEV_MAX_POR_MINUTO = 600;        // todo el sitio (un uso normal está muy por debajo)
-const JEV_MAX_POR_DIA = 50000;         // tope de gasto diario (~US$ 12 al precio publicado)
-const JEV_MAX_POR_SESION_10MIN = 120;  // por pestaña del navegador
 
 function jevResponder(p) {
   const key = PropertiesService.getScriptProperties().getProperty('TYPESAFE_KEY');
   if (!key) return { ok: false, error: 'jev_no_configurado' };
-  let q = String(p.q || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
+  const q = String(p.q || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
   if (q.length < 3 || q.length > 400) return { ok: false, error: 'consulta_invalida' };
   if (/(https?:\/\/|www\.|<\/?[a-z]|\{[\s\S]*\}|;\s*(drop|select|insert)\b)/i.test(q)) return { ok: false, error: 'consulta_invalida' };
   if (!/[a-záéíóúñü]{3,}/i.test(q)) return { ok: false, error: 'consulta_invalida' };
-
   const cache = CacheService.getScriptCache();
-  const norm = q.toLowerCase();
-  const ck = 'jev_' + Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, norm)).slice(0, 40);
+  const ck = 'jev_' + Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, q.toLowerCase())).slice(0, 40);
   const hit = cache.get(ck);
   if (hit) return JSON.parse(hit);
-
   const now = new Date();
   const sid = String(p.sid || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 32) || 'anon';
   const topes = [
@@ -102,7 +68,6 @@ function jevResponder(p) {
   ];
   for (const [k, max] of topes) if (Number(cache.get(k) || 0) >= max) return { ok: false, error: 'tope' };
   topes.forEach(([k, , ttl]) => cache.put(k, String(Number(cache.get(k) || 0) + 1), ttl));
-
   const body = {
     model: JEV_MODEL,
     state: { consulta_del_residente: q },
@@ -127,96 +92,42 @@ function jevResponder(p) {
   const a = JSON.parse(res.getContentText()).answers.ficha;
   const top = Object.entries(a.probabilities || {}).sort((x, y) => y[1] - x[1]).slice(0, 3)
     .map(([id, pr]) => [id, Math.round(pr * 1000) / 1000]);
-  const out = { ok: true, choice: a.choice, confidence: Math.round((a.confidence || (top[0] || [0, 0])[1]) * 1000) / 1000, top };
-  cache.put(ck, JSON.stringify(out), 21600);
-  return out;
+  const outp = { ok: true, choice: a.choice, confidence: Math.round((a.confidence || (top[0] || [0, 0])[1]) * 1000) / 1000, top };
+  cache.put(ck, JSON.stringify(outp), 21600);
+  return outp;
 }
 
-function doPost(e) {
-  let p0 = {};
-  try { p0 = JSON.parse(e.postData.contents || '{}'); } catch (_) { return out({ ok: false, error: 'json' }); }
-  if (p0.action === 'jev') {
-    try { return out(jevResponder(p0)); } catch (err) { return out({ ok: false, error: 'jev_error' }); }
-  }
-  const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-  try {
-    const p = JSON.parse(e.postData.contents || '{}');
-    const c = p.caso || {};
-    if (!/^RES-[A-Z0-9]{6}$/.test(String(c.caso_id || ''))) return out({ ok: false, error: 'caso_id' });
-    if (ESTADOS.indexOf(c.estado) === -1) return out({ ok: false, error: 'estado' });
-    if (!throttle(c.caso_id)) return out({ ok: false, error: 'demasiados envios' });
-
-    const sh = sheet();
-    const row = findRow(sh, c.caso_id);
-    const now = new Date();
-    const prev = row ? sh.getRange(row, 1, 1, COLS.length).getValues()[0] : null;
-    const rec = {};
-    COLS.forEach((k, i) => { rec[k] = prev ? prev[i] : ''; });
-    COLS.forEach((k) => { if (k in c && c[k] != null) rec[k] = clip(c[k]); });
-    rec.creado = prev ? prev[1] : now;
-    rec.actualizado = now;
-
-    let mail = false;
-    if (p.action === 'derivar') {
-      ['barrio', 'residente', 'lote', 'celular', 'correo'].forEach((k) => {
-        if (!String(rec[k] || '').trim()) throw new Error('falta ' + k);
-      });
-      if (!CENTRAL_MAIL) return out({ ok: false, error: 'CENTRAL_MAIL vacío: completar en el script' });
-      rec.derivado_central = 'sí';
-      sendMail(rec);                        // si falla, lanza y NO se marca como enviado
-      rec.correo_enviado = now;
-      mail = true;
-      const t = mondayTicket(rec);          // fase 2 (hoy devuelve null)
-      if (t) rec.monday_ticket = t;
-    }
-    const values = [COLS.map((k) => rec[k])];
-    if (row) sh.getRange(row, 1, 1, COLS.length).setValues(values);
-    else sh.appendRow(values[0]);
-    return out({ ok: true, mail, row: row || sh.getLastRow() });
-  } catch (err) {
-    return out({ ok: false, error: String(err && err.message || err) });
-  } finally {
-    lock.releaseLock();
-  }
+/* ───────────── Clave de la central ───────────── */
+function hashClave(clave, salt) {
+  return Utilities.base64Encode(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, salt + '|' + clave));
+}
+function centralOk(clave) {
+  const cache = CacheService.getScriptCache();
+  if (Number(cache.get('central_fallos') || 0) >= 20) return 'bloqueado';
+  const props = PropertiesService.getScriptProperties();
+  const h = props.getProperty('CENTRAL_HASH'), s = props.getProperty('CENTRAL_SALT');
+  if (!h || !s) return 'sin_clave';
+  if (hashClave(String(clave || ''), s) === h) return 'ok';
+  cache.put('central_fallos', String(Number(cache.get('central_fallos') || 0) + 1), 600);
+  return 'clave';
+}
+function centralCrearClave(clave) {
+  clave = String(clave || '');
+  if (clave.length < 8) return { ok: false, error: 'clave_corta' };
+  const props = PropertiesService.getScriptProperties();
+  if (props.getProperty('CENTRAL_HASH')) return { ok: false, error: 'ya_existe' };
+  const salt = Utilities.getUuid();
+  props.setProperties({ CENTRAL_SALT: salt, CENTRAL_HASH: hashClave(clave, salt) });
+  return { ok: true };
 }
 
-function sendMail(r) {
-  const body =
-    `Caso ${r.caso_id} · ${String(r.estado).toUpperCase()} · derivado desde SILA Ayuda\n\n` +
-    `CONTACTO DEL RESIDENTE\n` +
-    `Barrio: ${r.barrio}\nResidente: ${r.residente}\nLote: ${r.lote}\nCelular: ${r.celular}\nCorreo: ${r.correo}\n\n` +
-    `CONSULTA\n${r.consulta}\n` + (r.aclaraciones ? `\nAclaraciones: ${r.aclaraciones}\n` : '') +
-    (r.modulo ? `Módulo: ${r.modulo}\n` : '') +
-    `\nLO QUE YA SE INTENTÓ (según manuales)\n${r.pasos_intentados || '— El bot no encontró una solución documentada.'}\n` +
-    (r.fuentes_citadas ? `\nFuentes citadas: ${r.fuentes_citadas}\n` : '') +
-    `\nResultado informado por el residente: ${r.resultado || '—'}\n`;
-  MailApp.sendEmail({
-    to: CENTRAL_MAIL,
-    subject: `SILA Ayuda · ${r.caso_id} · ${r.barrio} · Lote ${r.lote}`,
-    body,
-    replyTo: /@/.test(String(r.correo)) ? String(r.correo) : undefined,
-    name: 'SILA Ayuda',
-  });
-}
-
-// Fase 2 — PENDIENTE: crear un ítem en Monday por cada caso derivado.
-function mondayTicket(r) {
-  if (!MONDAY_TOKEN || !MONDAY_BOARD_ID) return null;
-  const q = 'mutation ($b: ID!, $n: String!) { create_item (board_id: $b, item_name: $n) { id } }';
-  const res = UrlFetchApp.fetch('https://api.monday.com/v2', {
-    method: 'post', contentType: 'application/json', headers: { Authorization: MONDAY_TOKEN },
-    payload: JSON.stringify({ query: q, variables: { b: MONDAY_BOARD_ID, n: `${r.caso_id} · ${r.barrio} · Lote ${r.lote}` } }),
-    muteHttpExceptions: true,
-  });
-  const j = JSON.parse(res.getContentText() || '{}');
-  return j.data && j.data.create_item ? j.data.create_item.id : null;
-}
-
+/* ───────────── Planilla de casos ───────────── */
 function sheet() {
   const ss = libro();
-  const sh = ss.getSheetByName(SHEET) || ss.getSheets()[0];
+  const sh = ss.getSheetByName(SHEET) || ss.getSheets()[0].setName(SHEET);
   if (sh.getLastRow() === 0) sh.appendRow(COLS);
+  const head = sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), 1)).getValues()[0];
+  COLS.forEach((c, i) => { if (head[i] !== c) sh.getRange(1, i + 1).setValue(c); });
   return sh;
 }
 function findRow(sh, id) {
@@ -225,15 +136,200 @@ function findRow(sh, id) {
   const i = sh.getRange(2, 1, n, 1).getValues().flat().indexOf(id);
   return i === -1 ? 0 : i + 2;
 }
-function clip(v) {
-  const s = String(v).slice(0, 4000);
+function clip(v, max) {
+  const s = String(v).slice(0, max || 4000);
   return s.replace(/^[=+\-@]/, "'$&"); // evita inyección de fórmulas
 }
+function filaACaso(row) {
+  const o = {};
+  COLS.forEach((k, i) => {
+    let v = row[i];
+    if (v instanceof Date) v = v.toISOString();
+    if (typeof v === 'string' && v.charAt(0) === "'") v = v.slice(1);
+    o[k] = v;
+  });
+  try { o.eventos = o.eventos ? JSON.parse(o.eventos) : []; } catch (_) { o.eventos = []; }
+  return o;
+}
+
+function guardarCaso(p) {
+  const c = p.caso || {};
+  if (!/^RES-[A-Z0-9]{6}$/.test(String(c.caso_id || ''))) return { ok: false, error: 'caso_id' };
+  if (ESTADOS.indexOf(c.estado) === -1) return { ok: false, error: 'estado' };
+  if (!throttle(c.caso_id)) return { ok: false, error: 'demasiados envios' };
+  const sh = sheet();
+  const row = findRow(sh, c.caso_id);
+  const now = new Date();
+  const prev = row ? sh.getRange(row, 1, 1, COLS.length).getValues()[0] : null;
+  const rec = {};
+  COLS.forEach((k, i) => { rec[k] = prev ? prev[i] : ''; });
+  COLS.forEach((k) => { if (k !== 'eventos' && k in c && c[k] != null && k !== 'derivado_central' && k !== 'correo_enviado' && k !== 'monday_ticket') rec[k] = clip(c[k]); });
+  rec.creado = prev ? prev[1] : now;
+  rec.actualizado = now;
+  let ev = [];
+  try { ev = rec.eventos ? JSON.parse(String(rec.eventos).replace(/^'/, '')) : []; } catch (_) { ev = []; }
+  if (p.evento) ev.push({ t: now.toISOString(), txt: String(p.evento).slice(0, 500) });
+  let mail = false;
+  if (p.action === 'derivar') {
+    ['barrio', 'residente', 'lote', 'celular', 'correo'].forEach((k) => { if (!String(rec[k] || '').trim()) throw new Error('falta ' + k); });
+    rec.derivado_central = 'sí';
+    if (CENTRAL_MAIL) {
+      sendMail(rec);
+      rec.correo_enviado = now;
+      mail = true;
+      ev.push({ t: now.toISOString(), txt: 'Correo enviado a la central' });
+    }
+    const t = mondayTicket(rec);
+    if (t) rec.monday_ticket = t;
+  }
+  rec.eventos = JSON.stringify(ev.slice(-80)).slice(0, 45000);
+  const values = [COLS.map((k) => rec[k])];
+  if (row) sh.getRange(row, 1, 1, COLS.length).setValues(values);
+  else sh.appendRow(values[0]);
+  return { ok: true, mail: mail, central: rec.derivado_central === 'sí' };
+}
+
+function casosListar(desde) {
+  const sh = sheet();
+  const n = sh.getLastRow() - 1;
+  const casos = n < 1 ? [] : sh.getRange(2, 1, n, COLS.length).getValues().map(filaACaso);
+  const d = desde ? new Date(desde) : null;
+  return { ok: true, ahora: new Date().toISOString(), casos: d ? casos.filter((c) => new Date(c.actualizado) > d) : casos };
+}
+
+function casoActualizar(p) {
+  const sh = sheet();
+  const row = findRow(sh, String(p.caso_id || ''));
+  if (!row) return { ok: false, error: 'no_existe' };
+  const campos = p.campos || {};
+  const prev = sh.getRange(row, 1, 1, COLS.length).getValues()[0];
+  const now = new Date();
+  ['monday_ticket', 'estado', 'resultado'].forEach((k) => {
+    if (!(k in campos)) return;
+    if (k === 'estado' && ESTADOS.indexOf(campos[k]) === -1) return;
+    prev[COLS.indexOf(k)] = clip(campos[k], 500);
+  });
+  prev[COLS.indexOf('actualizado')] = now;
+  let ev = [];
+  try { ev = JSON.parse(String(prev[COLS.indexOf('eventos')] || '[]').replace(/^'/, '')); } catch (_) { ev = []; }
+  ev.push({ t: now.toISOString(), txt: 'Central: ' + Object.keys(campos).filter((k) => ['monday_ticket', 'estado', 'resultado'].indexOf(k) >= 0).map((k) => k + ' = ' + campos[k]).join(', ') });
+  prev[COLS.indexOf('eventos')] = JSON.stringify(ev.slice(-80)).slice(0, 45000);
+  sh.getRange(row, 1, 1, COLS.length).setValues([prev]);
+  return { ok: true };
+}
+
+/* ───────────── Estado compartido de la app de la central (clave → JSON, troceado) ───────────── */
+function estadoSheet() {
+  const ss = libro();
+  let sh = ss.getSheetByName(ESTADO_SHEET);
+  if (!sh) { sh = ss.insertSheet(ESTADO_SHEET); sh.appendRow(['key', 'parte', 'version', 'actualizado', 'datos']); sh.hideSheet(); }
+  return sh;
+}
+function kvLeerTodo(sh) {
+  const n = sh.getLastRow() - 1;
+  const rows = n < 1 ? [] : sh.getRange(2, 1, n, 5).getValues();
+  const m = {};
+  rows.forEach((r, i) => {
+    const k = r[0];
+    if (!k) return;
+    (m[k] = m[k] || { partes: [], version: r[2], actualizado: r[3], filas: [] }).partes[r[1]] = String(r[4]);
+    m[k].filas.push(i + 2);
+  });
+  return m;
+}
+function kvGet(keys) {
+  const m = kvLeerTodo(estadoSheet());
+  const valores = {};
+  (keys || []).forEach((k) => {
+    const e = m[k];
+    if (!e) { valores[k] = null; return; }
+    let valor = null;
+    try { valor = JSON.parse(e.partes.join('')); } catch (_) { valor = null; }
+    valores[k] = { valor: valor, version: Number(e.version) || 0, actualizado: e.actualizado instanceof Date ? e.actualizado.toISOString() : e.actualizado };
+  });
+  return { ok: true, valores: valores };
+}
+function kvSet(p) {
+  const key = String(p.key || '');
+  if (!/^sila_central_[a-z0-9_]{1,40}$/.test(key)) return { ok: false, error: 'key' };
+  const sh = estadoSheet();
+  const m = kvLeerTodo(sh);
+  const e = m[key];
+  const actual = e ? Number(e.version) || 0 : 0;
+  if (Number(p.version || 0) !== actual) {
+    let valor = null;
+    try { valor = e ? JSON.parse(e.partes.join('')) : null; } catch (_) { valor = null; }
+    return { ok: false, error: 'conflicto', actual: { valor: valor, version: actual } };
+  }
+  const txt = JSON.stringify(p.valor === undefined ? null : p.valor);
+  const partes = [];
+  for (let i = 0; i < txt.length; i += 45000) partes.push(txt.slice(i, i + 45000));
+  if (!partes.length) partes.push('null');
+  if (e) e.filas.sort((a, b) => b - a).forEach((r) => sh.deleteRow(r));
+  const now = new Date();
+  const version = actual + 1;
+  sh.getRange(sh.getLastRow() + 1, 1, partes.length, 5).setValues(partes.map((d, i) => [key, i, version, now, "'" + d]));
+  return { ok: true, version: version };
+}
+
+/* ───────────── Entrada única ───────────── */
+function doPost(e) {
+  let p = {};
+  try { p = JSON.parse(e.postData.contents || '{}'); } catch (_) { return out({ ok: false, error: 'json' }); }
+  try {
+    if (p.action === 'jev') return out(jevResponder(p));
+    if (p.action === 'central_estado') return out({ ok: true, tieneClave: !!PropertiesService.getScriptProperties().getProperty('CENTRAL_HASH') });
+    const lock = LockService.getScriptLock();
+    lock.waitLock(15000);
+    try {
+      if (p.action === 'upsert' || p.action === 'derivar') return out(guardarCaso(p));
+      if (p.action === 'central_crear_clave') return out(centralCrearClave(p.clave));
+      const auth = centralOk(p.clave);
+      if (auth !== 'ok') return out({ ok: false, error: auth });
+      if (p.action === 'casos_listar') return out(casosListar(p.desde));
+      if (p.action === 'caso_actualizar') return out(casoActualizar(p));
+      if (p.action === 'kv_get') return out(kvGet(p.keys));
+      if (p.action === 'kv_set') return out(kvSet(p));
+      return out({ ok: false, error: 'accion' });
+    } finally {
+      lock.releaseLock();
+    }
+  } catch (err) {
+    return out({ ok: false, error: String(err && err.message || err).slice(0, 200) });
+  }
+}
+
+function sendMail(r) {
+  const body =
+    'Caso ' + r.caso_id + ' · ' + String(r.estado).toUpperCase() + ' · derivado desde SILA Ayuda\n\n' +
+    'CONTACTO DEL RESIDENTE\n' +
+    'Barrio: ' + r.barrio + '\nResidente: ' + r.residente + '\nLote: ' + r.lote + '\nCelular: ' + r.celular + '\nCorreo: ' + r.correo + '\n\n' +
+    'CONSULTA\n' + r.consulta + '\n' + (r.aclaraciones ? '\nAclaraciones: ' + r.aclaraciones + '\n' : '') +
+    (r.modulo ? 'Módulo: ' + r.modulo + '\n' : '') +
+    '\nLO QUE YA SE INTENTÓ\n' + (r.pasos_intentados || '— No había una solución documentada.') + '\n' +
+    (r.fuentes_citadas ? '\nRespaldo en manuales: ' + r.fuentes_citadas + '\n' : '') +
+    '\nResultado informado por el residente: ' + (r.resultado || '—') + '\n';
+  MailApp.sendEmail({ to: CENTRAL_MAIL, subject: 'SILA Ayuda · ' + r.caso_id + ' · ' + r.barrio + ' · Lote ' + r.lote, body: body,
+    replyTo: /@/.test(String(r.correo)) ? String(r.correo) : undefined, name: 'SILA Ayuda' });
+}
+
+function mondayTicket(r) {
+  if (!MONDAY_TOKEN || !MONDAY_BOARD_ID) return null;
+  const q = 'mutation ($b: ID!, $n: String!) { create_item (board_id: $b, item_name: $n) { id } }';
+  const res = UrlFetchApp.fetch('https://api.monday.com/v2', {
+    method: 'post', contentType: 'application/json', headers: { Authorization: MONDAY_TOKEN },
+    payload: JSON.stringify({ query: q, variables: { b: MONDAY_BOARD_ID, n: r.caso_id + ' · ' + r.barrio + ' · Lote ' + r.lote } }),
+    muteHttpExceptions: true,
+  });
+  const j = JSON.parse(res.getContentText() || '{}');
+  return j.data && j.data.create_item ? j.data.create_item.id : null;
+}
+
 function throttle(id) {
   const c = CacheService.getScriptCache();
   const k = 't_' + id;
   const n = Number(c.get(k) || 0);
-  if (n > 30) return false;
+  if (n > 60) return false;
   c.put(k, String(n + 1), 3600);
   return true;
 }
