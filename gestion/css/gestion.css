@@ -633,3 +633,5 @@ body.locked .tabs, body.locked #view, body.locked .scope, body.locked .bell, bod
 }
 .uform .ubar label { display: flex; align-items: center; gap: 6px; font: 13.5px var(--font); text-transform: none; letter-spacing: 0; color: var(--text); }
 .uform .ubar { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.warn-t { color: var(--warn); }
+.ub em.bad { font-style: normal; }

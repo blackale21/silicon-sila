@@ -106,9 +106,12 @@
   function barriosRol() {
     const p = me();
     if (p.rol === 'direccion') return [...S.barrios.map((b) => b.id), G.SIN];
-    if (p.rol === 'operador') return (p.barrios || []).slice();
+    if (p.rol === 'operador') return barriosValidos(p);
     return [];
   }
+  function barriosValidos(p) { return (p.barrios || []).filter((b) => !G.listo() || S.barrios.some((x) => x.id === b)); }
+  const sinBarrios = () => { const p = me(); return p.rol !== 'direccion' && G.listo() && !barriosValidos(p).length; };
+  const AVISO_SB = 'Tu usuario no tiene ningún barrio válido asignado. Pedile a Dirección que te asigne uno en Config → Usuarios.';
   const enAlcance = (bid) => barriosRol().includes(bid) && (ui.barrio === '*' || ui.barrio === bid);
   function vis(t) { const p = me(); return p.rol === 'tecnico' ? !!p.usuario && t.asignado === p.usuario : enAlcance(t.barrio); }
   const visEnc = (e) => me().rol !== 'tecnico' && enAlcance(e.barrio);
@@ -252,10 +255,11 @@
     }
     const p = me();
     let h;
-    if (p.rol === 'tecnico') h = '<span class="lock">AISLADO</span> Sólo tickets asignados a vos';
+    if (p.rol === 'tecnico') h = '<span class="lock">AISLADO</span> ' + (sinBarrios() ? '<span class="warn-t">Sin barrios asignados</span>' : 'Sólo tickets asignados a vos');
     else {
       const bs = barriosRol();
       if (p.rol === 'operador' && bs.length <= 1) h = `<span class="lock">AISLADO</span> ${bs.length ? esc(G.barrio(bs[0]).nombre) + ' · otros barrios ocultos' : 'Sin barrios asignados'}`;
+      if (sinBarrios()) h = `<span class="lock">AISLADO</span> <span class="warn-t">Sin barrios asignados</span>`;
       else h = `${p.rol === 'operador' ? '<span class="lock">AISLADO</span>' : ''}<select id="tenant" aria-label="Barrio">
         <option value="*">${p.rol === 'direccion' ? 'Todos los barrios' : 'Mis barrios'}</option>
         ${bs.map((b) => `<option value="${esc(b)}" ${ui.barrio === b ? 'selected' : ''}>${esc(G.barrio(b).nombre)}</option>`).join('')}</select>`;
@@ -358,7 +362,9 @@
     const der = casos.filter((c) => c.derivado_central === 'sí').length;
     const tec = me().rol === 'tecnico';
     const sinCat = open.filter((t) => !t.cat).length;
-    const vacio = !S.tickets.length
+    const vacio = sinBarrios()
+      ? `<div class="empty"><b>No hay nada para mostrar.</b><br>${AVISO_SB}</div>`
+      : !S.tickets.length
       ? `<div class="empty"><b>Todavía no entró ningún caso derivado por el chat.</b><br>Cuando el bot derive uno a la central, aparece acá solo, con su contexto.${casos.length ? `<br><span class="mini">${plural(casos.length, 'caso')} en el chat, ninguno derivado.</span>` : ''}</div>`
       : `<p class="empty">${tec ? 'No tenés visitas asignadas.' : 'No hay tickets con este filtro.'}</p>`;
     return `
@@ -876,7 +882,7 @@
       const dirU = u.rol === 'direccion', baja = u.activo === false;
       return `<li class="${baja ? 'baja' : ''}"><span class="un"><b>${esc(u.nombre || u.usuario)}</b><small class="mono">${esc(u.usuario)}</small></span>
         <span class="chip r-${esc(u.rol)}">${esc(G.ROL_TXT[u.rol] || u.rol)}</span>
-        <small class="ub">${dirU ? 'todos los barrios' : (u.barrios || []).map((b) => esc(G.barrio(b).nombre)).join(', ') || 'sin barrios'}</small>
+        <small class="ub">${dirU ? 'todos los barrios' : (u.barrios || []).map((b) => (S.barrios.some((x) => x.id === b) ? esc(G.barrio(b).nombre) : `<em class="bad" title="Ese barrio no existe: editá el usuario y marcá uno válido">barrio inexistente “${esc(b)}”</em>`)).join(', ') || '<em class="bad">sin barrios</em>'}</small>
         <span class="ue ${baja ? 'off' : 'on'}">${baja ? 'Dado de baja' : 'Activo'}</span>
         ${dirU || baja ? '' : `<span class="uacts"><button type="button" class="ghost sm" data-a="uEditar" data-k="${esc(u.usuario)}">Editar</button><button type="button" class="ghost sm" data-a="uReset" data-k="${esc(u.usuario)}">Resetear clave</button><button type="button" class="ghost sm danger" data-a="uBaja" data-k="${esc(u.usuario)}">Dar de baja</button></span>`}</li>`;
     };
