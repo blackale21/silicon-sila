@@ -18,7 +18,12 @@
     equipo: 'Las personas que usan esta pantalla. Un operador ve sólo los barrios que le asignes; un técnico de campo ve sólo las visitas que le tocan.',
     rol: 'Operador: atiende los tickets de sus barrios. Técnico de campo: va al lugar a resolver. Dirección: ve todo y configura.',
     barrios: 'Se crean solos con lo que escribe el vecino en el chat. Si el mismo barrio aparece escrito de dos formas, podés unirlos.',
-    chats: 'Todas las charlas del chat de residentes, aunque no hayan pedido la central. “Resuelto por el bot · sin respuesta” = el bot le dio la solución y el vecino no contestó en 5 minutos. Tocá una charla para ver qué le explicó el bot.',
+    chats: 'Todas las charlas del chat de residentes, aunque no hayan pedido la central. “Resuelto · sin respuesta” = el bot le dio la solución y el vecino no contestó en 5 minutos. Tocá una charla para ver qué le explicó el bot.',
+    chatInd: 'Cuentan todas las charlas del período y del barrio elegido. Los porcentajes de resueltos, no resueltos y derivados se calculan sobre las consultas (sin contar los «no, gracias»).',
+    chatRes: 'Resueltos = el vecino confirmó que se resolvió, o el bot le dio la solución y no contestó en 5 minutos.',
+    chatSinR: 'Charlas en las que el vecino dejó de contestar: después de recibir la solución (se dan por resueltas) o antes (se fue sin terminar).',
+    chatTrato: 'Al cerrar la charla el bot pregunta “¿cómo te sentiste atendido?”. Es el % que respondió Bien sobre los que calificaron.',
+    chatMol: 'Charlas donde el vecino escribió que no entendía o mostró enojo (“no me gusta”, “no sirve”…). Conviene leerlas.',
     google: 'Opcional: el link donde los vecinos dejan reseñas del barrio en Google, la calificación actual (estrellas) y cuántas reseñas tiene. Se usa en Reputación.',
     unir: 'Si el mismo barrio quedó escrito distinto (por ejemplo “Los Alamos” y “Los Álamos”), elegí con cuál es el mismo y se juntan.',
     semaforo: 'Verde: está en tiempo. Amarillo: se está por vencer. Rojo: ya se pasó del tiempo máximo. Gris: no tiene categoría, así que no se mide.',
@@ -689,13 +694,104 @@
     return { nps: Math.round(((p - d) / r.length) * 100), n: r.length, p, d, pa: r.length - p - d, csat: r.reduce((a, e) => a + e.csat, 0) / r.length };
   }
   const refEnc = (e) => (e.ticket ? `<button type="button" class="tkl" data-open="${esc(e.ticket)}">${esc(e.ticket)}</button>` : `<span class="mono">${esc(e.caso_id)}</span> · resuelto por el bot`);
+  /* ════════ indicadores de los chats: cómo terminó cada charla y cómo quedó el vecino ════════ */
+  // orden fijo (nunca por ranking) y cada estado con su color; siempre van con nombre y número al lado
+  const DESENLACES = [
+    ['ok', 'Resuelto · confirmado', 'Resuelto y el vecino lo confirmó'],
+    ['bot', 'Resuelto · sin respuesta', 'El bot dio la solución y el vecino no contestó en 5 min: se da por resuelto'],
+    ['derivado', 'Derivado', 'Pidió la central y le llegó el caso'],
+    ['pend', 'No resuelto', 'El bot no lo resolvió y el vecino no quiso la central'],
+    ['aband', 'Se fue sin terminar', 'Dejó de contestar antes de que el bot le diera una solución'],
+    ['nada', 'Sin consulta', '«No, gracias» y parecidos: abrió el chat sin plantear un problema'],
+    ['curso', 'En curso', 'Charla de los últimos 5 minutos'],
+  ];
+  const TRATOS = [['bien', '😊 Bien'], ['regular', '😐 Más o menos'], ['mal', '😞 Mal'], ['', 'Sin calificar']];
+  const pct = (n, t) => (t ? Math.round((n / t) * 100) : 0);
+  // barra 100 %: segmentos con 2px de separación; el detalle va en el tooltip y en la leyenda
+  function barra100(partes, total, aria) {
+    const vis = partes.filter((x) => x.n);
+    if (!total || !vis.length) return '<div class="b100 vacia"></div>';
+    return `<div class="b100" role="img" aria-label="${esc(aria)}">${vis.map((x) => `<b class="${x.cls}" style="flex:${x.n}" title="${esc(`${x.l}: ${x.n} (${pct(x.n, total)} %)`)}"></b>`).join('')}</div>`;
+  }
+  function indicadoresChats(lista) {
+    const T = lista.length;
+    const de = lista.map((c) => ({ c, e: G.estadoChat(c).k, t: G.tratoChat(c), m: G.molestiaChat(c) }));
+    const cnt = (k) => de.filter((x) => x.e === k).length;
+    const n = Object.fromEntries(DESENLACES.map(([k]) => [k, cnt(k)]));
+    const res = n.ok + n.bot, sinR = n.bot + n.aband;
+    const cal = de.filter((x) => x.t);
+    const tr = Object.fromEntries(TRATOS.map(([k]) => [k, k ? cal.filter((x) => x.t === k).length : T - cal.length]));
+    const molestos = de.filter((x) => x.m).length;
+    const consultas = T - n.nada;
+    const kpi = (l, v, sub, cls, ayuda) => `<div class="kpi cut ck"><span>${l}${ayuda ? ' ' + hlp(ayuda) : ''}</span><b class="${cls || ''}">${v}</b><small>${sub}</small></div>`;
+    // por día (últimos 14 o los del período si es menor)
+    const dias = Math.min(14, ui.chatP === '7' ? 7 : 14);
+    const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+    const cols = Array.from({ length: dias }, (_, i) => {
+      const d0 = +hoy - (dias - 1 - i) * G.D, d1 = d0 + G.D;
+      const del = de.filter((x) => { const t = +new Date(x.c.creado); return t >= d0 && t < d1; });
+      return { d0, del };
+    });
+    const maxD = Math.max(1, ...cols.map((x) => x.del.length));
+    const H = 120;
+    const porDia = `<div class="cdias" role="img" aria-label="Chats por día y cómo terminaron, últimos ${dias} días">${cols.map(({ d0, del }) => {
+      const f = new Date(d0), lbl = `${String(f.getDate()).padStart(2, '0')}/${String(f.getMonth() + 1).padStart(2, '0')}`;
+      const segs = DESENLACES.map(([k, l]) => ({ k, l, n: del.filter((x) => x.e === k).length })).filter((x) => x.n);
+      const tip = `${lbl}: ${plural(del.length, 'chat')}${segs.length ? ' · ' + segs.map((x) => `${x.l} ${x.n}`).join(' · ') : ''}`;
+      return `<div class="cd" title="${esc(tip)}"><div class="pila" style="height:${Math.round((del.length / maxD) * H)}px">${segs.map((x) => `<b class="d-${x.k}" style="flex:${x.n}"></b>`).join('')}</div><small>${del.length ? del.length : ''}</small><i>${lbl.slice(0, 2)}</i></div>`;
+    }).join('')}</div>`;
+    // cruce: por cada desenlace, cómo calificó el trato y si mostró molestia
+    const cruce = DESENLACES.filter(([k]) => n[k] && k !== 'curso').map(([k, l]) => {
+      const g = de.filter((x) => x.e === k), gc = g.filter((x) => x.t);
+      const partes = TRATOS.map(([tk, tl]) => ({ cls: 't-' + (tk || 'nc'), l: tl, n: tk ? gc.filter((x) => x.t === tk).length : g.length - gc.length }));
+      const mol = g.filter((x) => x.m).length;
+      return `<tr><th scope="row"><i class="sw d-${k}"></i>${esc(l)}</th><td class="num">${g.length}</td>
+        <td class="barc">${barra100(partes, g.length, `${l}: ` + partes.map((x) => `${x.l} ${x.n}`).join(', '))}</td>
+        ${partes.map((x) => `<td class="num">${x.n || '·'}</td>`).join('')}<td class="num ${mol ? 'warn' : ''}">${mol || '·'}</td></tr>`;
+    }).join('');
+    // temas: de qué consultan y cuánto se resuelve
+    const temas = {};
+    de.filter((x) => x.e !== 'nada').forEach((x) => { const m = x.c.modulo || 'Sin tema (no hubo respuesta de los manuales)'; (temas[m] = temas[m] || { n: 0, r: 0 }).n++; if (x.e === 'ok' || x.e === 'bot') temas[m].r++; });
+    const topT = Object.entries(temas).sort((a, b) => b[1].n - a[1].n).slice(0, 7);
+    const maxT = Math.max(1, ...topT.map(([, v]) => v.n));
+    return `<section class="block cind">
+      <header class="bh"><h3>Indicadores del chat ${hlp('chatInd')}</h3>
+        <div class="seg sm" role="group" aria-label="Período">${[['7', '7 días'], ['30', '30 días'], ['todo', 'Todo']].map(([k, l]) => `<button type="button" data-cp="${k}" class="${ui.chatP === k ? 'on' : ''}">${l}</button>`).join('')}</div></header>
+      ${T ? `<div class="ckpis">
+        ${kpi('Chats', T, `${plural(consultas, 'consulta')} · ${n.nada} sin consulta`)}
+        ${kpi('Resueltos', pct(res, consultas) + '<em>%</em>', `${plural(n.ok, 'confirmado')} · ${n.bot} sin respuesta`, 'good', 'chatRes')}
+        ${kpi('No resueltos', pct(n.pend, consultas) + '<em>%</em>', `${plural(n.pend, 'chat')} sin solución ni central`, n.pend ? 'bad' : '')}
+        ${kpi('Derivados', pct(n.derivado, consultas) + '<em>%</em>', `${plural(n.derivado, 'chat')} a la central`)}
+        ${kpi('Sin respuesta', sinR, `${n.bot} tras la solución · ${n.aband} antes`, n.aband ? 'mid' : '', 'chatSinR')}
+        ${kpi('Trato del bot', cal.length ? pct(tr.bien, cal.length) + '<em>%</em>' : '—', cal.length ? `conformes · ${cal.length} de ${T} calificaron` : 'nadie calificó todavía', cal.length ? (pct(tr.bien, cal.length) >= 70 ? 'good' : pct(tr.bien, cal.length) >= 40 ? 'mid' : 'bad') : '', 'chatTrato')}
+        ${kpi('Con molestia', molestos, `${pct(molestos, consultas)} % de las consultas`, molestos ? 'mid' : '', 'chatMol')}
+      </div>
+      <div class="cgrid">
+        <article class="cpanel cut"><h4>Cómo terminaron <small>${plural(T, 'chat')}</small></h4>
+          ${barra100(DESENLACES.map(([k, l]) => ({ cls: 'd-' + k, l, n: n[k] })), T, 'Cómo terminaron los chats: ' + DESENLACES.map(([k, l]) => `${l} ${n[k]}`).join(', '))}
+          <ul class="cleg">${DESENLACES.filter(([k]) => n[k]).map(([k, l, ay]) => `<li title="${esc(ay)}"><i class="sw d-${k}"></i><span>${esc(l)}</span><b>${n[k]}</b><em>${pct(n[k], T)} %</em></li>`).join('')}</ul></article>
+        <article class="cpanel cut"><h4>Cómo lo trató el bot <small>calificación del vecino</small></h4>
+          ${barra100(TRATOS.map(([k, l]) => ({ cls: 't-' + (k || 'nc'), l, n: tr[k] })), T, 'Calificación del trato: ' + TRATOS.map(([k, l]) => `${l} ${tr[k]}`).join(', '))}
+          <ul class="cleg">${TRATOS.map(([k, l]) => `<li><i class="sw t-${k || 'nc'}"></i><span>${esc(l)}</span><b>${tr[k]}</b><em>${pct(tr[k], T)} %</em></li>`).join('')}</ul>
+          <p class="mini">Se le pregunta al cerrar la charla (resuelto, pendiente o derivado). Las que se cortan por silencio quedan sin calificar.</p></article>
+        <article class="cpanel cut wide"><h4>Chats por día <small>últimos ${dias} días · pasá el mouse para ver el detalle</small></h4>${porDia}</article>
+        <article class="cpanel cut wide"><h4>Cómo quedó el vecino <small>desenlace × trato</small></h4>
+          <div class="tscroll"><table class="ccruce"><thead><tr><th>Desenlace</th><th class="num">Chats</th><th>Trato</th>${TRATOS.map(([, l]) => `<th class="num">${l}</th>`).join('')}<th class="num">Molestia</th></tr></thead><tbody>${cruce}</tbody></table></div></article>
+        <article class="cpanel cut wide"><h4>De qué consultan <small>chats por tema · % resuelto</small></h4>
+          <ul class="ctemas">${topT.map(([m, v]) => `<li><span>${esc(m)}</span><div class="tb"><b style="width:${(v.n / maxT) * 100}%"></b></div><em>${v.n}</em><small>${pct(v.r, v.n)} % resuelto</small></li>`).join('')}</ul></article>
+      </div>` : '<p class="empty">No hubo chats en este período.</p>'}
+    </section>`;
+  }
   /* ════════ vista: chats (todas las charlas del bot, derivadas o no) ════════ */
   function vChats() {
-    const todos = S.casos.filter((c) => ui.barrio === '*' || idBarrioCaso(c) === ui.barrio)
+    if (!['7', '30', 'todo'].includes(ui.chatP)) ui.chatP = '30';
+    const desde = ui.chatP === 'todo' ? 0 : G.now() - +ui.chatP * G.D;
+    const todos = S.casos.filter((c) => (ui.barrio === '*' || idBarrioCaso(c) === ui.barrio) && +new Date(c.creado || 0) >= desde)
       .slice().sort((a, b) => ((a.creado || '') < (b.creado || '') ? 1 : -1));
     const conE = todos.map((c) => [c, G.estadoChat(c)]);
     const GR = [['todos', 'Todos', () => true], ['bot', 'Resueltos', (e) => e.k === 'bot' || e.k === 'ok'],
-      ['pend', 'Pendientes', (e) => e.k === 'pend'], ['derivado', 'Derivados', (e) => e.k === 'derivado'], ['curso', 'En curso', (e) => e.k === 'curso']];
+      ['pend', 'No resueltos', (e) => e.k === 'pend'], ['derivado', 'Derivados', (e) => e.k === 'derivado'], ['sinr', 'Sin respuesta', (e) => e.k === 'bot' || e.k === 'aband'],
+      ['nada', 'Sin consulta', (e) => e.k === 'nada'], ['curso', 'En curso', (e) => e.k === 'curso']];
     if (!GR.some((g) => g[0] === ui.chatF)) ui.chatF = 'todos';
     const f = GR.find((g) => g[0] === ui.chatF)[2];
     const q = G.norm(ui.q);
@@ -708,8 +804,8 @@
         <button type="button" class="cht-h" data-chat="${esc(c.caso_id)}" aria-expanded="${ab}">
           <span class="id">${esc(c.caso_id)}<small>${c.creado ? fdt(c.creado) : ''}</small></span>
           <span class="q"><b>${esc(String(c.consulta || '').slice(0, 140))}</b>${c.aclaraciones ? `<small>Después: ${esc(String(c.aclaraciones).slice(0, 160))}</small>` : ''}</span>
-          <span class="r">${tit(c) ? esc(tit(c)) : '<i>sin respuesta de los manuales</i>'}</span>
-          <span class="chip ce-${e.k}">${esc(e.txt)}</span>
+          <span class="r">${tit(c) ? esc(tit(c)) : e.k === 'nada' ? '<i>no planteó una consulta</i>' : e.k === 'curso' || e.k === 'aband' ? '<i>todavía no hubo respuesta</i>' : '<i>sin respuesta de los manuales</i>'}</span>
+          <span class="cht-st"><span class="chip ce-${e.k}">${esc(e.txt)}</span>${(() => { const t = G.tratoChat(c), m = G.molestiaChat(c); return (t ? `<small class="tr t-${t}">${{ bien: '😊 Bien', regular: '😐 Más o menos', mal: '😞 Mal' }[t]}</small>` : '') + (m ? `<small class="tr mol">⚠ molestia</small>` : ''); })()}</span>
         </button>
         ${ab ? `<div class="cht-d">
           ${c.residente || c.barrio || c.lote ? `<p class="mini">${esc([c.residente, c.barrio, c.lote ? 'Lote ' + c.lote : ''].filter(Boolean).join(' · '))}</p>` : '<p class="mini">El vecino no dejó sus datos (no pidió la central).</p>'}
@@ -719,7 +815,7 @@
         </div>` : ''}
       </article>`;
     };
-    return `<section class="block">
+    return `${indicadoresChats(todos)}<section class="block">
       <header class="bh"><h3>Chats del bot ${hlp('chats')}</h3></header>
       <div class="filters"><div class="seg" role="group" aria-label="Filtro de chats">${GR.map(([k, l, fn]) => `<button type="button" data-cf="${k}" class="${ui.chatF === k ? 'on' : ''}">${l} <i>${conE.filter(([, e]) => fn(e)).length}</i></button>`).join('')}</div>
         <input id="fq" type="search" placeholder="Buscar consulta, caso, barrio…" value="${esc(ui.q)}" aria-label="Buscar"></div>
@@ -1054,6 +1150,7 @@
     if (d.f) { ui.filtro = d.f; render(); return; }
     if (d.ef) { ui.encF = d.ef; render(); return; }
     if (d.cf) { ui.chatF = d.cf; render(); return; }
+    if (d.cp) { ui.chatP = d.cp; render(); return; }
     if (d.chat) { ui.chatAbierto = ui.chatAbierto === d.chat ? '' : d.chat; render(); return; }
     if (d.lote) { ui.lote = d.lote; render(); if (innerWidth < 900) $('.ldet').scrollIntoView({ behavior: 'smooth' }); return; }
     if (d.open) { abrirFicha(d.open); return; }

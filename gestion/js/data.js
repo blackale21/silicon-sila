@@ -381,11 +381,23 @@
   /** Cómo terminó cada charla del chat, en palabras de la central. */
   function estadoChat(c) {
     if (c.derivado_central === 'sí') return { k: 'derivado', txt: 'Derivado a la central' };
-    if (norm(c.estado) === 'resuelto') return /confirmado/i.test(c.resultado || '') ? { k: 'ok', txt: 'Resuelto · lo confirmó el vecino' } : { k: 'bot', txt: 'Resuelto por el bot · sin respuesta' };
-    if (sinRespuesta(c)) return { k: 'bot', txt: 'Resuelto por el bot · sin respuesta' };
-    if (norm(c.estado) === 'pendiente') return { k: 'pend', txt: /documentada/i.test(c.resultado || '') ? 'Pendiente · sin solución en los manuales' : 'Pendiente · no aceptó la central' };
+    // «no, gracias» sin plantear nada: el backend sólo acepta abierto/pendiente/resuelto, así que se marca en el resultado
+    if (/^sin consulta/i.test(c.resultado || '')) return { k: 'nada', txt: 'Sin consulta' };
+    if (norm(c.estado) === 'resuelto') return /confirmado/i.test(c.resultado || '') ? { k: 'ok', txt: 'Resuelto · lo confirmó el vecino' } : { k: 'bot', txt: 'Resuelto · sin respuesta del vecino' };
+    if (sinRespuesta(c)) return { k: 'bot', txt: 'Resuelto · sin respuesta del vecino' };
+    if (norm(c.estado) === 'pendiente') return { k: 'pend', txt: /documentada/i.test(c.resultado || '') ? 'No resuelto · sin solución en los manuales' : 'No resuelto · no quiso la central' };
+    // se fue antes de que el bot le diera una solución
+    if (now() - new Date(c.actualizado || c.creado).getTime() > SILENCIO_MS) return { k: 'aband', txt: 'Sin respuesta · se fue antes de la solución' };
     return { k: 'curso', txt: 'En curso' };
   }
+  /** Cómo calificó el vecino el trato del bot (bien / regular / mal), o null si no calificó. */
+  function tratoChat(c) {
+    const ev = Array.isArray(c.eventos) ? c.eventos : [];
+    for (let i = ev.length - 1; i >= 0; i--) { const m = /Calificaci[oó]n del trato: (bien|regular|mal)/i.exec(ev[i].txt || ''); if (m) return m[1].toLowerCase(); }
+    return null;
+  }
+  /** Veces que el vecino mostró molestia o que no entendía (lo marca el bot en el recorrido). */
+  const molestiaChat = (c) => (Array.isArray(c.eventos) ? c.eventos : []).filter((e) => /Se[ñn]al de molestia/i.test(e.txt || '')).length;
   const idTicket = (c) => 'TK-' + String(c.caso_id).replace(/^RES-/i, '');
 
   /** Registra barrios nuevos (Dirección), crea tickets de casos derivados y encuestas de lo que resolvió el bot. */
@@ -603,6 +615,6 @@
     usuarios: () => usuarios, usuariosListar, usuarioGuardar, usuarioBaja,
     mut, tk, en, now, iso, sla, revisarSLA, barrio, persona, cats, cat, umbral, loteKey, norm, bid, titulo, evento, alerta, marcarLeidas, puedeBarrio, barrioDeCaso,
     categorizar, cerrar, responder, pedirResena, actualizarCaso, moverTicket, unirBarrios,
-    resueltoPorBot, estadoChat,
+    resueltoPorBot, estadoChat, tratoChat, molestiaChat,
   };
 })();

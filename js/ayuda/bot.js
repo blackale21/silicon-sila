@@ -172,15 +172,24 @@
   // "no entiendo" después de una explicación: no es otra consulta, se le explica de a un paso
   const NO_ENTIENDO = /\b(no (te |le )?entiendo|no entend[ií]|no se entiende|no (me )?queda claro|me perd[ií]|no s[eé] (c[oó]mo|qu[eé] hacer)|(muy|re|medio) (complicado|dif[ií]cil|confuso))\b/i;
 
+  const MOLESTIA = /\b(no me gusta|no sirve|no sirv[eé]s|in[uú]til|horrible|mal[ií]simo|p[eé]simo|basura|cualquiera|no entend[eé]s|me cans[eé]|qu[eé] bronca|una porquer[ií]a|un desastre)\b/i;
   async function onText(t) {
     cortarSilencio();
+    if (st.caso && st.phase !== 'idle' && (MOLESTIA.test(t) || NO_ENTIENDO.test(t))) CASOS.enviar('upsert', st.caso, `Señal de molestia del vecino: «${t.slice(0, 120)}»`);
     try { await KB.load(); } catch (_) { note('No pude cargar la información de ayuda.', 'bad'); return; }
     if (st.phase !== 'confirm' && st.phase !== 'escalate' && SALUDO.test(t)) {
       return say(`<p>${pick(['¡Hola!', '¡Hola! ¿Cómo estás?'])} Contame qué te pasa con la app y lo vemos juntos.</p>`, 30);
     }
     if (st.phase === 'done' && SI.test(t)) return say(`<p>${pick(['¡Genial!', '¡Buenísimo!'])} Si necesitás algo más, escribime.</p>`, 20);
     // un "no" / "no, gracias" suelto sin nada abierto: se despide, no se abre un caso
-    if ((st.phase === 'idle' || st.phase === 'done') && NO.test(t)) return say(`<p>${pick(['¡Dale!', 'Perfecto.'])} Si necesitás algo más, escribime.</p>`, 20);
+    if ((st.phase === 'idle' || st.phase === 'done') && NO.test(t)) {
+      if (st.phase === 'idle') {
+        st = { phase: 'done', caso: newCaso(t), query: t, ctx: {}, card: null };
+        st.caso.resultado = 'Sin consulta: el vecino no planteó ningún problema';
+        await guardar('Chat sin consulta: el vecino respondió «' + t + '» sin plantear un problema');
+      }
+      return say(`<p>${pick(['¡Dale!', 'Perfecto.'])} Si necesitás algo más, escribime.</p>`, 20);
+    }
     if (GRACIAS.test(t)) return say(`<p>${pick(['¡De nada!', '¡Un gusto!', '¡Para eso estoy!'])} Si necesitás algo más, escribime.</p>`, 20);
     if ((st.phase === 'confirm' || st.phase === 'clar') && st.card && NO_ENTIENDO.test(t)) {
       const d = KB.decide(t, {});
@@ -426,6 +435,7 @@
     st.phase = 'done';
     await say(`<p>${pick(['¡Genial! Me alegra mucho.', '¡Buenísimo!', '¡Qué bueno!'])} Cualquier otra cosa, acá estoy.</p>`);
     await guardar('El residente confirmó que se resolvió', 'resuelto');
+    pedirTrato();
   }
   /* No le sirvió: antes de derivar, se sigue buscando con él (otra ficha cercana o que cuente qué ve).
      Recién al segundo intento sin solución queda pendiente y se ofrece la central. */
@@ -462,6 +472,21 @@
   async function keepPending() {
     st.phase = 'done';
     await say(`<p>Dale. Lo dejo pendiente con el número <b>${st.caso.caso_id}</b>, así si volvés no tenés que contar todo de nuevo.</p>`);
+    return pedirTrato();
+  }
+  /* ¿Cómo lo atendió el bot? (aparte de si se resolvió): queda en el recorrido y la central lo muestra en indicadores */
+  const TRATO = [['bien', '😊 Bien'], ['regular', '😐 Más o menos'], ['mal', '😞 Mal']];
+  async function pedirTrato() {
+    const caso = st.caso;
+    if (!caso || caso.trato_pedido) return;
+    caso.trato_pedido = true;
+    await wait(400);
+    await say('<p>Una última cosa, así mejoro: ¿cómo te sentiste atendido por mí?</p>', 20);
+    opts(TRATO.map(([k, l]) => ({ label: l, run: async () => {
+      me(l);
+      await CASOS.enviar('upsert', caso, `Calificación del trato: ${k}`);
+      await say(`<p>${k === 'bien' ? '¡Gracias! Me alegra.' : 'Gracias por decírmelo, lo tomo para mejorar.'}</p>`, 20);
+    } })));
   }
 
   /* ── derivación a la central ── */
@@ -526,6 +551,7 @@
       } else {
         await say(`<p>${nombre}, tu caso quedó registrado, pero <b>no pude confirmar que haya llegado a la central</b>. Sigue pendiente.</p>`);
       }
+      pedirTrato();
     });
   }
 
