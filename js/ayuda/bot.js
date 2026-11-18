@@ -168,7 +168,9 @@
   const GRACIAS = /^(muchas )?(gracias|grax|genial gracias|ok gracias|listo gracias|mil gracias)[\s!.,]*$/i;
   // Sólo cuentan como sí/no las respuestas cortas. "no puedo ingresar" NO es un "no": es información nueva.
   const SI = /^(s[ií]|s|dale|ok|okey|listo|joya|genial|perfecto|buen[ií]simo|resuelto|se resolvi[oó]|funcion[oó]|ya (est[aá]|anda|funciona)|pude|ahora s[ií]( anda| funciona)?)([\s!.,]+(gracias|muchas gracias|ya (est[aá]|anda)|listo|dale|por favor|porfa))*[\s!.,]*$/i;
-  const NO = /^(no|nop|nope|negativo|tampoco|todav[ií]a no|no pude|no funciona|no funcion[oó]|no anda|no sirvi[oó]|no me sirvi[oó]|sigue igual|sigue sin (andar|funcionar)|sigue (sin|igual)|no,? sigue igual|no,? por ahora|ahora no|mejor no)[\s!.,]*$/i;
+  const NO = /^(no|nop|nope|negativo|tampoco|todav[ií]a no|no pude|no funciona|no funcion[oó]|no anda|no sirvi[oó]|no me sirvi[oó]|sigue igual|sigue sin (andar|funcionar)|sigue (sin|igual)|no,? sigue igual|no,? por ahora|ahora no|mejor no)([\s!.,]+(gracias|muchas gracias))?[\s!.,]*$/i;
+  // "no entiendo" después de una explicación: no es otra consulta, se le explica de a un paso
+  const NO_ENTIENDO = /\b(no (te |le )?entiendo|no entend[ií]|no se entiende|no (me )?queda claro|me perd[ií]|no s[eé] (c[oó]mo|qu[eé] hacer)|(muy|re|medio) (complicado|dif[ií]cil|confuso))\b/i;
 
   async function onText(t) {
     cortarSilencio();
@@ -177,7 +179,13 @@
       return say(`<p>${pick(['¡Hola!', '¡Hola! ¿Cómo estás?'])} Contame qué te pasa con la app y lo vemos juntos.</p>`, 30);
     }
     if (st.phase === 'done' && SI.test(t)) return say(`<p>${pick(['¡Genial!', '¡Buenísimo!'])} Si necesitás algo más, escribime.</p>`, 20);
+    // un "no" / "no, gracias" suelto sin nada abierto: se despide, no se abre un caso
+    if ((st.phase === 'idle' || st.phase === 'done') && NO.test(t)) return say(`<p>${pick(['¡Dale!', 'Perfecto.'])} Si necesitás algo más, escribime.</p>`, 20);
     if (GRACIAS.test(t)) return say(`<p>${pick(['¡De nada!', '¡Un gusto!', '¡Para eso estoy!'])} Si necesitás algo más, escribime.</p>`, 20);
+    if ((st.phase === 'confirm' || st.phase === 'clar') && st.card && NO_ENTIENDO.test(t)) {
+      const d = KB.decide(t, {});
+      if (d.type !== 'card' && d.type !== 'choose' && !(porFrase(t) || []).length) { cortarSilencio(); appendClar(t); return pasoAPaso(st.card, 0); }
+    }
     if (st.phase === 'confirm') {
       if (SI.test(t)) return resolved();
       if (NO.test(t)) return notResolved();
@@ -188,8 +196,9 @@
       if (SI.test(t)) return showForm();
       if (NO.test(t)) return keepPending();
     }
-    if (st.phase === 'clar' && st.intentos && NO.test(t)) return notResolved();
-    if (st.phase === 'clar' || st.phase === 'choose') {
+    if ((st.phase === 'clar' || st.phase === 'paso') && st.intentos && NO.test(t)) return notResolved();
+    if (st.phase === 'paso' && NO.test(t)) return notResolved();
+    if (st.phase === 'clar' || st.phase === 'choose' || st.phase === 'paso') {
       appendClar(t);
       return seguir(t);
     }
@@ -353,6 +362,25 @@
     if (card.tips.length) await say(card.tips.length > 1 ? `<p>Un par de cosas a tener en cuenta:</p><ul class="ay-steps">${card.tips.map((t) => `<li>${esc(t.say)}</li>`).join('')}</ul>` : `<p>${esc(card.tips[0].say)}</p>`);
     await guardar(`Se le explicó: ${card.title} [${st.caso.fuentes_citadas}]`);
     return askResolved();
+  }
+  /* De a un paso: la misma ficha (mismo texto de los manuales), un paso por mensaje con su captura. */
+  async function pasoAPaso(card, i) {
+    st.phase = 'paso';
+    if (i === 0) {
+      await guardar(`No entendió la explicación: se le muestra de a un paso (${card.title})`);
+      await say(`<p>${pick(['Perdón, fui muy rápido.', 'Tenés razón, te lo tiré todo junto.'])} Vamos de a un paso, sin apuro.</p>`, 30);
+    }
+    const s = card.steps[i];
+    await say(`<p><b>Paso ${i + 1} de ${card.steps.length}:</b> ${esc(s.say)}</p>${s.shot ? `<div class="ay-shots">${shotHTML(s, i + 1)}</div>` : ''}`);
+    const ultimo = i === card.steps.length - 1;
+    opts([{ label: ultimo ? 'Listo, lo hice' : 'Listo, ¿y ahora?', pri: true, run: () => { me(ultimo ? 'Listo, lo hice' : 'Listo, ¿y ahora?'); return ultimo ? askResolved() : pasoAPaso(card, i + 1); } },
+      { label: 'Me trabé en este paso', run: async () => {
+        me('Me trabé en este paso'); appendClar(`Se trabó en el paso ${i + 1}: ${s.say}`);
+        await guardar(`Se trabó en el paso ${i + 1} de ${card.title}`);
+        st.caso.resultado = `Se trabó en el paso ${i + 1}`;
+        await say('<p>Gracias por decírmelo. Ese paso lo tiene que ver alguien de la central con vos.</p>', 20);
+        return pending();
+      } }]);
   }
   async function answerPage(h) {
     const c = h.chunk;
