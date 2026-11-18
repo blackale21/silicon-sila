@@ -1,0 +1,6 @@
+{
+  "name": "sila-mascota",
+  "private": true,
+  "description": "Mascota 3D de SILA (fuente). Compila a ../js/mascota.js con build.sh",
+  "dependencies": { "esbuild": "0.25.11", "three": "0.180.0" }
+}

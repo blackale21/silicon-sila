@@ -52,6 +52,14 @@ Botón flotante en la maqueta (`index.html`, se abre directo con `?ayuda=1`). Gl
 - **Casos:** siguen simulados (`ayuda.demo = true`) hasta que se cargue `CENTRAL_MAIL` en el script.
 - **Al cambiar las fichas:** rearmar la base y hacer push. El script relee las opciones solo, en hasta 6 h.
 
+## Mascota 3D de SILA (2026-11-17)
+SILA (robot "4" con visor y manos flotantes) acompaña el flujo comercial en `sila.html`.
+- **Dónde:** PC a la izquierda del encabezado de la pregunta; celular arriba a la derecha; se oculta en celular horizontal.
+- **Qué hace:** saluda al empezar, "dice" cada pregunta (boca), asiente al elegir, escucha mientras escribís, piensa al volver, señala la pregunta si pasan 22 s sin respuesta, celebra al emitir el pase. Te sigue con la mirada (cursor; si no, mira la pregunta). Tocarla: salta y saluda.
+- **Peso:** `js/mascota.js` (~600 KB, ~150 KB gzip) + `assets/sila-mascota.glb` (~1,4 MB). Se carga **después** de mostrar la 1ª pregunta; nunca frena el flujo.
+- **Apagar:** `config.mascota = false`, `?mascota=0`, o el navegador con ahorro de datos. Si WebGL falla, se retira sola.
+- **Fuente:** `mascota/src/mascota.js` → `sh mascota/build.sh`. El modelo sale de `C:\Users\O-O\sila-avatar-vida` (`build_web_glb.sh`).
+
 ## Probar local
 Servidor estático en la carpeta (ej. `python -m http.server 8340`) y abrir:
 - `http://localhost:8340/` → maqueta de la web; SOLICITÁ UNA DEMO → SILA

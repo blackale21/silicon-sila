@@ -17,6 +17,9 @@ window.SILA_CONFIG = {
   // Google Apps Script (backend/apps-script.gs) publicado como Web App. Vacío = no se usa.
   appsScriptUrl: '',
 
+  // Mascota 3D de SILA (js/mascota.js + assets/sila-mascota.glb, ~1,9 MB, carga diferida). false = sin mascota.
+  mascota: true,
+
   // Anti-spam: segundos mínimos para completar el flujo.
   minSeconds: 6,
 

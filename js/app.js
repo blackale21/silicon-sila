@@ -12,6 +12,8 @@
   const EMBED = params.get('embed') === '1';
   const FROM_SITE = params.get('from') === 'site';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // mascota 3D (js/mascota.js, carga diferida): si todavía no llegó, los eventos esperan en cola
+  const mascota = (ev, d) => (window.SilaMascota ? window.SilaMascota.emit(ev, d) : (window.__silaMascotaQ = window.__silaMascotaQ || []).push([ev, d]));
 
   const state = {
     answers: {},   // nodo -> id | [ids] | texto
@@ -137,7 +139,7 @@
       ${actions}
     </div>`;
 
-    swap(html, () => bind(id));
+    swap(html, () => { bind(id); mascota('pregunta', { el: $('h1.qt', el.q), text: qText(n), first: !state.history.length }); });
     updateRoute();
     updatePass();
   }
@@ -222,6 +224,7 @@
     el.q.dataset.busy = '1';
     el.q.querySelectorAll('.opt').forEach((b) => { b.classList.toggle('on', b === btn); b.setAttribute('aria-checked', b === btn); });
     btn.classList.add('pick');
+    mascota('elige');
     setTimeout(() => { delete el.q.dataset.busy; commit(id, btn.dataset.id); }, reduced ? 0 : 520);
   }
 
@@ -246,6 +249,7 @@
   function goBack() {
     const prev = state.history.pop();
     if (!prev) return;
+    mascota('volver');
     render(prev, { log: `<span class="t">${clock()}</span><span>↺ Volviste al checkpoint</span>` });
   }
 
@@ -409,6 +413,7 @@
     document.body.classList.add('ended');
     swap(html, () => {
       $('#passInline').innerHTML = passHTML(true);
+      mascota('fin', { el: $('#passInline') });
       sizeQR();
       $('#done').addEventListener('click', () => (EMBED ? closeEmbed() : backToSite()));
       submitLead();
@@ -718,6 +723,17 @@
     }
   });
 
+  /* ───────── mascota ───────── */
+  // Se carga después de mostrar la primera pregunta: nunca demora el flujo. Off con ?mascota=0,
+  // config mascota:false o ahorro de datos; si WebGL falla, js/mascota.js se retira sola.
+  function loadMascota() {
+    const host = document.getElementById('mascota');
+    const off = CFG.mascota === false || params.get('mascota') === '0' || (navigator.connection && navigator.connection.saveData);
+    if (!host || off) { host && host.remove(); return; }
+    const go = () => { const s = document.createElement('script'); s.src = 'js/mascota.js?v=20261117m'; s.async = true; document.head.appendChild(s); };
+    (window.requestIdleCallback || ((f) => setTimeout(f, 400)))(go, { timeout: 1500 });
+  }
+
   /* ───────── arranque ───────── */
   function boot() {
     el.logo.src = CFG.logoUrl || '';
@@ -741,9 +757,14 @@
     el.scrim.addEventListener('click', () => togglePass(false));
     document.getElementById('passClose').addEventListener('click', () => togglePass(false));
     flushQueue();
+    // escribir en un campo: SILA escucha y mira el campo (como mucho un aviso cada 3 s)
+    let lastType = 0;
+    el.q.addEventListener('input', (e) => { if (Date.now() - lastType > 3000) { lastType = Date.now(); mascota('escribe', { el: e.target }); } });
     intro(() => {
       el.app.classList.remove('pre');
       render(FLOW.start);
+      mascota('inicio');
+      loadMascota();
     });
   }
 
