@@ -18,9 +18,9 @@
   const root = document.createElement('div');
   root.className = 'ay-root';
   root.innerHTML = `
-    <button type="button" class="ay-launch" aria-haspopup="dialog" aria-controls="ayPanel">
-      <span class="ic">${ISO}<i class="dot"></i></span>
-      <span class="tx"><small>RESIDENTES</small><b>¿Te ayudo con la app?</b></span>
+    <button type="button" class="ay-launch" aria-haspopup="dialog" aria-controls="ayPanel" aria-label="Ayuda para residentes: ¿en qué puedo ayudarte dentro de la app?">
+      <span class="ay-globo" aria-hidden="true"><small>RESIDENTES</small><b>¿En qué puedo ayudarte dentro de la app?</b></span>
+      <span class="ay-sila" data-sila-mascota="boton" data-src="assets/sila-mascota.glb" aria-hidden="true"><span class="ic">${ISO}<i class="dot"></i></span></span>
     </button>
     <section class="ay-panel" id="ayPanel" role="dialog" aria-modal="false" aria-label="Ayuda para residentes de Silicon Access">
       <header class="ay-hd">
@@ -38,6 +38,16 @@
     </section>`;
   document.body.appendChild(root);
   document.body.classList.add('has-ayuda');
+  // SILA 3D en el botón (js/mascota.js, carga diferida). Mientras carga o si falla, queda el ícono.
+  (function cargarMascota() {
+    const cfg = window.SILA_CONFIG || {};
+    const off = cfg.mascota === false || /[?&]mascota=0/.test(location.search) || (navigator.connection && navigator.connection.saveData);
+    if (off) return;
+    if (window.SilaMascota) { window.SilaMascota.mount(); return; }
+    if (document.querySelector('script[data-sila-mascota-js]')) return;
+    const go = () => { const s = document.createElement('script'); s.src = 'js/mascota.js?v=20261117b'; s.async = true; s.dataset.silaMascotaJs = '1'; document.head.appendChild(s); };
+    (window.requestIdleCallback || ((f) => setTimeout(f, 600)))(go, { timeout: 2000 });
+  })();
   const $ = (s) => root.querySelector(s);
   const log = $('#ayLog'), txt = $('#ayText'), form = $('#ayForm');
 

@@ -57,6 +57,7 @@ SILA (robot "4" con visor y manos flotantes) acompaña el flujo comercial en `si
 - **Dónde:** PC a la izquierda del encabezado de la pregunta; celular arriba a la derecha; se oculta en celular horizontal.
 - **Qué hace:** saluda al empezar, "dice" cada pregunta (boca), asiente al elegir, escucha mientras escribís, piensa al volver, señala la pregunta si pasan 22 s sin respuesta, celebra al emitir el pase. Te sigue con la mirada (cursor; si no, mira la pregunta). Tocarla: salta y saluda.
 - **Peso:** `js/mascota.js` (~600 KB, ~150 KB gzip) + `assets/sila-mascota.glb` (~1,4 MB). Se carga **después** de mostrar la 1ª pregunta; nunca frena el flujo.
+- **Botón de Residentes** (`index.html`, js/ayuda/bot.js): SILA en la esquina con globo "¿En qué puedo ayudarte dentro de la app?"; saluda cada 12-22 s, se alegra al pasar el mouse, no dibuja con el chat abierto. Mientras carga o sin WebGL queda el ícono de antes.
 - **Apagar:** `config.mascota = false`, `?mascota=0`, o el navegador con ahorro de datos. Si WebGL falla, se retira sola.
 - **Fuente:** `mascota/src/mascota.js` → `sh mascota/build.sh`. El modelo sale de `C:\Users\O-O\sila-avatar-vida` (`build_web_glb.sh`).
 

@@ -12,23 +12,49 @@
 .ay-root [hidden] { display: none !important; }
 .ay-root button, .ay-root input, .ay-root textarea { font: inherit; color: inherit; }
 
-/* ── lanzador ── */
+/* ── lanzador: SILA en la esquina con su globo ── */
 .ay-launch {
-  position: fixed; right: 22px; bottom: 22px; z-index: 40; display: flex; align-items: center; gap: 10px;
-  height: 56px; padding: 0 18px 0 8px; border: 0; cursor: pointer; color: #fff; background: var(--ay-bg2);
-  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-  box-shadow: 0 18px 40px -14px rgba(0, 20, 60, 0.8); transition: transform 0.25s var(--ay-ease), background 0.2s;
-  animation: ayIn 0.6s 0.8s var(--ay-ease) both;
+  position: fixed; right: 18px; bottom: 14px; z-index: 40; display: flex; align-items: flex-end; gap: 0;
+  padding: 0; border: 0; background: none; cursor: pointer; color: #fff; text-align: left;
+  transition: transform 0.25s var(--ay-ease); animation: ayIn 0.6s 0.8s var(--ay-ease) both;
+  -webkit-tap-highlight-color: transparent;
 }
-.ay-launch .ic { position: relative; width: 40px; height: 40px; display: grid; place-items: center; background: var(--ay-blue);
-  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); }
-.ay-launch .ic svg { width: 22px; height: 22px; }
-.ay-launch .dot { position: absolute; right: 5px; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--ay-ok); box-shadow: 0 0 0 2px var(--ay-blue); }
-.ay-launch .tx { text-align: left; line-height: 1.15; }
-.ay-launch .tx small { display: block; font: 500 9.5px var(--ay-mono); letter-spacing: 0.16em; color: var(--ay-ice); opacity: 0.75; }
-.ay-launch .tx b { font-weight: 600; font-size: 14px; }
+.ay-globo {
+  position: relative; display: block; max-width: 232px; margin: 0 -6px 46px 0; padding: 10px 14px 11px;
+  background: var(--ay-bg2); border: 1px solid var(--ay-line-hi); border-radius: 14px 14px 4px 14px;
+  box-shadow: 0 18px 40px -14px rgba(0, 20, 60, 0.85); line-height: 1.22;
+  transform-origin: 100% 100%; animation: ayGlobo 0.55s 1.4s var(--ay-ease) both;
+}
+.ay-globo::after {   /* colita del globo, hacia SILA */
+  content: ''; position: absolute; right: -7px; bottom: 10px; width: 12px; height: 12px; background: var(--ay-bg2);
+  border-right: 1px solid var(--ay-line-hi); border-bottom: 1px solid var(--ay-line-hi); transform: skewY(-35deg) rotate(-45deg);
+}
+.ay-globo small { display: flex; align-items: center; gap: 6px; font: 500 9.5px var(--ay-mono); letter-spacing: 0.16em; color: var(--ay-ice); opacity: 0.8; margin-bottom: 3px; }
+.ay-globo small::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--ay-ok); box-shadow: 0 0 8px var(--ay-ok); }
+.ay-globo b { display: block; font-weight: 600; font-size: 14px; color: var(--ay-text); }
+.ay-sila { position: relative; flex: none; width: 112px; height: 96px; display: grid; place-items: end center; }
+.ay-sila canvas { position: absolute; inset: -6px -8px -4px; width: calc(100% + 16px); height: calc(100% + 10px); display: block; }
+.ay-sila::after {   /* sombra en el piso */
+  content: ''; position: absolute; left: 24%; right: 24%; bottom: 0; height: 10px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(61, 139, 255, 0.45), transparent); pointer-events: none;
+}
+/* ícono de respaldo: se ve hasta que carga la mascota (o si no hay WebGL) */
+.ay-sila .ic { position: relative; width: 52px; height: 52px; margin-bottom: 8px; display: grid; place-items: center; background: var(--ay-blue);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); transition: opacity 0.4s; }
+.ay-sila .ic svg { width: 26px; height: 26px; }
+.ay-sila .dot { position: absolute; right: 6px; top: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--ay-ok); box-shadow: 0 0 0 2px var(--ay-blue); }
+.ay-sila.mascota-lista .ic { opacity: 0; }
+.ay-sila.mascota-lista canvas { animation: aySila 0.8s var(--ay-ease) both; }
 .ay-root.open .ay-launch { transform: scale(0.9); opacity: 0; pointer-events: none; }
-@media (hover: hover) { .ay-launch:hover { background: #111c33; transform: translateY(-2px); } }
+@media (hover: hover) {
+  .ay-launch:hover .ay-globo { border-color: rgba(61, 139, 255, 0.7); background: #111c33; }
+  .ay-launch:hover .ay-globo::after { background: #111c33; border-color: rgba(61, 139, 255, 0.7); }
+  .ay-launch:hover { transform: translateY(-2px); }
+}
+.ay-launch:focus-visible { outline: none; }
+.ay-launch:focus-visible .ay-globo { outline: 2px solid var(--ay-blue-hi); outline-offset: 3px; }
+@keyframes ayGlobo { from { opacity: 0; transform: scale(0.6) translateY(8px); } }
+@keyframes aySila { from { opacity: 0; transform: translateY(10px) scale(0.9); } }
 @keyframes ayIn { from { opacity: 0; transform: translateY(14px); } }
 
 /* ── panel ── */
@@ -172,15 +198,16 @@
 .ay-view h5:first-child { margin-top: 0; }
 
 /* convivencia con el botón comercial de la maqueta */
-body.has-ayuda .sila-fab { bottom: 92px; }
+body.has-ayuda .sila-fab { bottom: 142px; }
 
 /* ── celular: pantalla completa ── */
 @media (max-width: 600px) {
-  .ay-launch { right: 14px; bottom: 14px; height: 52px; padding: 0 12px 0 6px; gap: 8px; }
-  .ay-launch .tx small { display: block; font-size: 9px; }
-  .ay-launch .tx b { font-size: 0; }
-  .ay-launch .tx b::after { content: 'Ayuda'; font-size: 14px; }
-  body.has-ayuda .sila-fab { bottom: 78px; }
+  .ay-launch { right: 8px; bottom: 8px; }
+  .ay-globo { max-width: 178px; padding: 8px 11px 9px; margin-bottom: 38px; }
+  .ay-globo small { font-size: 8.5px; }
+  .ay-globo b { font-size: 12.5px; }
+  .ay-sila { width: 92px; height: 80px; }
+  body.has-ayuda .sila-fab { bottom: 112px; }
   .ay-panel { inset: 0; right: 0; bottom: 0; width: 100%; height: 100dvh; border: 0; clip-path: none; transform: translateY(24px); }
   .ay-hd { padding-top: calc(12px + env(safe-area-inset-top)); }
   .ay-m { max-width: 96%; }

@@ -138,7 +138,7 @@ class Mascota {
 
   tick() {
     const dt = Math.min(this.clock.getDelta(), 0.1);
-    if (!this.visible || document.hidden) return;
+    if (!this.visible || document.hidden || this.opts.paused?.()) return;
     this.t += dt;
     if (this.gestureEnd && this.t > this.gestureEnd) { this.gestureEnd = 0; this.nextIdle(); }
     this.mixer.update(this.opts.reduced ? 0 : dt);
@@ -209,15 +209,37 @@ function onEvent(ev, d = {}) {
   }
 }
 
-async function mount() {
-  const host = document.getElementById('mascota');
-  if (!host) return;
-  const url = host.dataset.src;
+// ───────── botón de ayuda a residentes: SILA en la esquina, con su globo ─────────
+// Saluda cada tanto, se alegra al pasar el mouse y deja de dibujar mientras el chat está abierto.
+function botonVida(b, host) {
+  const btn = host.closest('button, a') || host;
+  const panelOpen = () => !!host.closest('.open');
+  const extras = ['saludo', 'presenta', 'explica'];
+  const next = () => setTimeout(() => {
+    if (!panelOpen() && !document.hidden && b.isIdle) {
+      const g = extras[Math.floor(Math.random() * extras.length)];
+      b.gesture(g, {rate: g === 'saludo' ? 1.6 : 1.2, max: 2.8});
+    }
+    next();
+  }, 12000 + Math.random() * 10000);
+  setTimeout(() => b.gesture('hola', {rate: 1.8, max: 3}), 600);   // llega saludando
+  next();
+  btn.addEventListener('pointerenter', () => { b.pop.kick(6); b.hop.kick(3); if (b.isIdle) b.gesture('saludo', {rate: 1.8, max: 2}); });
+}
+
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+async function mountOne(host) {
+  if (host.__silaMascota) return;
+  const modo = host.dataset.silaMascota || 'flujo';
+  const inst = new Mascota(host, {reduced: reducedMotion(), paused: () => !!host.closest('.open')});
+  host.__silaMascota = inst;
   try {
-    m = new Mascota(host, {reduced: matchMedia('(prefers-reduced-motion: reduce)').matches});
-    await m.load(url);
+    await inst.load(host.dataset.src);
+    host.classList.add('mascota-lista');
+    requestAnimationFrame(() => inst.resize());
+    if (modo === 'boton') { botonVida(inst, host); return; }
+    m = inst;
     document.body.classList.add('mascota-on');
-    requestAnimationFrame(() => m.resize());
     const q = pending; pending = [];
     // de lo que pasó mientras cargaba, alcanza con el último foco y un saludo
     const last = [...q].reverse().find(([e]) => e === 'pregunta');
@@ -226,10 +248,14 @@ async function mount() {
     if (q.some(([e]) => e === 'fin')) onEvent('fin', q.find(([e]) => e === 'fin')[1]);
   } catch (e) {
     console.warn('SILA mascota desactivada:', e.message);
-    host.remove(); m = null;
+    inst.canvas.remove();
+    host.classList.add('mascota-error');
+    if (modo === 'flujo') host.remove();
   }
 }
+// cualquier elemento con data-sila-mascota="flujo|boton" y data-src="…glb"
+function mountAll() { document.querySelectorAll('[data-sila-mascota]').forEach(mountOne); }
 
-window.SilaMascota = {emit: onEvent, get ready() { return !!m?.clips; }};
+window.SilaMascota = {emit: onEvent, mount: mountAll, get ready() { return !!m?.clips; }};
 const q0 = window.__silaMascotaQ || []; q0.forEach(([e, d]) => onEvent(e, d));
-mount();
+mountAll();

@@ -730,7 +730,7 @@
     const host = document.getElementById('mascota');
     const off = CFG.mascota === false || params.get('mascota') === '0' || (navigator.connection && navigator.connection.saveData);
     if (!host || off) { host && host.remove(); return; }
-    const go = () => { const s = document.createElement('script'); s.src = 'js/mascota.js?v=20261117m'; s.async = true; document.head.appendChild(s); };
+    const go = () => { const s = document.createElement('script'); s.src = 'js/mascota.js?v=20261117b'; s.async = true; document.head.appendChild(s); };
     (window.requestIdleCallback || ((f) => setTimeout(f, 400)))(go, { timeout: 1500 });
   }
 
