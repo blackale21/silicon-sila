@@ -146,6 +146,11 @@
         const steps = c.text.split(/\n/).filter((l) => /^(\d+[.)]|•)\s/.test(l)).length;
         return { ...c, doc: d, tf, len, steps, set: new Set(body) };
       });
+      // Material de la Guardia: APAGADO (no borrado) hasta que se defina cómo y a quién mostrarlo.
+      // Para volver a encenderlo: SILA_CONFIG.ayuda.guardia = true
+      const guardiaOff = cfg.guardia !== true;
+      const esGuardia = (m) => /^Guardia/.test(m || '');
+      if (guardiaOff) K.chunks = K.chunks.filter((c) => !esGuardia(c.doc.module));
       K.chunks.forEach((c) => c.tf.forEach((_, t) => K.df.set(t, (K.df.get(t) || 0) + 1)));
       // fichas en tono humano (redactadas desde los manuales, cada paso con su cita validada)
       const hasCards = rows("SELECT name FROM sqlite_master WHERE type='table' AND name='cards'").length;
@@ -162,7 +167,7 @@
         card.len = [...tf.values()].reduce((a, b) => a + b, 0);
         card.steps.concat(card.tips).forEach((s) => { s.chunkObj = K.chunks.find((x) => x.id === s.chunk); });
         return card;
-      });
+      }).filter((c) => !(guardiaOff && esGuardia(c.module)));
       K.cards.forEach((c) => c.tf.forEach((_, t) => K.cdf.set(t, (K.cdf.get(t) || 0) + 1)));
       K.cavg = K.cards.length ? K.cards.reduce((a, c) => a + c.len, 0) / K.cards.length : 1;
       K.vocab = [...new Set([...K.df.keys(), ...K.cdf.keys()])];

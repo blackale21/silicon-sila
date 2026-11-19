@@ -702,6 +702,7 @@
     ['derivado', 'Derivado', 'Pidió la central y le llegó el caso'],
     ['pend', 'No resuelto', 'El bot no lo resolvió y el vecino no quiso la central'],
     ['aband', 'Se fue sin terminar', 'Dejó de contestar antes de que el bot le diera una solución'],
+    ['fuera', 'Sin sesión · otro tema', 'No había iniciado sesión y preguntó por algo que no es ingresar: se le pidió entrar primero'],
     ['nada', 'Sin consulta', '«No, gracias» y parecidos: abrió el chat sin plantear un problema'],
     ['curso', 'En curso', 'Charla de los últimos 5 minutos'],
   ];
@@ -791,7 +792,7 @@
     const conE = todos.map((c) => [c, G.estadoChat(c)]);
     const GR = [['todos', 'Todos', () => true], ['bot', 'Resueltos', (e) => e.k === 'bot' || e.k === 'ok'],
       ['pend', 'No resueltos', (e) => e.k === 'pend'], ['derivado', 'Derivados', (e) => e.k === 'derivado'], ['sinr', 'Sin respuesta', (e) => e.k === 'bot' || e.k === 'aband'],
-      ['nada', 'Sin consulta', (e) => e.k === 'nada'], ['curso', 'En curso', (e) => e.k === 'curso']];
+      ['fuera', 'Sin sesión', (e) => e.k === 'fuera'], ['nada', 'Sin consulta', (e) => e.k === 'nada'], ['curso', 'En curso', (e) => e.k === 'curso']];
     if (!GR.some((g) => g[0] === ui.chatF)) ui.chatF = 'todos';
     const f = GR.find((g) => g[0] === ui.chatF)[2];
     const q = G.norm(ui.q);
@@ -804,7 +805,7 @@
         <button type="button" class="cht-h" data-chat="${esc(c.caso_id)}" aria-expanded="${ab}">
           <span class="id">${esc(c.caso_id)}<small>${c.creado ? fdt(c.creado) : ''}</small></span>
           <span class="q"><b>${esc(String(c.consulta || '').slice(0, 140))}</b>${c.aclaraciones ? `<small>Después: ${esc(String(c.aclaraciones).slice(0, 160))}</small>` : ''}</span>
-          <span class="r">${tit(c) ? esc(tit(c)) : e.k === 'nada' ? '<i>no planteó una consulta</i>' : e.k === 'curso' || e.k === 'aband' ? '<i>todavía no hubo respuesta</i>' : '<i>sin respuesta de los manuales</i>'}</span>
+          <span class="r">${tit(c) ? esc(tit(c)) : e.k === 'nada' ? '<i>no planteó una consulta</i>' : e.k === 'fuera' ? '<i>sin sesión: se le pidió ingresar primero</i>' : e.k === 'curso' || e.k === 'aband' ? '<i>todavía no hubo respuesta</i>' : '<i>sin respuesta de los manuales</i>'}</span>
           <span class="cht-st"><span class="chip ce-${e.k}">${esc(e.txt)}</span>${(() => { const t = G.tratoChat(c), m = G.molestiaChat(c); return (t ? `<small class="tr t-${t}">${{ bien: '😊 Bien', regular: '😐 Más o menos', mal: '😞 Mal' }[t]}</small>` : '') + (m ? `<small class="tr mol">⚠ molestia</small>` : ''); })()}</span>
         </button>
         ${ab ? `<div class="cht-d">

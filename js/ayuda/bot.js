@@ -14,6 +14,19 @@
   const ROOT = KB.ROOT;
   const pick = (a) => a[Math.floor(Math.random() * a.length)];
 
+  /* ── Sesión de Silicon Access ──
+     Sin sesión el chat SOLO ayuda a ingresar (app y web): fichas de Acceso y contraseña + Invitación y registración.
+     Con sesión ayuda con todo (menos Guardia, apagada en kb.js).
+     Cómo se entera de la sesión (lo conecta Silicon; ver docs/sesion_silicon.md):
+       · link con ?sesion=1          · window.SILA_SESION = true antes de cargar el chat
+       · aviso de la página que lo contiene: postMessage({ type: 'sila-sesion', logueado: true })
+       · interruptor de PRUEBA en el encabezado (SILA_CONFIG.ayuda.simularSesion; false = oculto) */
+  const AYC = (window.SILA_CONFIG && window.SILA_CONFIG.ayuda) || {};
+  const INGRESO = ['Acceso y contraseña', 'Invitación y registración'];
+  let sesion = /[?&]sesion=1\b/.test(location.search) || window.SILA_SESION === true;
+  const permitido = (module) => sesion || INGRESO.indexOf(module) >= 0;
+  const soloPermitidas = (cards) => cards.filter((c) => permitido(c.module));
+
   /* ── DOM ── */
   const root = document.createElement('div');
   root.className = 'ay-root';
@@ -26,6 +39,7 @@
       <header class="ay-hd">
         <span class="iso">${ISO}</span>
         <span class="t"><b>Ayuda Silicon Access</b><small><i>●</i> en línea · asistente virtual</small></span>
+        ${AYC.simularSesion === false ? '' : '<button type="button" class="ay-ses" aria-pressed="false" title="Sólo para pruebas: simula si la persona ya inició sesión en Silicon Access"><span>PRUEBA</span><b>Sin sesión</b></button>'}
         <button type="button" class="ay-x" aria-label="Cerrar ayuda"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.6"/></svg></button>
       </header>
       ${demo ? '<div class="ay-demo"><b>DEMO</b> · No se envía nada: los casos quedan sólo en este navegador.</div>' : ''}
@@ -50,6 +64,32 @@
   })();
   const $ = (s) => root.querySelector(s);
   const log = $('#ayLog'), txt = $('#ayText'), form = $('#ayForm');
+  const GLOBO = { no: '¿Problemas para entrar a tu cuenta?', si: '¿En qué puedo ayudarte dentro de la app?' };
+  function pintarSesion() {
+    const b = $('.ay-ses');
+    if (b) { b.setAttribute('aria-pressed', String(sesion)); b.classList.toggle('on', sesion); b.querySelector('b').textContent = sesion ? 'Con sesión' : 'Sin sesión'; }
+    const g = root.querySelector('.ay-globo b'); if (g) g.textContent = sesion ? GLOBO.si : GLOBO.no;
+    root.querySelector('.ay-launch').setAttribute('aria-label', 'Ayuda para residentes: ' + (sesion ? GLOBO.si : GLOBO.no));
+  }
+  // la conversación arranca de nuevo al cambiar de modo (lo de antes ya quedó registrado)
+  async function setSesion(v, origen) {
+    v = !!v;
+    if (v === sesion) return;
+    sesion = v;
+    pintarSesion();
+    cortarSilencio();
+    st = { phase: 'idle', caso: null, query: '', ctx: {}, card: null };
+    log.querySelectorAll('.ay-opts:not(.used)').forEach((b) => b.classList.add('used'));
+    if (started) {
+      note(origen === 'prueba' ? `Prueba: ahora simulás que ${sesion ? 'YA iniciaste' : 'NO iniciaste'} sesión.` : (sesion ? 'Sesión iniciada.' : 'Sesión cerrada.'), 'warn');
+      await say(sesion ? '<p>Listo, ya estás dentro. Contame qué te está pasando con la app y lo vemos juntos.</p>'
+        : '<p>Te ayudo a ingresar a tu cuenta de Silicon Access, en la app o en la web. Contame qué te pasa.</p>', 30);
+    }
+  }
+  pintarSesion();
+  const sesBtn = $('.ay-ses');
+  if (sesBtn) sesBtn.addEventListener('click', () => setSesion(!sesion, 'prueba'));
+  window.addEventListener('message', (e) => { const m = e.data; if (m && m.type === 'sila-sesion') setSesion(!!m.logueado, 'silicon'); });
 
   /* ── estado ── */
   let st = { phase: 'idle', caso: null, query: '', ctx: {}, card: null };
@@ -115,7 +155,8 @@
     started = true;
     const h = new Date().getHours();
     const saludo = h < 12 ? '¡Buen día!' : h < 20 ? '¡Buenas tardes!' : '¡Buenas noches!';
-    await say(`<p>${saludo} Soy SILA, de Silicon Access. Contame qué te está pasando con la app y lo vemos juntos.</p>`, 40);
+    await say(sesion ? `<p>${saludo} Soy SILA, de Silicon Access. Contame qué te está pasando con la app y lo vemos juntos.</p>`
+      : `<p>${saludo} Soy SILA, de Silicon Access. Te ayudo a <b>ingresar a tu cuenta</b>, en la app o en la web. Contame qué te pasa.</p>`, 40);
     try { await KB.load(); } catch (e) { note('No pude cargar la información de ayuda en este momento.', 'bad'); }
   }
 
@@ -124,7 +165,7 @@
      Las que los manuales no cubren no están acá: siguen el camino normal (no se inventa). */
   const FRASES = [
     ['no me llega el código | no me llega el mail de activación', ['invitacion-y-registracion-no-llega-mail-invitacion', 'invitacion-y-registracion-crear-contrasena-desde-mail']],
-    ['no puedo ingresar a la app | no me deja iniciar sesión | no puedo entrar a la app', ['invitacion-y-registracion-entrar-a-la-app', 'invitacion-y-registracion-despues-de-enviar-solicitud', 'invitacion-y-registracion-ya-tengo-usuario-otro-barrio']],
+    ['no puedo ingresar a la app | no me deja iniciar sesión | no puedo entrar a la app', ['acceso-olvide-contrasena', 'invitacion-y-registracion-entrar-a-la-app', 'invitacion-y-registracion-despues-de-enviar-solicitud', 'invitacion-y-registracion-ya-tengo-usuario-otro-barrio']],
     ['no puedo registrar mi face id | no me deja cargar la foto del face id', ['selfie-id-autoempadronamiento-sacar-selfie', 'selfie-id-autoempadronamiento-pide-documento']],
     ['mi face id no me reconoce en la entrada', ['selfie-id-autoempadronamiento-aprobacion-y-rechazo']],
     ['quiero autorizar a un proveedor | autorizar a la empleada | autorizar personal de obra', ['app-movil-autorizar-visita', 'obras-invitar-responsable']],
@@ -207,12 +248,13 @@
     }
     if ((st.phase === 'clar' || st.phase === 'paso') && st.intentos && NO.test(t)) return notResolved();
     if (st.phase === 'paso' && NO.test(t)) return notResolved();
-    if (st.phase === 'clar' || st.phase === 'choose' || st.phase === 'paso') {
+    if (st.phase === 'fuera' && NO.test(t)) return cierreFuera();
+    if (st.phase === 'clar' || st.phase === 'choose' || st.phase === 'paso' || st.phase === 'fuera') {
       appendClar(t);
       return seguir(t);
     }
     st = { phase: 'busy', caso: newCaso(t), query: t, ctx: {}, card: null };
-    await guardar('Consulta registrada', 'registrado');
+    await guardar(sesion ? 'Consulta registrada' : 'Consulta registrada · sin sesión (sólo ayuda para ingresar)', 'registrado');
     return handle(t, {});
   }
   function newCaso(t) {
@@ -255,7 +297,9 @@
     if (best && (st.probadas || []).indexOf(best.id) >= 0 && d.type === 'card' && d.card.id !== best.id) return false;
     if (best && r.confidence >= 0.55) { await CASOS.enviar('upsert', st.caso, log); await answerCard(best); return true; }
     const top = (r.top || []).filter(([id, p]) => id !== 'ninguna' && p >= 0.15);
-    const dudas = top.map(([id]) => byId(id)).filter(Boolean);
+    const todas = top.map(([id]) => byId(id)).filter(Boolean);
+    const dudas = soloPermitidas(todas);
+    if (todas.length && !dudas.length && top[0][1] >= 0.3) { await CASOS.enviar('upsert', st.caso, log); await fueraDeAlcance(todas[0].module); return true; }
     if (dudas.length === 1 && top[0][1] >= 0.3) {
       // un solo candidato razonable: se lo pregunta en vez de adivinar otro tema
       await CASOS.enviar('upsert', st.caso, log + ' · se le preguntó si era eso');
@@ -281,7 +325,9 @@
     st.ctx = ctx;
     st.phase = 'busy';
     const d = KB.decide(q, ctx.previo ? {} : ctx);
-    const fr = !ctx.module || ctx.previo ? porFrase(q) : null;
+    const fr0 = !ctx.module || ctx.previo ? porFrase(q) : null;
+    const fr = fr0 && soloPermitidas(fr0);
+    if (fr0 && fr0.length && !fr.length) return fueraDeAlcance(fr0[0].module);
     if (fr && fr.length) {
       await CASOS.enviar('upsert', st.caso, 'Reconocida como consulta frecuente');
       if (fr.length === 1) return answerCard(fr[0]);
@@ -301,11 +347,15 @@
       if (ctx.clarified) return notFound();
       st.phase = 'clar';
       await say(`<p>${pick(['Te ayudo.', 'Dale, lo vemos.', 'Contá conmigo.'])} ¿Con qué parte de la app es? Elegí una o contame un poco más qué te pasa.</p>`);
-      opts(KB.cardModules().map((m) => ({ label: m, run: () => { me(m); offerCards(m); } })));
+      opts(KB.cardModules().filter(permitido).map((m) => ({ label: m, run: () => { me(m); offerCards(m); } })));
       return;
     }
     if (d.type === 'narrow') return offerCards(d.module, true);
     if (d.type === 'choose') {
+      const ok = soloPermitidas(d.cards);
+      if (!ok.length) return fueraDeAlcance(d.cards[0].module);
+      if (ok.length === 1) return answerCard(ok[0]);
+      d.cards = ok;
       st.phase = 'choose';
       await say(`<p>${pick(['Para no mandarte para otro lado:', 'Quiero estar seguro de entenderte:'])} ¿cuál de estas es tu consulta?</p>`);
       opts([...d.cards.map((c) => ({ label: c.title, run: () => { me(c.title); answerCard(c); } })),
@@ -316,12 +366,46 @@
     if (d.type === 'page') return answerPage(d.hit);
     return notFound();
   }
+  /* Sin sesión preguntó por otro tema: primero tiene que entrar; se le ofrece ayuda para ingresar o la central. */
+  async function fueraDeAlcance(module) {
+    st.caso.modulo = module || st.caso.modulo;
+    st.caso.resultado = `Fuera de alcance sin sesión: consultó por ${module || 'otro tema'}`;
+    st.phase = 'fuera';
+    st.ctx = {};
+    await guardar(`Sin sesión: consultó por ${module || 'otro tema'}; se le pidió ingresar primero y se le ofreció la central`, 'sin sesión');
+    await say(`<p>Eso te lo explico cuando ya hayas entrado a tu cuenta de Silicon Access. Por ahora te puedo ayudar con todo lo que sea <b>ingresar</b>, en la app o en la web.</p>`, 60);
+    await say('<p>¿Tenés problemas para entrar, o preferís que la central te contacte por esa consulta?</p>', 30);
+    opts([{ label: 'Tengo problemas para entrar', pri: true, run: () => { me('Tengo problemas para entrar'); ayudaIngreso(); } },
+      { label: 'Que me contacte la central', run: async () => {
+        me('Que me contacte la central');
+        st.caso.estado = 'pendiente';
+        await guardar('Sin sesión: pidió que lo contacte la central', 'pendiente');
+        showForm();
+      } },
+      { label: 'No, gracias', run: () => { me('No, gracias'); cierreFuera(); } }]);
+  }
+  async function cierreFuera() {
+    st.phase = 'done';
+    await say(`<p>${pick(['¡Dale!', 'Perfecto.'])} Cuando entres a tu cuenta, abrime de nuevo y lo vemos.</p>`, 20);
+    return pedirTrato();
+  }
+  async function ayudaIngreso() {
+    st.phase = 'clar';
+    st.ctx = {};
+    await say('<p>Dale. ¿Qué te pasa al querer entrar? Elegí una o contámelo con tus palabras.</p>', 20);
+    const ids = ['acceso-olvide-contrasena', 'acceso-cual-es-mi-usuario', 'invitacion-y-registracion-no-llega-mail-invitacion',
+      'invitacion-y-registracion-registrarme-con-qr', 'invitacion-y-registracion-bajar-la-app', 'acceso-desde-computadora'];
+    const cs = ids.map((id) => KB.K.cards.find((c) => c.id === id)).filter(Boolean);
+    const lista = cs.length >= 3 ? cs : INGRESO.flatMap((m) => KB.cardsOf(m)).slice(0, 6);
+    opts(lista.map((c) => ({ label: c.title, run: () => { me(c.title); appendClar(c.title); answerCard(c); } })));
+  }
   async function otraCosa() {
     st.phase = 'clar';
     st.ctx = {};
     await say(`<p>${pick(['Dale.', 'Perfecto.'])} Contame un poco más: ¿qué estás intentando hacer y en qué parte de la app te pasa?</p>`);
   }
   async function offerCards(module, fromQuery) {
+    if (!permitido(module)) return fueraDeAlcance(module);
     st.phase = 'clar';
     st.ctx = { module };
     const cs = KB.cardsOf(module).slice(0, 6);
@@ -342,6 +426,7 @@
       <figcaption>Paso ${n}</figcaption></figure>`;
   }
   async function answerCard(card) {
+    if (!permitido(card.module)) return fueraDeAlcance(card.module);
     if ((st.probadas || []).indexOf(card.id) >= 0) {
       // lo que dicen los manuales para esto ya se probó: no se repite, se dice y se ofrece la central
       await guardar(`Ya había probado: ${card.title}; no hay otra solución documentada`);
@@ -393,6 +478,7 @@
   }
   async function answerPage(h) {
     const c = h.chunk;
+    if (!permitido(c.doc.module)) return fueraDeAlcance(c.doc.module);
     st.caso.modulo = c.doc.module;
     st.caso.fuentes_citadas = `${c.doc.title} (pág. ${c.page})`;
     st.caso.pasos_intentados = `Se le mostró la pantalla de ayuda de ${c.doc.module}.`;

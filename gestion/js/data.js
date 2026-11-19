@@ -383,6 +383,8 @@
     if (c.derivado_central === 'sí') return { k: 'derivado', txt: 'Derivado a la central' };
     // «no, gracias» sin plantear nada: el backend sólo acepta abierto/pendiente/resuelto, así que se marca en el resultado
     if (/^sin consulta/i.test(c.resultado || '')) return { k: 'nada', txt: 'Sin consulta' };
+    // sin sesión preguntó por otro tema: se le pidió ingresar primero (si pidió la central, ya salió como derivado)
+    if (/^fuera de alcance sin sesi/i.test(norm(c.resultado)) && norm(c.estado) !== 'pendiente') return { k: 'fuera', txt: 'Sin sesión · otro tema' };
     if (norm(c.estado) === 'resuelto') return /confirmado/i.test(c.resultado || '') ? { k: 'ok', txt: 'Resuelto · lo confirmó el vecino' } : { k: 'bot', txt: 'Resuelto · sin respuesta del vecino' };
     if (sinRespuesta(c)) return { k: 'bot', txt: 'Resuelto · sin respuesta del vecino' };
     if (norm(c.estado) === 'pendiente') return { k: 'pend', txt: /documentada/i.test(c.resultado || '') ? 'No resuelto · sin solución en los manuales' : 'No resuelto · no quiso la central' };

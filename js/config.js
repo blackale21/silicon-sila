@@ -35,5 +35,10 @@ window.SILA_CONFIG = {
     kbUrl: 'kb/sila_kb.sqlite',
     // App de la central que recibe los casos derivados (vacío = no se muestra el acceso).
     gestionUrl: 'gestion/',
+    // Interruptor de PRUEBA en el encabezado del chat para simular "sin sesión / con sesión".
+    // Sin sesión sólo ayuda a ingresar (app y web). false = oculto (cuando Silicon avise la sesión de verdad).
+    simularSesion: true,
+    // Material de la Guardia: apagado hasta definir cómo mostrarlo. true = lo vuelve a usar.
+    guardia: false,
   },
 };
